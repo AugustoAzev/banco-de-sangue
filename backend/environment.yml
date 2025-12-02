@@ -1,0 +1,16 @@
+name: banco-sangue-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - fastapi
+  - uvicorn-standard
+  - sqlalchemy
+  - pymysql
+  - python-dotenv
+  - python-jose  
+  - passlib      
+  - bcrypt      
+  - python-multipart 
+  - pip
