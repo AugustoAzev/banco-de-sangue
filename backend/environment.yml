@@ -3,14 +3,16 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.10
-  - fastapi
-  - uvicorn-standard
-  - sqlalchemy
-  - pymysql
-  - python-dotenv
-  - python-jose  
-  - passlib      
-  - bcrypt      
-  - python-multipart 
-  - pip
+  - python=3.10.19
+  - pip=25.3
+  - fastapi=0.123.4
+  - uvicorn-standard=0.38.0
+  - sqlalchemy=2.0.44
+  - pymysql=1.1.2
+  - python-dotenv=1.2.1
+  
+  - pip:
+    - python-jose[cryptography]==3.5.0
+    - passlib[bcrypt]==1.7.4
+    - bcrypt==5.0.0
+    - python-multipart==0.0.20
