@@ -31,3 +31,45 @@ __pycache__/
 backend/venv/
 backend/.env
 .env
+
+
+.pytest_cache/
+.hypothesis/
+
+
+# Relatórios de cobertura de código
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+
+# Logs de erro do pip 
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Artefatos de build e distribuição 
+build/
+develop-eggs/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+
+# Garante que cache dentro da pasta de migração não suba
+alembic/__pycache__/

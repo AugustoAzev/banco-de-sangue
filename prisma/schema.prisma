@@ -1,0 +1,149 @@
+// prisma/schema.prisma
+
+// [Configuração MySQL e Generator - Mantidas]
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// =======================================================
+// ENUMS
+// =======================================================
+
+enum TipoUsuario {
+  ADMINISTRADOR
+  ATENDENTE
+}
+
+enum TipoSanguineo {
+  A_POSITIVO
+  A_NEGATIVO
+  B_POSITIVO
+  B_NEGATIVO
+  AB_POSITIVO
+  AB_NEGATIVO
+  O_POSITIVO
+  O_NEGATIVO
+}
+
+enum StatusDoacao {
+  EM_ESTOQUE
+  DESPACHADA
+  DESCARTADA
+}
+
+// =================
+//     TABELAS
+// =================
+
+// 1. Unidade de Coleta (Empresa) - Otimização de busca por CNPJ e Login de Admin
+model UnidadeColeta {
+  id_unidade    String   @id @default(uuid())
+  nome_fantasia String
+  cnpj          String?  @unique
+  endereco      String
+  email_unidade String?
+
+  unidades_associadas UsuarioUnidade[]
+  doacoes       Doacao[]
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  // Índice para busca rápida de CNPJ
+  @@index([cnpj])
+}
+
+// 2. Usuario (Unificação de Administrador e Funcionário) - Otimização de Login
+model Usuario {
+  id_usuario    String        @id @default(uuid())
+  nome_completo String
+  email         String        @unique // Já tem índice implícito por @unique
+  senha_hash    String
+
+  cpf           String?       @unique
+  pis           String?       @unique
+  cargo         String?
+  telefone      String?
+
+  tipo          TipoUsuario
+
+  unidades_trabalho UsuarioUnidade[]
+  doacoes_registradas Doacao[]
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  // Índices para otimizar o login e busca de documentos
+  @@index([email]) // Boa prática, apesar do @unique
+  @@index([cpf])
+}
+
+// 3. Tabela Associativa para N:M (RN015) - Mantida
+model UsuarioUnidade {
+  id_usuario    String
+  id_unidade    String
+
+  usuario       Usuario       @relation(fields: [id_usuario], references: [id_usuario])
+  unidade       UnidadeColeta @relation(fields: [id_unidade], references: [id_unidade])
+
+  ativo         Boolean       @default(true)
+
+  @@id([id_usuario, id_unidade])
+  @@map("usuario_unidade")
+}
+
+// 4. Doador - Otimização de busca por CPF
+model Doador {
+  id_doador     String        @id @default(uuid())
+  nome_completo String
+  cpf           String        @unique // Já tem índice implícito por @unique
+  idade         Int?
+  sexo          String?
+  tipo_sanguineo TipoSanguineo?
+  email         String?
+  telefone      String?
+  endereco      String?
+
+  historico_doacoes Doacao[]
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  // Índice para busca rápida de CPF (frequente em hospitais/hemocentros)
+  @@index([cpf])
+}
+
+// 5. Doação (Histórico e Estoque) - Otimização para filtros por Unidade (RN016)
+model Doacao {
+  id_doacao     String        @id @default(uuid())
+  data_doacao   DateTime      @default(now())
+  volume_ml     Float
+  observacoes   String?
+
+  status        StatusDoacao  @default(EM_ESTOQUE)
+  tipo_sanguineo_coletado TipoSanguineo
+
+  // Relações com Chaves Estrangeiras
+
+  id_doador     String
+  doador        Doador        @relation(fields: [id_doador], references: [id_doador])
+
+  id_registrador String
+  registrador   Usuario       @relation(fields: [id_registrador], references: [id_usuario])
+
+  id_unidade    String
+  unidade       UnidadeColeta @relation(fields: [id_unidade], references: [id_unidade])
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  // Índice crucial para o filtro de isolamento por Unidade (RN016) e performance de estoque.
+  @@index([id_unidade]) 
+  // Opcional: Índice composto para buscas por (Unidade e Tipo Sanguíneo)
+  // @@index([id_unidade, tipo_sanguineo_coletado]) 
+}
