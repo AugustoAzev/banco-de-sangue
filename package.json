@@ -1,14 +1,16 @@
 {
-  "name": "react-ts",
+  "name": "banco-de-sangue",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "typescript": "~5.9.3",
     "vite": "^7.2.2"
   }
