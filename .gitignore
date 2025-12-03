@@ -31,3 +31,8 @@ __pycache__/
 backend/venv/
 backend/.env
 .env
+
+
+# Playwright
+test-results/
+playwright-report/
