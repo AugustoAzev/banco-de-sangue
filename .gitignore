@@ -33,6 +33,9 @@ backend/.env
 .env
 
 
+# Playwright
+test-results/
+playwright-report/
 .pytest_cache/
 .hypothesis/
 
