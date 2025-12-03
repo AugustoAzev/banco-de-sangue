@@ -10,6 +10,7 @@
     "test": "playwright test"
   },
   "devDependencies": {
+    "prisma": "^6.19.0",
     "@playwright/test": "^1.57.0",
     "prisma": "^6.19.0",
     "typescript": "~5.9.3",
