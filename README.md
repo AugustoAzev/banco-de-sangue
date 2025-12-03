@@ -7,3 +7,5 @@
 # Python 3 on back-end
 
 # MySQL for databases
+
+# Run test command: 'npx playwright test'
