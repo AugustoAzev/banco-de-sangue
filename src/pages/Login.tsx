@@ -8,21 +8,27 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     
     try {
+      // Connects to the Python backend
       const response = await api.post('/auth/login', { email, password });
       const { access_token, role, name } = response.data;
       
       signIn(access_token, { name, role, email });
       navigate('/dashboard');
     } catch (err) {
+      console.error(err);
       setError('Credenciais inválidas. Verifique seu e-mail e senha.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -34,24 +40,23 @@ export default function Login() {
       height: '100vh', 
       backgroundColor: 'var(--color-bg)' 
     }}>
-      <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '2.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+      <div className="card" style={{ width: '100%', maxWidth: '420px', padding: '3rem' }}>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2.5rem' }}>
           <div style={{ 
             backgroundColor: '#fee2e2', 
             padding: '1rem', 
             borderRadius: '50%', 
-            color: 'var(--color-primary)' 
+            color: 'var(--color-primary)',
+            marginBottom: '1rem'
           }}>
-            <Droplet size={32} fill="var(--color-primary)" />
+            <Droplet size={40} fill="var(--color-primary)" />
           </div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
+            Pulse
+          </h1>
+          <p className="text-muted">Acesso Administrativo</p>
         </div>
-        
-        <h1 style={{ textAlign: 'center', marginBottom: '0.5rem', fontSize: '1.5rem', color: 'var(--color-primary)' }}>
-          Acesso ao Sistema
-        </h1>
-        <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-          Banco de Sangue Digital
-        </p>
 
         <form onSubmit={handleLogin}>
           {error && (
@@ -60,23 +65,26 @@ export default function Login() {
               color: '#991b1b', 
               padding: '0.75rem', 
               borderRadius: '6px', 
-              marginBottom: '1rem',
-              fontSize: '0.9rem' 
+              marginBottom: '1.5rem',
+              fontSize: '0.875rem',
+              border: '1px solid #fecaca',
+              textAlign: 'center'
             }}>
               {error}
             </div>
           )}
 
           <div className="input-group">
-            <label htmlFor="email">E-mail Corporativo</label>
+            <label htmlFor="email">E-mail</label>
             <input 
               id="email"
-              type="text" 
+              type="email" 
               className="input-field" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="ex: admin@banco.com"
+              placeholder="seu.email@hemocentro.com.br"
               required
+              autoFocus
             />
           </div>
 
@@ -93,10 +101,21 @@ export default function Login() {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-            Entrar
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{ width: '100%', marginTop: '1.5rem', height: '48px' }}
+            disabled={loading}
+          >
+            {loading ? 'Autenticando...' : 'Acessar Sistema'}
           </button>
         </form>
+        
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <p className="text-muted" style={{ fontSize: '0.75rem' }}>
+            © 2025 Banco de Sangue Digital. Acesso Restrito.
+          </p>
+        </div>
       </div>
     </div>
   );
