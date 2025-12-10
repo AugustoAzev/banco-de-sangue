@@ -44,7 +44,6 @@ class UnidadeColeta(Base):
     atualizado_em = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     # Relacionamentos
-    # Definição explicita de string para evitar problemas de importação circular 
     usuarios_associados = relationship("UsuarioUnidade", back_populates="unidade")
     doacoes = relationship("Doacao", back_populates="unidade")
 
@@ -131,3 +130,15 @@ class Doacao(Base):
     doador = relationship("Doador", back_populates="historico_doacoes")
     registrador = relationship("Usuario", back_populates="doacoes_registradas")
     unidade = relationship("UnidadeColeta", back_populates="doacoes")
+
+
+class Insumo(Base):
+    """ Tabela para controle de Materiais e Insumos """
+    __tablename__ = "insumos"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    nome = Column(String(255), nullable=False)
+    quantidade = Column(Integer, default=0, nullable=False)
+    
+    criado_em = Column(DateTime, server_default=func.now())
+    atualizado_em = Column(DateTime, server_default=func.now(), onupdate=func.now())
