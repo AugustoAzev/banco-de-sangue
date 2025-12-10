@@ -32,7 +32,7 @@ def get_bolsas(
     # Formata resposta simplificada para a tabela de estoque
     return [
         {
-            "id": item.id_doacao, # ID real (UUID)
+            "id": item.id_doacao, 
             "tipo_sangue": item.tipo_sanguineo_coletado,
             "quantidade": int(item.volume_ml), 
             "created_at": item.data_doacao
@@ -66,7 +66,7 @@ def add_bolsa(
         raise HTTPException(status_code=400, detail="Cadastre ao menos um doador antes de lançar estoque.")
 
     # 4. Criar as doações (Loop pela quantidade informada)
-    # Se o usuário informou quantidade 5, criamos 5 registros de doação de 450ml
+    # Se o usuário informou quantidade 5, criamos 5 registros de doação de 450ml -> revisar essa regra aqui fiz da minha cabeça foda-se
     try:
         for _ in range(bolsa.quantidade):
             nova_doacao = all_models.Doacao(

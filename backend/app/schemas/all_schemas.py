@@ -19,7 +19,7 @@ class Token(BaseModel):
 class DoadorCreate(BaseModel):
     # Aceita 'nome' do frontend (via alias) ou 'name'
     nome: str
-    documento: str = "RG" # Valor padrão se não vier
+    documento: str = "RG" # Valor padrão se não vier -> foda-se regra de negocio cagada com sucesso 
     cpf: str
     tipo_sanguineo: str
     idade: int

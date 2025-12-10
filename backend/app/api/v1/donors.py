@@ -22,7 +22,7 @@ def create_donor(
     db_donor = all_models.Doador(
         # CORREÇÃO: Usar .nome em vez de .name
         nome_completo=donor.nome,
-        # CORREÇÃO: Removemos documento pois não existe no model
+        # CORREÇÃO: Removemos documento pois não existe no model -> merda do caralho estava 2 horas twntando arrumar essa porra
         cpf=donor.cpf,
         idade=donor.idade,
         sexo=donor.sexo,
@@ -70,7 +70,7 @@ def update_donor(
 
     # CORREÇÃO: Usar .nome em vez de .name
     db_donor.nome_completo = donor.nome
-    # O campo documento não existe no model, então removemos a linha
+    # O campo documento não existe no model, então removemos a linha -> caralhoooooooooooooo
     db_donor.idade = donor.idade
     db_donor.sexo = donor.sexo
     db_donor.tipo_sanguineo = donor.tipo_sanguineo
