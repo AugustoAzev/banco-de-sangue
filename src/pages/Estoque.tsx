@@ -28,8 +28,8 @@ export default function Estoque() {
     
     return { 
       text: `${grupo}${sinal}`, 
-      color: '#991b1b', // Vermelho escuro
-      bg: '#fee2e2'     // Vermelho claro
+      color: '#991b1b', 
+      bg: '#fee2e2'    
     };
   };
 
