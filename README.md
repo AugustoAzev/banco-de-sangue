@@ -210,5 +210,3 @@ banco-de-sangue/
 # 📄 Licença
 
 Distribuído sob licença **MIT**.
-
-Feito com ❤️ para modernizar a gestão de hemocentros.
