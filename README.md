@@ -1,19 +1,14 @@
 # 🩸 Pulse — Sistema de Gestão de Hemocentro
 
-O **Pulse** é um sistema completo para gerenciamento de hemocentros e bancos de sangue, permitindo controle total do ciclo do sangue: cadastro de doadores, triagens, registro de doações, controle de bolsas e insumos, além de dashboards administrativos com métricas em tempo real.
+O **Pulse** é um sistema completo para gestão de hemocentros e bancos de sangue.  
+Ele integra cadastro de doadores, triagem, controle de estoque, administração de insumos, relatórios e dashboards analíticos.
 
----
+Este projeto utiliza:
 
-## 📘 Sobre o Projeto
-
-O objetivo do Pulse é modernizar e centralizar operações essenciais de um hemocentro com:
-
-- Cadastro e gestão de doadores  
-- Triagem e registro clínico  
-- Gestão de estoque (bolsas, insumos, vencimentos)  
-- Painéis com indicadores em tempo real  
-- API moderna com FastAPI  
-- Interface rápida e responsiva construída em React + Vite  
+- **Backend:** FastAPI + SQLAlchemy + Alembic  
+- **Frontend:** React + TypeScript + Vite  
+- **Ambiente Python:** `environment.yml` (Conda)  
+- **Migrações:** Alembic (Python) e Prisma (Service Layer)
 
 ---
 
@@ -26,35 +21,38 @@ O objetivo do Pulse é modernizar e centralizar operações essenciais de um hem
 - Alembic
 - JWT + Passlib
 - Pydantic
+- Conda (`environment.yml`)
 
 ### **Frontend**
 - React 18
 - TypeScript
 - Vite
-- CSS Modules
+- CSS Modules / CSS Nativo
 - Axios
 - React Router DOM
 - Lucide Icons
 
 ### **Infraestrutura / Testes**
-- MySQL ou MariaDB
-- Conda / Pip
+- MySQL/MariaDB
+- Prisma
 - Playwright
+- Git
 
 ---
 
-## 📋 Pré-requisitos
+# 📋 Pré-requisitos
 
-Instale antes de começar:
+Instale:
 
-- Python 3.10 ou superior  
-- Node.js 18 ou superior  
-- MySQL ou MariaDB  
-- Git  
+- Python 3.10+
+- Conda
+- Node.js 18+
+- MySQL ou MariaDB
+- Git
 
 ---
 
-# 🚀 Instalação e Configuração
+# 🚀 Instalação & Configuração
 
 ## 1. Clonar o repositório
 
@@ -65,76 +63,66 @@ cd banco-de-sangue
 
 ---
 
-## 2. Backend
-
-### Criar ambiente virtual (Conda recomendado)
-
-```bash
-conda env create -f backend/environment.yml
-conda activate banco-sangue-env
-```
-
-### Ou usando Venv
+## 2. Configurar o Backend (Conda)
 
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate      # Linux/Mac
-venv\Scripts\activate         # Windows
-
-pip install -r requirements.txt
+conda env create -f environment.yml
+conda activate banco-sangue-env
 ```
 
 ---
 
-### Variáveis de Ambiente
+## 3. Variáveis de Ambiente
 
-Crie o arquivo:
-
-```
-backend/.env
-```
-
-Insira:
+Criar `backend/.env`:
 
 ```env
 DB_USER=root
-DB_PASSWORD=sua_senha_do_banco
+DB_PASSWORD=sua_senha
 DB_HOST=localhost
 DB_DATABASE=banco_sangue
-SECRET_KEY=sua_chave_secreta_segura_aqui
+SECRET_KEY=sua_chave_secreta
 ```
 
 ---
 
-## 3. Criar o Banco de Dados
+## 4. Banco de Dados
+
+Criar banco:
 
 ```sql
 CREATE DATABASE banco_sangue;
 ```
 
-Aplicar migrações:
+Rodar migrações Alembic:
 
 ```bash
 alembic upgrade head
 ```
 
+Se usar Prisma:
+
+```bash
+npx prisma migrate deploy
+```
+
 ---
 
-## 4. Popular o Banco (Seed)
+## 5. Popular dados iniciais (seed)
 
 ```bash
 python seed_data.py
+python seed_user.py
 ```
 
-Credenciais criadas:
-
-- Email: `admin@pulse.com`  
-- Senha: `12345678`
+Usuário inicial:
+- Email: admin@pulse.com  
+- Senha: 12345678
 
 ---
 
-## 5. Instalar dependências do Frontend
+## 6. Instalar o Frontend
 
 ```bash
 npm install
@@ -142,34 +130,32 @@ npm install
 
 ---
 
-# ▶️ Executando a Aplicação
+# ▶️ Executar o Projeto
 
-## Terminal 1 — Backend
+## Backend
 
 ```bash
 uvicorn backend.app.main:app --reload --port 8000
 ```
 
-Acesse:
-
-- API → http://127.0.0.1:8000  
-- Swagger → http://127.0.0.1:8000/docs  
+Acessos:
+- API: http://127.0.0.1:8000  
+- Swagger: http://127.0.0.1:8000/docs  
 
 ---
 
-## Terminal 2 — Frontend
+## Frontend
 
 ```bash
 npm run dev
 ```
 
-Acesse:
-
-- Frontend → http://localhost:5173  
+Acessar:  
+http://localhost:5173
 
 ---
 
-# 🧪 Testes com Playwright
+# 🧪 Testes Automatizados (Playwright)
 
 Rodar testes:
 
@@ -177,7 +163,7 @@ Rodar testes:
 npx playwright test
 ```
 
-Visualizar relatório:
+Relatório:
 
 ```bash
 npx playwright show-report
@@ -185,34 +171,44 @@ npx playwright show-report
 
 ---
 
-# 📂 Estrutura do Projeto
+# 📂 Estrutura Completa do Projeto
 
 ```plaintext
 banco-de-sangue/
-├── alembic/                # Scripts de migração
-├── backend/
-│   ├── app/
-│   │   ├── api/            # Rotas da API (v1)
-│   │   ├── core/           # Configuração global (DB, segurança)
-│   │   ├── models/         # Modelos SQLAlchemy
-│   │   └── schemas/        # Schemas Pydantic
+├── alembic
+│   ├── env.py
+│   ├── script.py.mako
+│   └── versions/
+├── alembic.ini
+├── backend
+│   ├── app
+│   │   ├── api (auth, donors, employees, inventory)
+│   │   ├── core
+│   │   ├── models
+│   │   ├── schemas
+│   │   └── main.py
 │   └── environment.yml
-├── src/                    # Frontend (React)
-│   ├── components/
-│   ├── contexts/
-│   ├── pages/
-│   └── services/
+├── prisma
+│   ├── schema.prisma
+│   └── migrations/
+├── public
+├── src (Frontend React)
+│   ├── components
+│   ├── contexts
+│   ├── pages
+│   ├── services
+│   └── main.tsx
+├── tests (Playwright)
 ├── seed_data.py
-├── vite.config.ts
-└── README.md
+├── seed_user.py
+├── package.json
+└── vite.config.ts
 ```
 
 ---
 
 # 📄 Licença
 
-Este projeto é distribuído sob a licença **MIT**.
+Distribuído sob licença **MIT**.
 
----
-
-Feito com ❤️ para estudos e inovação em gestão de hemocentros.
+Feito com ❤️ para modernizar a gestão de hemocentros.
