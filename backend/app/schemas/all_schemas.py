@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
@@ -10,64 +10,93 @@ class LoginRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
-    role: str  # 'admin' ou 'funcionario'
+    role: str
     name: str
 
 # --- Doador ---
-class DoadorBase(BaseModel):
-    name: str
-    documento: str
-    tipo_sangue: str
-    telefone: Optional[str] = None
+
+# Schema APENAS para receber dados do Frontend (Input)
+class DoadorCreate(BaseModel):
+    # Aceita 'nome' do frontend (via alias) ou 'name'
+    nome: str
+    documento: str = "RG" # Valor padrão se não vier -> foda-se regra de negocio cagada com sucesso 
+    cpf: str
+    tipo_sanguineo: str
+    idade: int
+    sexo: str
     email: Optional[str] = None
-    complemento: Optional[str] = None
+    telefone: Optional[str] = None
+    endereco: Optional[str] = None
+    
+    # Validações apenas de entrada (usadas na lógica, não no banco Doador)
     condicao_1: bool
     condicao_2: bool
     condicao_3: bool
 
-class DoadorCreate(DoadorBase):
-    pass
-
-class DoadorResponse(DoadorBase):
-    id: int
-    created_at: Optional[datetime]
+# Schema APENAS para devolver dados do Banco (Output)
+class DoadorResponse(BaseModel):
+    id_doador: str
+    # Mapeia o campo 'nome_completo' do banco para 'nome_completo' no JSON
+    # Se quiser retornar como 'nome', poderia usar alias, mas aqui mantemos o nome da coluna
+    nome_completo: str 
+    cpf: str
+    tipo_sanguineo: Optional[str] = None
+    idade: Optional[int] = None
+    sexo: Optional[str] = None
+    email: Optional[str] = None
+    telefone: Optional[str] = None
+    endereco: Optional[str] = None
+    
+    # Campos de data
+    created_at: Optional[datetime] = Field(None, alias="criado_em") # Mapeia se o banco usar 'criado_em'
+    
     class Config:
         from_attributes = True
+        populate_by_name = True
 
-# --- Estoque (Bolsa e Insumo) ---
+# --- Estoque (Bolsas) ---
 class BolsaCreate(BaseModel):
     tipo_sangue: str
     quantidade: int
 
-class BolsaResponse(BolsaCreate):
-    id: int
+class BolsaResponse(BaseModel):
+    id: int 
+    tipo_sangue: str
+    quantidade: int
+
     class Config:
         from_attributes = True
 
+# --- Insumos ---
 class InsumoCreate(BaseModel):
     nome: str
     quantidade: int
 
 class InsumoResponse(InsumoCreate):
-    id: int
+    id: int 
+    
     class Config:
         from_attributes = True
 
 # --- Funcionario ---
-class FuncionarioCreate(BaseModel):
-    name: str
+class FuncionarioBase(BaseModel):
+    name: str = Field(..., alias="nome_completo")
     cargo: str
     cpf: str
     pis: Optional[str] = None
     telefone: Optional[str] = None
     email: str
-    password: str
     complemento: Optional[str] = None
 
-class FuncionarioResponse(BaseModel):
-    id: int
-    name: str
-    cargo: str
-    email: str
+    class Config:
+        populate_by_name = True
+
+class FuncionarioCreate(FuncionarioBase):
+    password: str
+
+class FuncionarioResponse(FuncionarioBase):
+    id_usuario: str 
+    tipo: str 
+    
     class Config:
         from_attributes = True

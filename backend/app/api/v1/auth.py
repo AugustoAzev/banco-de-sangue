@@ -9,29 +9,26 @@ router = APIRouter()
 
 @router.post("/login", response_model=all_schemas.Token)
 def login(form_data: all_schemas.LoginRequest, db: Session = Depends(get_db)):
-    # 1. tenta achar como Admin (User)
-    user = db.query(all_models.User).filter(all_models.User.email == form_data.email).first()
-    role = "admin"
-    db_obj = user
+    # Busca na tabela única de Usuários
+    user = db.query(all_models.Usuario).filter(all_models.Usuario.email == form_data.email).first()
 
-    # 2. se não achar, tenta como Funcionario
-    if not user:
-        user = db.query(all_models.Funcionario).filter(all_models.Funcionario.email == form_data.email).first()
-        role = "funcionario"
-        db_obj = user
-
-    # 3. se não achou ninguém ou senha errada
-    if not db_obj or not verify_password(form_data.password, db_obj.password):
+    # Verifica se o usuário existe e se a senha bate
+    # Nota: No novo model, a senha é 'senha_hash', não 'password'
+    if not user or not verify_password(form_data.password, user.senha_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="E-mail ou senha incorretos",
         )
 
-    access_token = create_access_token(data={"sub": db_obj.email, "role": role})
+    # O campo 'tipo' é um Enum, pegamos o .value para a string "ADMINISTRADOR" ou "ATENDENTE"
+    role = user.tipo.value if hasattr(user.tipo, 'value') else user.tipo
+
+    access_token = create_access_token(data={"sub": user.email, "role": role})
     
+    # Mapeia os campos do banco (nome_completo) para o schema de resposta (name)
     return {
         "access_token": access_token, 
         "token_type": "bearer", 
         "role": role,
-        "name": db_obj.name
+        "name": user.nome_completo
     }
