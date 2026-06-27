@@ -1,0 +1,10 @@
+{
+  "env": {
+    "JWT_SECRET": "@jwt-secret",
+    "SUPABASE_URL": "@supabase-url",
+    "SUPABASE_ANON_KEY": "@supabase-anon-key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-role-key"
+  },
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev"
+}
