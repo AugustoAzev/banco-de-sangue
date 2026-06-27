@@ -4,4 +4,4 @@ const nextConfig = {
   serverExternalPackages: ['bcryptjs'],
 };
 
-module.exports = nextConfig;
+export default nextConfig;
