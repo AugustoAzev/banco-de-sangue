@@ -23,13 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-backend/venv/
-backend/.env
 .env
 
 
@@ -52,11 +45,11 @@ coverage.xml
 *.py,cover
 
 
-# Logs de erro do pip 
+# Logs de erro do pip
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Artefatos de build e distribuição 
+# Artefatos de build e distribuição
 build/
 develop-eggs/
 eggs/
@@ -72,7 +65,3 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-
-# Garante que cache dentro da pasta de migração não suba
-alembic/__pycache__/

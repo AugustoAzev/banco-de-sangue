@@ -5,14 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173, // Garante a porta padrão
-    proxy: {
-      // Toda requisição que começar com /api será redirecionada para o Python
-      '/api': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  }
+    port: 5173,
+  },
 })
