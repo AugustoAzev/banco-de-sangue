@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import api from '../../src/services/api';
+import api from '../../../src/services/api';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
 
 interface Doador {
