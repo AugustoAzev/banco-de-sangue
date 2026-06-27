@@ -1,9 +1,9 @@
 {
   "env": {
-    "JWT_SECRET": "@jwt-secret",
-    "SUPABASE_URL": "@supabase-url",
-    "SUPABASE_ANON_KEY": "@supabase-anon-key",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-role-key"
+    "JWT_SECRET": "7NatP5ukqMrYB9IoZpFYLtsvdXNJHhx3jhrZJz49KvZPKJ+Fz0FtOqAcP1dSo/+Mw4+fJumH8mCovH4iSz3f8w==",
+    "SUPABASE_URL": "https://zvtgkxpbndgbmknmnanu.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2dGdreHBibmRnYm1rbm1uYW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1MTg1NjAsImV4cCI6MjA5ODA5NDU2MH0.XGZLIMk6xS_jCvMZSyhSnsyKiWNKFaE7gsQXEM4UDec",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2dGdreHBibmRnYm1rbm1uYW51Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjUxODU2MCwiZXhwIjoyMDk4MDk0NTYwfQ.7APPuBJi8i_GXcPVNdGDtq_Nd1vyWXg2T1Wtabvdrrs"
   },
   "buildCommand": "npm run build",
   "devCommand": "npm run dev"
