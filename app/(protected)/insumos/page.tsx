@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import api from '../../src/services/api';
+import api from '../../../src/services/api';
 import { Plus, Trash2, Pencil, X } from 'lucide-react';
 
 interface Insumo {

@@ -21,8 +21,8 @@
     "noFallthroughCasesInSwitch": true,
     
     /* Tipos Globais */
-    "types": ["vite/client", "node"]
+    "types": ["node"]
   },
-  "include": ["src", "api"],
+  "include": ["src", "api", "app"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

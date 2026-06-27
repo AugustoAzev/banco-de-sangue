@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import api from '../../src/services/api';
+import api from '../../../src/services/api';
 import { Droplet, Plus, Filter, Calendar, Trash2 } from 'lucide-react';
 
 interface Bolsa {

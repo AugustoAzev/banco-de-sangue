@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Users, Droplet, Activity, AlertTriangle, Calendar } from 'lucide-react';
-import api from '../../src/services/api';
+import api from '../../../src/services/api';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
