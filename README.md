@@ -3,7 +3,7 @@
 O **Pulse** é um sistema completo para gestão de hemocentros e bancos de sangue.  
 Ele integra cadastro de doadores, triagem, controle de estoque, administração de insumos, relatórios e dashboards analíticos.
 
-Este projeto utiliza:
+Este projeto utiliza esta stack:
 
 - **Backend:** FastAPI + SQLAlchemy + Alembic  
 - **Frontend:** React + TypeScript + Vite  
