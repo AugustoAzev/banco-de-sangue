@@ -14,7 +14,7 @@ export function signToken(payload: Omit<TokenPayload, 'iat' | 'exp'>): string {
 
 export function verifyToken(token: string): TokenPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload;
+    return jwt.verify(token, JWT_SECRET) as unknown as TokenPayload;
   } catch {
     return null;
   }
