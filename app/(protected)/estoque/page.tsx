@@ -1,5 +1,7 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import api from '../../src/services/api';
 import { Droplet, Plus, Filter, Calendar, Trash2 } from 'lucide-react';
 
 interface Bolsa {
@@ -14,28 +16,15 @@ export default function Estoque() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [, setError] = useState('');
-  
   const [filtroTipo, setFiltroTipo] = useState('');
   const [novaBolsa, setNovaBolsa] = useState({ tipo_sangue: '', quantidade: 1 });
 
-  // Função auxiliar para estilizar o tipo sanguíneo (Mesmo padrão de Doadores)
   const formatTipoSanguineo = (tipo: string) => {
     if (!tipo) return { text: '-', color: '#6b7280', bg: '#f3f4f6' };
-    
-    // Converte "A_POSITIVO" para "A+"
     const [grupo, rh] = tipo.split('_');
     const sinal = rh === 'POSITIVO' ? '+' : '-';
-    
-    return { 
-      text: `${grupo}${sinal}`, 
-      color: '#991b1b', 
-      bg: '#fee2e2'    
-    };
+    return { text: `${grupo}${sinal}`, color: '#991b1b', bg: '#fee2e2' };
   };
-
-  useEffect(() => {
-    loadBolsas();
-  }, [filtroTipo]);
 
   async function loadBolsas() {
     try {
@@ -44,13 +33,14 @@ export default function Estoque() {
       const response = await api.get(url);
       setBolsas(response.data);
       setError('');
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError('Erro ao carregar estoque.');
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => { loadBolsas(); }, [filtroTipo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,21 +50,20 @@ export default function Estoque() {
       setNovaBolsa({ tipo_sangue: '', quantidade: 1 });
       loadBolsas();
       alert('Bolsa registrada com sucesso!');
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert('Erro ao registrar bolsa. Verifique os dados.');
     }
   };
 
   const handleDelete = async (id: number) => {
-    if(!window.confirm("Deseja remover este registro de estoque?")) return;
+    if (!confirm("Deseja remover este registro de estoque?")) return;
     try {
-        await api.delete(`/inventory/bolsas/${id}`);
-        loadBolsas();
-    } catch (err) {
-        alert("Erro ao excluir registro.");
+      await api.delete(`/inventory/bolsas/${id}`);
+      loadBolsas();
+    } catch {
+      alert("Erro ao excluir registro.");
     }
-  }
+  };
 
   return (
     <div>
@@ -96,8 +85,8 @@ export default function Estoque() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
             <div className="input-group" style={{ flex: '1 1 200px' }}>
               <label>Tipo Sanguíneo</label>
-              <select 
-                className="input-field" 
+              <select
+                className="input-field"
                 value={novaBolsa.tipo_sangue}
                 onChange={e => setNovaBolsa({...novaBolsa, tipo_sangue: e.target.value})}
                 required
@@ -118,20 +107,19 @@ export default function Estoque() {
               <input type="number" className="input-field" value={novaBolsa.quantidade} onChange={e => setNovaBolsa({...novaBolsa, quantidade: parseInt(e.target.value)})} min="1" required />
             </div>
             <div className="input-group" style={{ flex: '0 0 auto' }}>
-               <button type="submit" className="btn btn-primary" style={{ height: '42px' }}>Salvar Entrada</button>
+              <button type="submit" className="btn btn-primary" style={{ height: '42px' }}>Salvar Entrada</button>
             </div>
           </form>
         </div>
       )}
 
-      {/* Filtros */}
       <div className="card" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
         <Filter size={18} className="text-muted" />
         <span className="text-muted" style={{ fontSize: '0.9rem' }}>Filtrar por:</span>
-        <select 
-          className="input-field" 
+        <select
+          className="input-field"
           style={{ width: '200px', margin: 0 }}
-          value={filtroTipo} 
+          value={filtroTipo}
           onChange={e => setFiltroTipo(e.target.value)}
         >
           <option value="">Todos os Tipos</option>
@@ -146,17 +134,11 @@ export default function Estoque() {
         </select>
       </div>
 
-      {/* Listagem com Ações */}
       <div className="table-container">
         <table>
           <thead>
             <tr>
-              <th>ID Lote</th>
-              <th>Tipo Sanguíneo</th>
-              <th>Qtd.</th>
-              <th>Data</th>
-              <th>Status</th>
-              <th style={{textAlign: 'right'}}>Ações</th>
+              <th>ID Lote</th><th>Tipo Sanguíneo</th><th>Qtd.</th><th>Data</th><th>Status</th><th style={{textAlign: 'right'}}>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -171,35 +153,23 @@ export default function Estoque() {
                   <tr key={item.id || index}>
                     <td className="text-muted">#{item.id.toString().slice(0,8)}...</td>
                     <td>
-                      <div style={{ 
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        backgroundColor: estilo.bg,
-                        color: estilo.color,
-                        fontWeight: 'bold',
-                        fontSize: '0.85rem',
-                        border: '1px solid rgba(153, 27, 27, 0.1)'
-                      }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: estilo.bg, color: estilo.color, fontWeight: 'bold', fontSize: '0.85rem' }}>
                         {estilo.text}
                       </div>
                     </td>
                     <td style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{item.quantidade}</td>
                     <td>
-                        {item.created_at ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <Calendar size={16} className="text-muted" />
-                                {new Date(item.created_at).toLocaleDateString('pt-BR')}
-                            </div>
-                        ) : '-'}
+                      {item.created_at ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Calendar size={16} className="text-muted" />
+                          {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                        </div>
+                      ) : '-'}
                     </td>
                     <td><span className="badge bg-green-50" style={{ color: '#166534' }}>Disponível</span></td>
                     <td style={{textAlign: 'right'}}>
                       <button onClick={() => handleDelete(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }} title="Excluir Lote">
-                          <Trash2 size={18} />
+                        <Trash2 size={18} />
                       </button>
                     </td>
                   </tr>
