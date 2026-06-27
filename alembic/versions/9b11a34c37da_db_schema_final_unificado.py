@@ -90,6 +90,13 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['id_usuario'], ['usuarios.id_usuario'], ),
     sa.PrimaryKeyConstraint('id_usuario', 'id_unidade')
     )
+    op.create_table('insumos',
+    sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
+    sa.Column('nome', sa.String(length=255), nullable=False),
+    sa.Column('quantidade', sa.Integer(), nullable=False, server_default='0'),
+    sa.Column('criado_em', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+    sa.Column('atualizado_em', sa.DateTime(), server_default=sa.text('now()'), nullable=True)
+    )
     # ### end Alembic commands ###
 
 
@@ -106,4 +113,5 @@ def downgrade() -> None:
     op.drop_table('unidades_coleta')
     op.drop_index(op.f('ix_doadores_cpf'), table_name='doadores')
     op.drop_table('doadores')
+    op.drop_table('insumos')
     # ### end Alembic commands ###

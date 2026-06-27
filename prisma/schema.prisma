@@ -1,8 +1,10 @@
 // prisma/schema.prisma
 
-// [Configuração MySQL e Generator - Mantidas]
+// [Configuração PostgreSQL e Generator - Mantidas]
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
+  // Set DATABASE_URL environment variable to your PostgreSQL connection string
+  // Example: DATABASE_URL="postgresql://user:password@localhost:5432/banco_de_sangue"
   url      = env("DATABASE_URL")
 }
 
@@ -143,7 +145,17 @@ model Doacao {
   atualizado_em DateTime @updatedAt
 
   // Índice crucial para o filtro de isolamento por Unidade (RN016) e performance de estoque.
-  @@index([id_unidade]) 
+  @@index([id_unidade])
   // Opcional: Índice composto para buscas por (Unidade e Tipo Sanguíneo)
-  // @@index([id_unidade, tipo_sanguineo_coletado]) 
+  // @@index([id_unidade, tipo_sanguineo_coletado])
+}
+
+// 6. Insumo (Materiais e Insumos)
+model Insumo {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  quantidade   Int      @default(0)
+
+  criado_em    DateTime @default(now())
+  atualizado_em DateTime @updatedAt
 }
