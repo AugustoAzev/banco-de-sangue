@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Droplet, Plus, Filter, Calendar, Trash2 } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export default function Estoque() {
   const [bolsas, setBolsas] = useState<Bolsa[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
   
   const [filtroTipo, setFiltroTipo] = useState('');
   const [novaBolsa, setNovaBolsa] = useState({ tipo_sangue: '', quantidade: 1 });

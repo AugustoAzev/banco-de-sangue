@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
@@ -11,7 +10,7 @@ import Insumos from './pages/Insumos';
 import Layout from './components/Layout';
 
 // Componente para proteger rotas privadas
-function PrivateRoute({ children }: { children: JSX.Element }) {
+function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { signed, loading } = useAuth();
 
   if (loading) {

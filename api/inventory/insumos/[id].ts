@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseFetch, badRequest, notFound } from '../_lib/supabase';
-import { requireAuth } from '../_middleware/auth';
-import type { Insumo } from '../_lib/types';
+import { supabaseFetch, badRequest, notFound } from '../../_lib/supabase';
+import { requireAuth } from '../../_middleware/auth';
+import type { Insumo } from '../../_lib/types';
 
 type Params = { params: Promise<{ id: string }> };
 

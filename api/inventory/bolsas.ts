@@ -91,19 +91,18 @@ export async function POST(request: NextRequest) {
   }
   const id_unidade = ucs[0].id_unidade;
 
-  const userId = auth.user.sub;
+  const userId = auth.user!.sub;
   const now = new Date().toISOString();
 
   // Build N doacoes rows
   const bolsaPayloads = Array.from({ length: quantidade }, () => ({
     id_doacao: randomUUID(),
     id_doador,
-    id_unidade_coleta: id_unidade,
+    id_unidade,
     tipo_sanguineo_coletado: tipo_sangue,
     volume_ml: 450,
     status: 'EM_ESTOQUE',
-    data_doacao: now,
-    id_atendente: userId,
+    id_registrador: userId,
     criado_em: now,
     atualizado_em: now,
   }));
