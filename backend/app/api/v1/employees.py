@@ -11,19 +11,25 @@ router = APIRouter()
 
 @router.post("/", response_model=all_schemas.FuncionarioResponse)
 def create_employee(
-    emp: all_schemas.FuncionarioCreate, 
+    emp: all_schemas.FuncionarioCreate,
     db: Session = Depends(get_db),
     user: dict = Depends(get_current_user) # Apenas admin deveria criar? Adicionar check aqui se desejar
 ):
     # Verifica CPF duplicado
-    if db.query(all_models.Funcionario).filter(all_models.Funcionario.cpf == emp.cpf).first():
+    if db.query(all_models.Usuario).filter(all_models.Usuario.cpf == emp.cpf).first():
         raise HTTPException(status_code=400, detail="CPF já cadastrado")
-    
-    # Hash da senha
-    emp_data = emp.dict()
-    emp_data['password'] = get_password_hash(emp_data['password'])
-    
-    db_emp = all_models.Funcionario(**emp_data)
+
+    # Hash da senha e mapeia campos do schema para o modelo
+    db_emp = all_models.Usuario(
+        nome_completo=emp.name,
+        email=emp.email,
+        senha_hash=get_password_hash(emp.password),
+        cpf=emp.cpf,
+        pis=emp.pis,
+        cargo=emp.cargo,
+        telefone=emp.telefone,
+        tipo=all_models.TipoUsuario.FUNCIONARIO
+    )
     db.add(db_emp)
     db.commit()
     db.refresh(db_emp)
@@ -31,10 +37,10 @@ def create_employee(
 
 @router.get("/", response_model=List[all_schemas.FuncionarioResponse])
 def get_employees(query: Optional[str] = None, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
-    q = db.query(all_models.Funcionario)
+    q = db.query(all_models.Usuario)
     if query:
         q = q.filter(
-            (all_models.Funcionario.name.like(f"%{query}%")) | 
-            (all_models.Funcionario.cargo.like(f"%{query}%"))
+            (all_models.Usuario.nome_completo.like(f"%{query}%")) |
+            (all_models.Usuario.cargo.like(f"%{query}%"))
         )
     return q.all()
