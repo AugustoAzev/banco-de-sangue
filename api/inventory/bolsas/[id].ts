@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseFetch, badRequest, notFound } from '../_lib/supabase';
-import { requireAuth } from '../_middleware/auth';
+import { supabaseFetch, notFound } from '../../_lib/supabase';
+import { requireAuth } from '../../_middleware/auth';
 
 // DELETE /api/inventory/bolsas/[id] — remove a bolsa (doacao) by id_doacao
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
