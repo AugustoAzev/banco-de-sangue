@@ -2,10 +2,11 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
 import type { TokenPayload } from './types';
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRE_HOURS = 1;
 
 export function signToken(payload: Omit<TokenPayload, 'iat' | 'exp'>): string {
+  if (!JWT_SECRET) throw new Error('JWT_SECRET env var not configured');
   return jwt.sign(payload, JWT_SECRET, {
     expiresIn: `${ACCESS_TOKEN_EXPIRE_HOURS}h`,
   });
