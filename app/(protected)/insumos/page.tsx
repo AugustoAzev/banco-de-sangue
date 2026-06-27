@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+'use client';
+
+import { useState, useEffect } from 'react';
+import api from '../../src/services/api';
 import { Plus, Trash2, Pencil, X } from 'lucide-react';
 
 interface Insumo {
@@ -13,23 +15,20 @@ export default function Insumos() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<Insumo | null>(null);
-  
   const [formData, setFormData] = useState({ nome: '', quantidade: 0 });
-
-  useEffect(() => {
-    loadInsumos();
-  }, []);
 
   async function loadInsumos() {
     try {
       const response = await api.get('/inventory/insumos');
       setInsumos(response.data);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // silent
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => { loadInsumos(); }, []);
 
   const handleEdit = (item: Insumo) => {
     setFormData({ nome: item.nome, quantidade: item.quantidade });
@@ -38,11 +37,11 @@ export default function Insumos() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Excluir este insumo?')) return;
+    if (!confirm('Excluir este insumo?')) return;
     try {
       await api.delete(`/inventory/insumos/${id}`);
       loadInsumos();
-    } catch (err) {
+    } catch {
       alert('Erro ao excluir insumo.');
     }
   };
@@ -51,18 +50,15 @@ export default function Insumos() {
     e.preventDefault();
     try {
       if (editingItem) {
-        // Atualizar (PUT)
         await api.put(`/inventory/insumos/${editingItem.id}`, formData);
       } else {
-        // Criar (POST)
         await api.post('/inventory/insumos', formData);
       }
-      
       setShowForm(false);
       setEditingItem(null);
       setFormData({ nome: '', quantidade: 0 });
       loadInsumos();
-    } catch (err) {
+    } catch {
       alert('Erro ao salvar insumo.');
     }
   };
@@ -75,23 +71,23 @@ export default function Insumos() {
           <p className="text-muted">Controle de materiais e descartáveis</p>
         </div>
         {!showForm && (
-            <button className="btn btn-primary" onClick={() => { setEditingItem(null); setFormData({nome:'', quantidade:0}); setShowForm(true); }}>
+          <button className="btn btn-primary" onClick={() => { setEditingItem(null); setFormData({nome:'', quantidade:0}); setShowForm(true); }}>
             <Plus size={20} /> Adicionar Item
-            </button>
+          </button>
         )}
       </div>
 
       {showForm && (
         <div className="card" style={{ marginBottom: '2rem', backgroundColor: '#f9fafb' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-             <h3>{editingItem ? 'Editar Item' : 'Novo Item'}</h3>
-             <button onClick={() => setShowForm(false)} style={{border:'none', background:'transparent', cursor:'pointer'}}><X size={20}/></button>
+            <h3>{editingItem ? 'Editar Item' : 'Novo Item'}</h3>
+            <button onClick={() => setShowForm(false)} style={{border:'none', background:'transparent', cursor:'pointer'}}><X size={20}/></button>
           </div>
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
             <div className="input-group" style={{ flex: 2 }}>
               <label>Nome do Material</label>
-              <input 
-                className="input-field" 
+              <input
+                className="input-field"
                 placeholder="Ex: Seringas descartáveis 5ml"
                 value={formData.nome}
                 onChange={e => setFormData({...formData, nome: e.target.value})}
@@ -100,18 +96,18 @@ export default function Insumos() {
             </div>
             <div className="input-group" style={{ flex: 1 }}>
               <label>Quantidade</label>
-              <input 
-                type="number" 
-                className="input-field" 
+              <input
+                type="number"
+                className="input-field"
                 value={formData.quantidade}
                 onChange={e => setFormData({...formData, quantidade: parseInt(e.target.value)})}
                 required
               />
             </div>
             <div className="input-group">
-               <button type="submit" className="btn btn-primary" style={{ height: '42px' }}>
-                 {editingItem ? 'Atualizar' : 'Adicionar'}
-               </button>
+              <button type="submit" className="btn btn-primary" style={{ height: '42px' }}>
+                {editingItem ? 'Atualizar' : 'Adicionar'}
+              </button>
             </div>
           </form>
         </div>
@@ -121,11 +117,7 @@ export default function Insumos() {
         <table>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Material / Insumo</th>
-              <th>Quantidade em Estoque</th>
-              <th>Status</th>
-              <th style={{ textAlign: 'right' }}>Ações</th>
+              <th>ID</th><th>Material / Insumo</th><th>Quantidade em Estoque</th><th>Status</th><th style={{ textAlign: 'right' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -148,10 +140,10 @@ export default function Insumos() {
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     <button onClick={() => handleEdit(item)} style={{ marginRight: '10px', background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6' }}>
-                        <Pencil size={18} />
+                      <Pencil size={18} />
                     </button>
                     <button onClick={() => handleDelete(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}>
-                        <Trash2 size={18} />
+                      <Trash2 size={18} />
                     </button>
                   </td>
                 </tr>
