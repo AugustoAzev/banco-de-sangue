@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseFetch, getServiceHeaders } from '../../src/lib/supabase';
-import { requireAuth } from '../../src/lib/auth-helpers';
+import { supabaseFetch, getServiceHeaders } from '../../../src/lib/supabase';
+import { requireAuth } from '../../../src/lib/auth-helpers';
 import { randomUUID } from 'crypto';
-import type { DoadorCreate, Doador } from '../../src/lib/types';
+import type { DoadorCreate, Doador } from '../../../src/lib/types';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = await requireAuth(req);

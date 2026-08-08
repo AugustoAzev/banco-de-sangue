@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseFetch, getServiceHeaders } from '../../src/lib/supabase';
-import { requireAuth } from '../../src/lib/auth-helpers';
-import type { Insumo, InsumoCreate } from '../../src/lib/types';
+import { supabaseFetch, getServiceHeaders } from '../../../src/lib/supabase';
+import { requireAuth } from '../../../src/lib/auth-helpers';
+import type { Insumo, InsumoCreate } from '../../../src/lib/types';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = await requireAuth(req);
