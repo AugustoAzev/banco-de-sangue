@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseFetch, getServiceHeaders } from '../../src/lib/supabase';
-import { requireAuth } from '../../src/lib/auth-helpers';
-import { hashPassword } from '../../src/lib/auth';
+import { supabaseFetch, getServiceHeaders } from '../../../src/lib/supabase';
+import { requireAuth } from '../../../src/lib/auth-helpers';
+import { hashPassword } from '../../../src/lib/auth';
 import { randomUUID } from 'crypto';
 
 interface FuncionarioCreate {
