@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseFetch, getServiceHeaders } from '../_lib/supabase';
-import { requireAuth } from '../_lib/auth-helpers';
+import { supabaseFetch, getServiceHeaders } from '../../src/lib/supabase';
+import { requireAuth } from '../../src/lib/auth-helpers';
 import { randomUUID } from 'crypto';
-import type { Bolsa, BolsaCreate } from '../_lib/types';
+import type { Bolsa, BolsaCreate } from '../../src/lib/types';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = await requireAuth(req);
