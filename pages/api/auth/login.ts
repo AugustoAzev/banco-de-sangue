@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseFetch, badRequest, unauthorized, serverError } from '../_lib/supabase';
-import { signToken, verifyPassword } from '../_lib/auth';
+import { supabaseFetch, badRequest, unauthorized, serverError } from '../../src/lib/supabase';
+import { signToken, verifyPassword } from '../../src/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
