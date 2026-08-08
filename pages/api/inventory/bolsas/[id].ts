@@ -1,43 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { supabaseFetch, notFound } from '../../_lib/supabase';
-import { requireAuth } from '../../_middleware/auth';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { supabaseFetch, getServiceHeaders } from '../../_lib/supabase';
+import { requireAuth } from '../../_lib/auth-helpers';
 
-// DELETE /api/inventory/bolsas/[id] — remove a bolsa (doacao) by id_doacao
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth(request);
-  if (!auth.authorized) return auth.error;
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const auth = await requireAuth(req);
+  if (!auth.authorized) return res.status(auth.error!.status).json(auth.error!.data);
 
-  const { id } = await params;
+  const { query } = req;
+  const id = query.id as string;
 
-  // Verify bolsa exists and is in stock
+  if (req.method !== 'DELETE') {
+    return res.status(405).json({ detail: 'Método não permitido' });
+  }
+
   const check = await supabaseFetch(
     `/rest/v1/doacoes?id_doacao=eq.${encodeURIComponent(id)}&status=eq.EM_ESTOQUE&select=id_doacao&limit=1`,
     { method: 'GET' }
   );
   if (!check.ok) {
-    return NextResponse.json({ detail: 'Erro ao verificar bolsa' }, { status: 502 });
+    return res.status(502).json({ detail: 'Erro ao verificar bolsa' });
   }
   const found: { id_doacao: string }[] = await check.json();
   if (found.length === 0) {
-    return notFound('Bolsa não encontrada ou não está em estoque');
+    return res.status(404).json({ detail: 'Bolsa não encontrada ou não está em estoque' });
   }
 
   const serviceRes = await fetch(
     `${process.env.SUPABASE_URL}/rest/v1/doacoes?id_doacao=eq.${encodeURIComponent(id)}`,
-    {
-      method: 'DELETE',
-      headers: {
-        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
-        'Content-Type': 'application/json',
-      },
-    }
+    { method: 'DELETE', headers: getServiceHeaders() }
   );
 
   if (!serviceRes.ok) {
     const errText = await serviceRes.text();
-    return NextResponse.json({ detail: `Erro ao remover bolsa: ${errText}` }, { status: 502 });
+    return res.status(502).json({ detail: `Erro ao remover bolsa: ${errText}` });
   }
 
-  return new NextResponse(null, { status: 204 });
+  return res.status(204).end();
 }
