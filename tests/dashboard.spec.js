@@ -4,7 +4,7 @@ test.describe('Dashboard', () => {
   test.beforeEach(async ({ page }) => {
     // Login first
     await page.goto('http://localhost:5173/');
-    await page.getByLabel('E-mail').fill('admin@pulse.com');
+    await page.getByLabel('E-mail').fill('admin@banco-sangue.com');
     await page.getByLabel('Senha').fill('12345678');
     await page.getByRole('button', { name: /acessar sistema/i }).click();
     await page.waitForURL(/dashboard/, { timeout: 10000 });

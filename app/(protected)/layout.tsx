@@ -31,7 +31,7 @@ function Sidebar() {
     }}>
       <div style={{ padding: '2rem', borderBottom: '1px solid var(--color-border)' }}>
         <h2 style={{ color: 'var(--color-primary)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Droplet fill="var(--color-primary)" /> Pulse
+          <Droplet fill="var(--color-primary)" /> Banco de Sangue
         </h2>
         <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '5px' }}>
           Gestão de Hemocentro

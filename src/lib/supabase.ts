@@ -4,18 +4,18 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-export function getSupabaseHeaders(supabaseToken?: string) {
+export function getSupabaseHeaders(supabaseToken?: string): Record<string, string> {
   return {
-    'apikey': SUPABASE_ANON_KEY,
+    'apikey': SUPABASE_ANON_KEY!,
     'Authorization': supabaseToken ? `Bearer ${supabaseToken}` : `Bearer ${SUPABASE_ANON_KEY}`,
     'Content-Type': 'application/json',
     'Prefer': 'return=representation',
   };
 }
 
-export function getServiceHeaders() {
+export function getServiceHeaders(): Record<string, string> {
   return {
-    'apikey': SUPABASE_SERVICE_ROLE_KEY,
+    'apikey': SUPABASE_SERVICE_ROLE_KEY!,
     'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
     'Content-Type': 'application/json',
     'Prefer': 'return=representation',
@@ -46,8 +46,8 @@ export async function supabaseFetch(
     ...options,
     headers: {
       ...headers,
-      ...options.headers,
-    },
+      ...(options.headers as Record<string, string>),
+    } as Record<string, string>,
   });
 
   return response;
