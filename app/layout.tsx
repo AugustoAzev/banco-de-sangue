@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Pulse | Banco de Sangue',
+  title: 'Banco de Sangue',
 };
 
 export default function RootLayout({

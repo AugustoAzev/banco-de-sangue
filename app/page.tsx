@@ -51,7 +51,7 @@ function LoginForm() {
             <Droplet size={40} fill="var(--color-primary)" />
           </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-            Pulse
+            Banco de Sangue
           </h1>
           <p className="text-muted">Acesso Administrativo</p>
         </div>
