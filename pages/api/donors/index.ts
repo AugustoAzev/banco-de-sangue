@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!auth.authorized) return res.status(auth.error!.status).json(auth.error!.data);
 
   if (req.method === 'GET') {
-    const { searchParams } = new URL(req.url, 'http://localhost');
+    const { searchParams } = new URL(req.url!, 'http://localhost');
     const query = searchParams.get('query') ?? '';
 
     let path = '/rest/v1/doadores?select=*&order=nome_completo.asc';

@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!auth.authorized) return res.status(auth.error!.status).json(auth.error!.data);
 
   if (req.method === 'GET') {
-    const { searchParams } = new URL(req.url, 'http://localhost');
+    const { searchParams } = new URL(req.url!, 'http://localhost');
     const query = searchParams.get('query') ?? '';
 
     const fields = 'id_usuario,nome_completo,cargo,cpf,pis,telefone,email,tipo,criado_em';
