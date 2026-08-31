@@ -163,7 +163,7 @@ export default function Doadores() {
               </div>
               <div className="input-group">
                 <label>Idade</label>
-                <input name="idade" type="number" value={formData.idade} onChange={handleInputChange} className="input-field" required />
+                <input name="idade" type="number" min="16" max="69" value={formData.idade} onChange={handleInputChange} className="input-field" required />
               </div>
               <div className="input-group">
                 <label>Sexo</label>
