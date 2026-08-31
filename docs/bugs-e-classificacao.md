@@ -78,28 +78,34 @@ if (idade < 16 || idade > 69) {
 
 ---
 
-## Bug 3 — Sem Validação de Tipo Sanguíneo no POST Bolsas
+## Bug 3 — Campo CPF Aceita Caracteres Não-Numéricos
 
-- **Tipo:** Lógico / Runtime
-- **Local:** `pages/api/inventory/bolsas.ts`, método POST, linha 53
-- **Severidade:** Média
+- **Tipo:** Validação / Segurança
+- **Local:** `pages/api/donors/index.ts` (linha 37) + `app/(protected)/doadores/page.tsx` (linha 162)
+- **Severidade:** Alta
 - **Ferramenta de apoio:** Code review manual
 
 ### Descrição
 
-O endpoint `POST /inventory/bolsas` aceita qualquer string no campo `tipo_sanguineo` sem validar contra os valores do ENUM definido no banco (`A_POSITIVO`, `A_NEGATIVO`, `B_POSITIVO`, `B_NEGATIVO`, `AB_POSITIVO`, `AB_NEGATIVO`, `O_POSITIVO`, `O_NEGATIVO`):
+O endpoint `POST /api/donors` valida `cpf` apenas para falsy (string vazia), aceitando qualquer string — incluindo emojis (`😀`), letras, símbolos e caracteres especiais. CPF deve conter apenas 11 dígitos numéricos (com ou sem formatação).
 
 ```typescript
-// Apenas verifica se existe, não se é um valor válido do ENUM
-if (!tipo_sangue) return res.status(400).json({ detail: 'tipo_sangue é obrigatório' });
-// ← Falta: validar se tipo_sangue está no conjunto de valores válidos
+// Atual: apenas verifica se está vazio
+if (!cpf) return res.status(400).json({ detail: 'cpf é obrigatório' });
+// ← Falta validar formato (apenas dígitos)
 ```
 
-Valores inválidos são aceitos e armazenados no banco, causando inconsistência de dados.
+### Passos para reproduzir
+
+1. Login → Novo Doador → CPF: `😀😀😀` ou `abc.def.ghi-jk`
+2. Preencher resto do formulário
+3. Cadastrar → doador é cadastrado com sucesso
 
 ### Correção necessária
 
-Validar `tipo_sangue` contra a lista de valores permitidos antes de inserir no banco.
+Backend: validar que o CPF contém apenas dígitos (remover máscara antes de validar).
+
+Frontend: adicionar `pattern="[0-9.-]*"` e `inputMode="numeric"` no input.
 
 ---
 

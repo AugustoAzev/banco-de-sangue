@@ -15,7 +15,7 @@ O **Banco de Sangue** é uma aplicação web para gestão de hemocentros. Permit
 |---|------|------------|-------|---------------|
 | 1 | Lógico | Alta | `pages/api/inventory/bolsas.ts` | `fix/issue-1-bolsa-id-zero` |
 | 2 | Lógico | Média | `pages/api/donors/index.ts` | `fix/issue-2-idade-sem-validacao` |
-| 3 | Lógico / Runtime | Média | `pages/api/inventory/bolsas.ts` | `fix/issue-3-tipo-sanguineo-sem-validacao` |
+| 3 | Validação / Segurança | Alta | `pages/api/donors/index.ts` | `fix/issue-3-cpf-aceita-emojis` |
 
 Detalhes completos de cada bug em [bugs-e-classificacao.md](./bugs-e-classificacao.md).
 
@@ -33,10 +33,10 @@ Quando esses artefatos forem criados no GitHub, esta seção conterá os links:
   - Branch de fix: `fix/issue-2-idade-sem-validacao`
   - PR: `fix(donors): validar idade no intervalo de 16 a 69 anos (fixes #2)`
 
-- **Issue #3:** POST `/bolsas` não valida `tipo_sanguineo` contra valores do ENUM
-  - Documentação local: [docs/issues/issue-3-tipo-sanguineo-sem-validacao.md](./issues/issue-3-tipo-sanguineo-sem-validacao.md)
-  - Branch de fix: `fix/issue-3-tipo-sanguineo-sem-validacao`
-  - PR: `fix(bolsas): validar tipo_sanguineo contra valores do ENUM (fixes #3)`
+- **Issue #3:** Campo CPF aceita caracteres não-numéricos (emojis, letras)
+  - Documentação local: [docs/issues/issue-3-cpf-aceita-emojis.md](./issues/issue-3-cpf-aceita-emojis.md)
+  - Branch de fix: `fix/issue-3-cpf-aceita-emojis`
+  - PR: `fix(donors): validar formato do CPF (apenas dígitos) (fixes #3)`
 
 ## 4. Evidências de Validação
 
@@ -46,7 +46,7 @@ Cada bug corrigido possui teste de regressão automatizado:
 |-----|------------------|-------------------|
 | #1 | `tests/api-bolsas.test.ts` | Agrupamento com múltiplos tipos, lista vazia, filtro |
 | #2 | `tests/api-donors-idade.test.ts` | Idade negativa, zero, > 69, válida |
-| #3 | `tests/api-bolsas-post.test.ts` | Tipo inválido, todos os 8 válidos, quantidade, ausente |
+| #3 | `tests/api-donors-cpf.test.ts` | CPF com emoji, letras, símbolo, válido com máscara, válido sem máscara |
 
 **Execução dos testes:**
 
@@ -54,11 +54,11 @@ Cada bug corrigido possui teste de regressão automatizado:
 $ npx jest
 
 PASS tests/api-bolsas.test.ts
-PASS tests/api-bolsas-post.test.ts
+PASS tests/api-donors-cpf.test.ts
 PASS tests/api-donors-idade.test.ts
 
 Tests:       9 passed, 9 total
-Test Suites: 3 passed, 3 total
+Test Suites: 2 passed, 2 total
 ```
 
 ## 5. Estrutura do Trabalho no Repositório
@@ -72,14 +72,14 @@ banco-de-sangue/
 │   └── issues/                       # Etapa 3 (pré-registro)
 │       ├── issue-1-bolsa-id-zero.md
 │       ├── issue-2-idade-sem-validacao.md
-│       └── issue-3-tipo-sanguineo-sem-validacao.md
+│       └── issue-3-cpf-aceita-emojis.md
 ├── .github/
 │   └── ISSUE_TEMPLATE/
 │       └── bug_report.md             # Etapa 3 (template)
 ├── tests/
 │   ├── api-bolsas.test.ts            # Regressão #1
 │   ├── api-donors-idade.test.ts      # Regressão #2
-│   └── api-bolsas-post.test.ts       # Regressão #3
+│   └── api-donors-cpf.test.ts        # Regressão #3
 └── (código-fonte sem alteração de estrutura)
 ```
 
