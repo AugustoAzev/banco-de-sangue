@@ -16,15 +16,15 @@ O endpoint `GET /api/inventory/bolsas` agrupa bolsas por tipo sanguíneo, mas de
 2. Acessar a página `/estoque`
 3. Clicar no ícone de lixeira em qualquer linha da tabela
 4. Confirmar a exclusão
-5. Verificar que a bolsa não foi excluída ou que outra bolsa foi removida por engano
+5. Verificar que a bolsa não foi excluída
 
 ## Resultado Obtido
 
-A exclusão falha silenciosamente ou remove uma bolsa incorreta, pois o `id` enviado ao backend é sempre `0`.
+A exclusão falha silenciosamente, pois o `id` enviado ao backend é sempre `0`.
 
 ## Resultado Esperado
 
-Cada linha da tabela deve representar uma bolsa (ou um grupo) com um `id` válido, e a exclusão deve funcionar corretamente.
+Cada linha deve ter um `id` válido, e a exclusão deve funcionar corretamente.
 
 ## Evidência
 

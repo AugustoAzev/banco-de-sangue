@@ -41,67 +41,71 @@ Preservar os IDs reais das bolsas agrupadas, usando um identificador composto (e
 
 ---
 
-## Bug 2 — Validação de CPF Duplicado Ignora Erros de Rede
+## Bug 2 — Idade Inválida Aceita no Cadastro de Doadores
 
-- **Tipo:** Segurança
-- **Local:** `pages/api/donors/index.ts`, linhas 45-54
-- **Severidade:** Alta
-- **Ferramenta de apoio:** Code review manual
-
-### Descrição
-
-Antes de cadastrar um novo doador, o endpoint verifica se o CPF já existe. Porém, se a chamada ao Supabase retornar erro (ex:timeout, 500, indisponibilidade), o bloco `if (cpfCheck.ok)` não é executado e a verificação é completamente ignorada:
-
-```typescript
-const cpfCheck = await supabaseFetch(
-  `/rest/v1/doadores?cpf=eq.${encodeURIComponent(cpf)}&select=id_doador&limit=1`,
-  { method: 'GET' }
-);
-if (cpfCheck.ok) {           // ← se falhar, bloco é SKIPPADO
-  const existing = await cpfCheck.json();
-  if (existing.length > 0) {
-    return res.status(400).json({ detail: 'CPF já cadastrado' });
-  }
-}
-// fluxo continua mesmo se cpfCheck.ok === false
-```
-
-Um invasor (ou falha de rede) pode cadastrar CPFs duplicados, comprometendo a integridade dos dados de doadores.
-
-### Correção necessária
-
-Tratar qualquer resposta não-OK como erro, impedindo o cadastro quando a verificação de CPF não puder ser realizada:
-
-```typescript
-if (!cpfCheck.ok) {
-  return res.status(502).json({ detail: 'Erro ao verificar CPF' });
-}
-```
-
----
-
-## Bug 3 — Sem Validação de Tipo Sanguíneo no POST Bolsas
-
-- **Tipo:** Lógico / Runtime
-- **Local:** `pages/api/inventory/bolsas.ts`, método POST, linha 53
+- **Tipo:** Lógico
+- **Local:** `pages/api/donors/index.ts`, linha 39
 - **Severidade:** Média
 - **Ferramenta de apoio:** Code review manual
 
 ### Descrição
 
-O endpoint `POST /inventory/bolsas` aceita qualquer string no campo `tipo_sanguineo` sem validar contra os valores do ENUM definido no banco (`A_POSITIVO`, `A_NEGATIVO`, `B_POSITIVO`, `B_NEGATIVO`, `AB_POSITIVO`, `AB_NEGATIVO`, `O_POSITIVO`, `O_NEGATIVO`):
+O endpoint `POST /api/donors` valida `idade` apenas para `undefined` ou `null`, aceitando qualquer inteiro — incluindo valores negativos, zero e números absurdos. Isso permite cadastrar doadores com idade fisicamente impossível, burlando a regra de triagem "entre 16 e 69 anos" exibida pelo frontend mas não validada pelo backend.
 
 ```typescript
-// Apenas verifica se existe, não se é um valor válido do ENUM
-if (!tipo_sangue) return res.status(400).json({ detail: 'tipo_sangue é obrigatório' });
-// ← Falta: validar se tipo_sangue está no conjunto de valores válidos
+if (idade === undefined || idade === null) {
+  return res.status(400).json({ detail: 'idade é obrigatória' });
+}
+// ← Falta validar se idade está entre 16 e 69 anos
 ```
 
-Valores inválidos são aceitos e armazenados no banco, causando inconsistência de dados.
+### Passos para reproduzir
+
+1. Login como administrador
+2. Novo Doador → preencher dados → Idade: `-50` (ou `9999`)
+3. Clicar "Cadastrar Doador"
+4. Doador é cadastrado com idade inválida
 
 ### Correção necessária
 
-Validar `tipo_sangue` contra a lista de valores permitidos antes de inserir no banco.
+Adicionar validação de faixa etária após verificar que idade está definida:
+
+```typescript
+if (idade < 16 || idade > 69) {
+  return res.status(400).json({ detail: 'idade deve estar entre 16 e 69 anos' });
+}
+```
+
+---
+
+## Bug 3 — Campo CPF Aceita Caracteres Não-Numéricos
+
+- **Tipo:** Validação / Segurança
+- **Local:** `pages/api/donors/index.ts` (linha 37) + `app/(protected)/doadores/page.tsx` (linha 162)
+- **Severidade:** Alta
+- **Ferramenta de apoio:** Code review manual
+
+### Descrição
+
+O endpoint `POST /api/donors` valida `cpf` apenas para falsy (string vazia), aceitando qualquer string — incluindo emojis (`😀`), letras, símbolos e caracteres especiais. CPF deve conter apenas 11 dígitos numéricos (com ou sem formatação).
+
+```typescript
+// Atual: apenas verifica se está vazio
+if (!cpf) return res.status(400).json({ detail: 'cpf é obrigatório' });
+// ← Falta validar formato (apenas dígitos)
+```
+
+### Passos para reproduzir
+
+1. Login → Novo Doador → CPF: `😀😀😀` ou `abc.def.ghi-jk`
+2. Preencher resto do formulário
+3. Cadastrar → doador é cadastrado com sucesso
+
+### Correção necessária
+
+Backend: validar que o CPF contém apenas dígitos (remover máscara antes de validar).
+
+Frontend: adicionar `pattern="[0-9.-]*"` e `inputMode="numeric"` no input.
 
 ---
 
