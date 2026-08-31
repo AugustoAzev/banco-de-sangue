@@ -12,19 +12,20 @@ O endpoint `POST /api/inventory/bolsas` aceita qualquer string no campo `tipo_sa
 ## Passos para Reproduzir
 
 1. Fazer login
-2. Acessar `/estoque`
-3. Abrir o formulário "Registrar Entrada"
-4. Selecionar um tipo sanguíneo
-5. (Hipotético, com manipulação da request) Enviar um `tipo_sangue` inválido como `XYZ_INVALIDO`
-6. Observar que a bolsa é cadastrada com sucesso no banco, mesmo com tipo inválido
+2. Abrir DevTools → Network
+3. Acessar `/estoque` → "Registrar Entrada"
+4. Selecionar um tipo sanguíneo válido na UI
+5. No DevTools, interceptar a request POST e mudar `tipo_sangue` para `"INVALIDO_XYZ"`
+6. Enviar a request
+7. Observar que a bolsa é cadastrada com sucesso, mesmo com tipo inválido
 
 ## Resultado Obtido
 
-Bolsas com tipos sanguíneos inválidos são inseridas no banco, corrompendo a integridade dos dados.
+Bolsas com tipos sanguíneos inválidos são inseridas no banco, corrompendo a integridade.
 
 ## Resultado Esperado
 
-Tipos sanguíneos inválidos devem ser rejeitados com erro 400 antes de chegar ao banco.
+Tipos inválidos devem ser rejeitados com erro 400 antes de chegar ao banco.
 
 ## Evidência
 

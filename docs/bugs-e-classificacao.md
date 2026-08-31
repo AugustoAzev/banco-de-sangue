@@ -41,40 +41,38 @@ Preservar os IDs reais das bolsas agrupadas, usando um identificador composto (e
 
 ---
 
-## Bug 2 — Validação de CPF Duplicado Ignora Erros de Rede
+## Bug 2 — Idade Inválida Aceita no Cadastro de Doadores
 
-- **Tipo:** Segurança
-- **Local:** `pages/api/donors/index.ts`, linhas 45-54
-- **Severidade:** Alta
+- **Tipo:** Lógico
+- **Local:** `pages/api/donors/index.ts`, linha 39
+- **Severidade:** Média
 - **Ferramenta de apoio:** Code review manual
 
 ### Descrição
 
-Antes de cadastrar um novo doador, o endpoint verifica se o CPF já existe. Porém, se a chamada ao Supabase retornar erro (ex:timeout, 500, indisponibilidade), o bloco `if (cpfCheck.ok)` não é executado e a verificação é completamente ignorada:
+O endpoint `POST /api/donors` valida `idade` apenas para `undefined` ou `null`, aceitando qualquer inteiro — incluindo valores negativos, zero e números absurdos. Isso permite cadastrar doadores com idade fisicamente impossível, burlando a regra de triagem "entre 16 e 69 anos" exibida pelo frontend mas não validada pelo backend.
 
 ```typescript
-const cpfCheck = await supabaseFetch(
-  `/rest/v1/doadores?cpf=eq.${encodeURIComponent(cpf)}&select=id_doador&limit=1`,
-  { method: 'GET' }
-);
-if (cpfCheck.ok) {           // ← se falhar, bloco é SKIPPADO
-  const existing = await cpfCheck.json();
-  if (existing.length > 0) {
-    return res.status(400).json({ detail: 'CPF já cadastrado' });
-  }
+if (idade === undefined || idade === null) {
+  return res.status(400).json({ detail: 'idade é obrigatória' });
 }
-// fluxo continua mesmo se cpfCheck.ok === false
+// ← Falta validar se idade está entre 16 e 69 anos
 ```
 
-Um invasor (ou falha de rede) pode cadastrar CPFs duplicados, comprometendo a integridade dos dados de doadores.
+### Passos para reproduzir
+
+1. Login como administrador
+2. Novo Doador → preencher dados → Idade: `-50` (ou `9999`)
+3. Clicar "Cadastrar Doador"
+4. Doador é cadastrado com idade inválida
 
 ### Correção necessária
 
-Tratar qualquer resposta não-OK como erro, impedindo o cadastro quando a verificação de CPF não puder ser realizada:
+Adicionar validação de faixa etária após verificar que idade está definida:
 
 ```typescript
-if (!cpfCheck.ok) {
-  return res.status(502).json({ detail: 'Erro ao verificar CPF' });
+if (idade < 16 || idade > 69) {
+  return res.status(400).json({ detail: 'idade deve estar entre 16 e 69 anos' });
 }
 ```
 
