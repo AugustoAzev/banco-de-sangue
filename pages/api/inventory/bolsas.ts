@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const result: Bolsa[] = Object.entries(grouped).map(([tipo_sangue, bolsas]) => ({
-      id: 0,
+      id: bolsas[0]?.id ?? '',
       tipo_sangue,
       quantidade: bolsas.length,
       created_at: bolsas[0]?.created_at,
