@@ -159,7 +159,7 @@ export default function Doadores() {
               </div>
               <div className="input-group">
                 <label>CPF</label>
-                <input name="cpf" value={formData.cpf} onChange={handleInputChange} className="input-field" placeholder="000.000.000-00" required disabled={!!editingId} />
+                <input name="cpf" value={formData.cpf} onChange={handleInputChange} className="input-field" placeholder="000.000.000-00" pattern="[0-9.-]*" inputMode="numeric" required disabled={!!editingId} />
               </div>
               <div className="input-group">
                 <label>Idade</label>

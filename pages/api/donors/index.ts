@@ -35,6 +35,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!nome) return res.status(400).json({ detail: 'nome é obrigatório' });
     if (!cpf) return res.status(400).json({ detail: 'cpf é obrigatório' });
+    // CPF deve conter apenas dígitos (com ou sem máscara)
+    const cpfDigits = cpf.replace(/\D/g, '');
+    if (cpfDigits.length !== 11) {
+      return res.status(400).json({ detail: 'CPF deve conter 11 dígitos' });
+    }
     if (!tipo_sanguineo) return res.status(400).json({ detail: 'tipo_sanguineo é obrigatório' });
 
     if (

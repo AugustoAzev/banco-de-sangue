@@ -88,7 +88,7 @@ npx playwright show-report
 
 ## Deploy na Vercel
 
-1. Conectar o repositório GitHub na [Vercel] (https://vercel.com)
+1. Conectar o repositório GitHub na [Vercel](https://vercel.com)
 2. Adicionar as variáveis de ambiente na Vercel:
    - `SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
