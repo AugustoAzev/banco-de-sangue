@@ -63,7 +63,7 @@ export interface DoadorCreate {
 }
 
 export interface Bolsa {
-  id: number;
+  id: string | number;
   tipo_sangue: string;
   quantidade: number;
   created_at?: string;
