@@ -9,7 +9,7 @@
 const mockSupabaseFetch = jest.fn();
 
 jest.mock('../src/lib/supabase', () => ({
-  supabaseFetch: (...args: unknown[]) => mockSupabaseFetch(...args),
+  supabaseFetch: (...args) => mockSupabaseFetch(...args),
   getServiceHeaders: () => ({ apikey: 'test', Authorization: 'Bearer test' }),
 }));
 
