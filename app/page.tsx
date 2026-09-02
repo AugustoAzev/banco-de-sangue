@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../src/services/api';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
-import { Droplet } from 'lucide-react';
+import { ArrowRight, LockKeyhole, Mail } from 'lucide-react';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -32,90 +32,55 @@ function LoginForm() {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      backgroundColor: 'var(--color-bg)'
-    }}>
-      <div className="card" style={{ width: '100%', maxWidth: '420px', padding: '3rem' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2.5rem' }}>
-          <div style={{
-            backgroundColor: '#fee2e2',
-            padding: '1rem',
-            borderRadius: '50%',
-            color: 'var(--color-primary)',
-            marginBottom: '1rem'
-          }}>
-            <Droplet size={40} fill="var(--color-primary)" />
-          </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-            Banco de Sangue
-          </h1>
-          <p className="text-muted">Acesso Administrativo</p>
+    <main className="login-page">
+      <section className="login-brand-panel" aria-label="Banco de Sangue Digital">
+        <div className="brand-kicker"><span /> Cuidado que circula</div>
+        <img className="brand-image" src="/banco-de-sangue-logo.png" alt="Gota de sangue sobre uma mão" />
+        <div className="brand-copy">
+          <p className="brand-eyebrow">Banco de Sangue Digital</p>
+          <h1>Conectando cuidado,<br />preservando vidas.</h1>
+          <p>Gestão inteligente para que cada doação encontre o seu destino.</p>
         </div>
+        <div className="brand-stat"><strong>24h</strong><span>de cuidado contínuo</span></div>
+      </section>
+
+      <section className="login-form-area">
+        <div className="login-card">
+          <div className="login-heading">
+            <div className="login-mark"><span>+</span></div>
+            <div>
+              <p className="login-overline">Área restrita</p>
+              <h2>Bem-vindo de volta</h2>
+            </div>
+          </div>
+          <p className="login-intro">Entre para acompanhar o estoque e cuidar do que importa.</p>
 
         <form onSubmit={handleLogin}>
           {error && (
-            <div style={{
-              backgroundColor: '#fef2f2',
-              color: '#991b1b',
-              padding: '0.75rem',
-              borderRadius: '6px',
-              marginBottom: '1.5rem',
-              fontSize: '0.875rem',
-              border: '1px solid #fecaca',
-              textAlign: 'center'
-            }}>
+            <div className="login-error">
               {error}
             </div>
           )}
 
           <div className="input-group">
-            <label htmlFor="email">E-mail</label>
-            <input
-              id="email"
-              type="email"
-              className="input-field"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu.email@hemocentro.com.br"
-              required
-              autoFocus
-            />
+            <label htmlFor="email">E-mail profissional</label>
+            <div className="login-input-wrap"><Mail size={18} aria-hidden="true" /><input id="email" type="email" className="input-field" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@pulse.com" required autoFocus /></div>
           </div>
 
           <div className="input-group">
             <label htmlFor="password">Senha</label>
-            <input
-              id="password"
-              type="password"
-              className="input-field"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
+            <div className="login-input-wrap"><LockKeyhole size={18} aria-hidden="true" /><input id="password" type="password" className="input-field" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Digite sua senha" required /></div>
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ width: '100%', marginTop: '1.5rem', height: '48px' }}
-            disabled={loading}
-          >
-            {loading ? 'Autenticando...' : 'Acessar Sistema'}
+          <button type="submit" className="login-submit" disabled={loading}>
+            {loading ? 'Autenticando...' : <>Acessar sistema <ArrowRight size={18} aria-hidden="true" /></>}
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-          <p className="text-muted" style={{ fontSize: '0.75rem' }}>
-            © 2025 Banco de Sangue Digital. Acesso Restrito.
-          </p>
+          <p className="login-footer">© 2025 Banco de Sangue Digital <span /> Ambiente seguro e restrito</p>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 

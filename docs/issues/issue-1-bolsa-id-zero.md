@@ -12,7 +12,7 @@ O endpoint `GET /api/inventory/bolsas` agrupa bolsas por tipo sanguíneo, mas de
 
 ## Passos para Reproduzir
 
-1. Fazer login com `admin@banco-sangue.com` / `12345678`
+1. Fazer login com `admin@pulse.com` / `12345678`
 2. Acessar a página `/estoque`
 3. Clicar no ícone de lixeira em qualquer linha da tabela
 4. Confirmar a exclusão
