@@ -8,7 +8,7 @@ test.describe('Login Flow', () => {
     await page.goto('http://localhost:5173/');
 
     // Fill credentials (admin created by seed_data.py)
-    await page.getByLabel('E-mail').fill('admin@banco-sangue.com');
+    await page.getByLabel('E-mail profissional').fill('admin@pulse.com');
     await page.getByLabel('Senha').fill('12345678');
 
     await page.getByRole('button', { name: /acessar sistema/i }).click();
@@ -23,7 +23,7 @@ test.describe('Login Flow', () => {
   test('login with wrong password shows error', async ({ page }) => {
     await page.goto('http://localhost:5173/');
 
-    await page.getByLabel('E-mail').fill('admin@banco-sangue.com');
+    await page.getByLabel('E-mail profissional').fill('admin@pulse.com');
     await page.getByLabel('Senha').fill('wrongpassword');
 
     await page.getByRole('button', { name: /acessar sistema/i }).click();
