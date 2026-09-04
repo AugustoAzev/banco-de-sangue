@@ -1,14 +1,14 @@
 :root {
-  --color-primary: #8a1c1c;
-  --color-primary-hover: #6b1212;
-  --color-bg: #f3f4f6;
+  --color-primary: #a92224;
+  --color-primary-hover: #851b1e;
+  --color-bg: #f7f3ed;
   --color-surface: #ffffff;
-  --color-text-main: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-border: #e5e7eb;
+  --color-text-main: #282626;
+  --color-text-muted: #77716f;
+  --color-border: #e7ded4;
 
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-sm: 0 2px 5px rgb(91 65 45 / 0.06);
+  --shadow-md: 0 12px 30px rgb(91 65 45 / 0.1);
 
   --radius: 8px;
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -31,11 +31,13 @@ body {
 .layout-container {
   display: flex;
   min-height: 100vh;
+  background: var(--color-bg);
 }
 
 .main-content {
   flex: 1;
-  padding: 2rem;
+  min-width: 0;
+  padding: 2.4rem clamp(1.25rem, 4vw, 3.5rem);
   overflow-y: auto;
 }
 
@@ -102,8 +104,9 @@ body {
   width: 100%;
   overflow-x: auto;
   background: white;
-  border-radius: var(--radius);
+  border-radius: 12px;
   border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
 table {
@@ -113,7 +116,7 @@ table {
 }
 
 th {
-  background-color: #f9fafb;
+  background-color: #fbf9f6;
   padding: 0.75rem 1rem;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -172,6 +175,78 @@ td {
 .login-footer { display: flex; align-items: center; justify-content: center; gap: .6rem; margin-top: 2rem; color: #9aa7a0; font-size: .7rem; text-align: center; }
 .login-footer span { width: 3px; height: 3px; border-radius: 50%; background: #cbd5cf; }
 @keyframes login-reveal { from { opacity: 0; transform: translateX(1.2rem); } to { opacity: 1; transform: translateX(0); } }
+
+/* Protected application shell */
+.app-sidebar {
+  width: 248px;
+  flex: 0 0 248px;
+  background: #fbf8f3;
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.app-brand { padding: 1.8rem 1.5rem; border-bottom: 1px solid var(--color-border); }
+.app-brand h2 { color: var(--color-primary); font-size: 1.02rem; letter-spacing: -.02em; }
+.app-brand p { margin-top: .35rem; font-size: .72rem; color: var(--color-text-muted); }
+.app-nav { flex: 1; padding: 1.4rem .85rem; }
+.app-nav ul { list-style: none; }
+.app-nav li { margin-bottom: .35rem; }
+.app-nav a { color: var(--color-text-muted); font-size: .88rem; }
+.app-nav a:hover { background: #f4ebe4 !important; color: var(--color-primary) !important; }
+.app-nav a[aria-current='page'] { color: var(--color-primary) !important; background: #fff !important; box-shadow: 0 3px 12px rgb(91 65 45 / .08); }
+.app-user { padding: 1.25rem 1.35rem; border-top: 1px solid var(--color-border); background: #f8f3ed; }
+.app-user button { color: var(--color-primary) !important; }
+.page-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 2rem; }
+.page-header .text-h1 { margin-bottom: .35rem !important; color: #312d2d; font-size: clamp(1.55rem, 2.3vw, 2rem); letter-spacing: -.04em; }
+.page-header .text-muted { font-size: .88rem; }
+.btn { border-radius: 9px; box-shadow: 0 3px 8px rgb(91 65 45 / .08); }
+.btn-primary { background: var(--color-primary); }
+.btn-primary:hover { background: var(--color-primary-hover); }
+.input-field { border-color: var(--color-border); background: #fffdfa; border-radius: 9px; }
+.input-field:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgb(169 34 36 / .1); }
+.table-container tbody tr { transition: background .2s; }
+.table-container tbody tr:hover { background: #fffaf6; }
+.table-container td, .table-container th { white-space: nowrap; }
+.main-content > div > .card { border-radius: 12px; }
+.main-content form { color: var(--color-text-main); }
+.main-content form label { color: #514b49; font-size: .78rem; font-weight: 700; letter-spacing: .01em; }
+.main-content form > div[style*='grid-template-columns'] { gap: 1.15rem !important; }
+.main-content form > div[style*='grid-template-columns'] + div { border-color: var(--color-border) !important; background: #fbf9f6 !important; }
+.main-content button[title], .main-content td button { transition: color .2s, background .2s; }
+.main-content td button { border-radius: 7px !important; padding: .45rem !important; }
+.main-content td button:hover { background: #f8eee8 !important; }
+.dashboard-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.stat-card { min-height: 176px; padding: 1.25rem; transition: transform .2s, box-shadow .2s; }
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.stat-icon { display: grid; width: 2.6rem; height: 2.6rem; place-items: center; border-radius: 10px; }
+.dashboard-lower { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, .8fr); gap: 1rem; margin-top: 1rem; }
+.panel-title { display: flex; align-items: center; gap: .55rem; margin-bottom: 1rem; font-size: 1rem; font-weight: 700; }
+
+@media (max-width: 1050px) {
+  .dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .layout-container { display: block; }
+  .app-sidebar { width: 100%; height: auto; position: relative; border-right: 0; border-bottom: 1px solid var(--color-border); }
+  .app-brand { padding: 1rem 1.25rem; }
+  .app-nav { padding: .6rem .75rem; overflow-x: auto; }
+  .app-nav ul { display: flex; gap: .35rem; min-width: max-content; }
+  .app-nav li { margin: 0; }
+  .app-nav a { padding: .65rem .75rem !important; }
+  .app-user { display: none; }
+  .main-content { padding: 1.5rem 1rem 2rem; }
+  .page-header { align-items: stretch; flex-direction: column; margin-bottom: 1.5rem; }
+  .page-header .btn { align-self: flex-start; }
+  .dashboard-stats, .dashboard-lower { grid-template-columns: 1fr; }
+  .main-content form > div[style*='grid-template-columns'] { grid-template-columns: 1fr !important; }
+  .main-content form[style*='align-items: flex-end'] { align-items: stretch !important; flex-direction: column; }
+  .main-content form[style*='align-items: flex-end'] .input-group { flex: 1 1 auto !important; width: 100%; }
+  .main-content form[style*='align-items: flex-end'] button { width: 100%; }
+  .table-container { margin-inline: -.1rem; }
+}
 
 @media (max-width: 800px) {
   .login-page { display: block; }
