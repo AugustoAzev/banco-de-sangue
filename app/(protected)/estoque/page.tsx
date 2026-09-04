@@ -67,7 +67,7 @@ export default function Estoque() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="page-header">
         <div>
           <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>Estoque de Sangue</h1>
           <p className="text-muted">Monitoramento de hemocomponentes</p>

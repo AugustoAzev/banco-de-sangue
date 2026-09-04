@@ -19,33 +19,25 @@ function Sidebar() {
   ];
 
   return (
-    <aside style={{
-      width: '260px',
-      backgroundColor: '#ffffff',
-      borderRight: '1px solid var(--color-border)',
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'sticky',
-      top: 0,
-      height: '100vh'
-    }}>
-      <div style={{ padding: '2rem', borderBottom: '1px solid var(--color-border)' }}>
+    <aside className="app-sidebar">
+      <div className="app-brand">
         <h2 style={{ color: 'var(--color-primary)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Droplet fill="var(--color-primary)" /> Banco de Sangue
         </h2>
-        <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '5px' }}>
+        <p>
           Gestão de Hemocentro
         </p>
       </div>
 
-      <nav style={{ flex: 1, padding: '1rem' }}>
-        <ul style={{ listStyle: 'none' }}>
+      <nav className="app-nav">
+        <ul>
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
             return (
               <li key={item.path} style={{ marginBottom: '0.5rem' }}>
                 <Link
                   href={item.path}
+                  aria-current={isActive ? 'page' : undefined}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -68,7 +60,7 @@ function Sidebar() {
         </ul>
       </nav>
 
-      <div style={{ padding: '1.5rem', borderTop: '1px solid var(--color-border)', backgroundColor: '#fafafa' }}>
+      <div className="app-user">
         <div style={{ marginBottom: '1rem' }}>
           <p style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user?.name || 'Usuário'}</p>
           <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{user?.role || 'Acesso Restrito'}</p>
