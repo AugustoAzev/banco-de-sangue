@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../src/services/api';
 import { Droplet, Plus, Filter, Calendar, Trash2 } from 'lucide-react';
+import { useToast } from '../../../src/contexts/ToastContext';
 
 interface Bolsa {
   id: number;
@@ -15,7 +16,7 @@ export default function Estoque() {
   const [bolsas, setBolsas] = useState<Bolsa[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [, setError] = useState('');
+  const { success, error, confirm } = useToast();
   const [filtroTipo, setFiltroTipo] = useState('');
   const [novaBolsa, setNovaBolsa] = useState({ tipo_sangue: '', quantidade: 1 });
 
@@ -32,9 +33,8 @@ export default function Estoque() {
       const url = filtroTipo ? `/inventory/bolsas?tipo_sangue=${filtroTipo}` : '/inventory/bolsas';
       const response = await api.get(url);
       setBolsas(response.data);
-      setError('');
     } catch {
-      setError('Erro ao carregar estoque.');
+      error('Não foi possível carregar o estoque.');
     } finally {
       setLoading(false);
     }
@@ -49,19 +49,20 @@ export default function Estoque() {
       setShowForm(false);
       setNovaBolsa({ tipo_sangue: '', quantidade: 1 });
       loadBolsas();
-      alert('Bolsa registrada com sucesso!');
+      success('Bolsa registrada com sucesso!');
     } catch {
-      alert('Erro ao registrar bolsa. Verifique os dados.');
+      error('Erro ao registrar bolsa. Verifique os dados.');
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Deseja remover este registro de estoque?")) return;
+    if (!await confirm('Deseja remover este registro de estoque?')) return;
     try {
       await api.delete(`/inventory/bolsas/${id}`);
       loadBolsas();
+      success('Registro removido do estoque.');
     } catch {
-      alert("Erro ao excluir registro.");
+      error('Erro ao excluir registro.');
     }
   };
 

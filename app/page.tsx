@@ -5,18 +5,18 @@ import { useRouter } from 'next/navigation';
 import api from '../src/services/api';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
 import { ArrowRight, LockKeyhole, Mail } from 'lucide-react';
+import { useToast } from '../src/contexts/ToastContext';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
+  const { error } = useToast();
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
@@ -25,7 +25,7 @@ function LoginForm() {
       signIn(access_token, { name, role, email });
       router.push('/dashboard');
     } catch {
-      setError('Credenciais inválidas. Verifique seu e-mail e senha.');
+      error('Credenciais inválidas. Verifique seu e-mail e senha.');
     } finally {
       setLoading(false);
     }
@@ -56,12 +56,6 @@ function LoginForm() {
           <p className="login-intro">Entre para acompanhar o estoque e cuidar do que importa.</p>
 
         <form onSubmit={handleLogin}>
-          {error && (
-            <div className="login-error">
-              {error}
-            </div>
-          )}
-
           <div className="input-group">
             <label htmlFor="email">E-mail profissional</label>
             <div className="login-input-wrap"><Mail size={18} aria-hidden="true" /><input id="email" type="email" className="input-field" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@pulse.com" required autoFocus /></div>
