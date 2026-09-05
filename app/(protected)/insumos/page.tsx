@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../src/services/api';
 import { Plus, Trash2, Pencil, X } from 'lucide-react';
+import { useToast } from '../../../src/contexts/ToastContext';
 
 interface Insumo {
   id: number;
@@ -16,13 +17,14 @@ export default function Insumos() {
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<Insumo | null>(null);
   const [formData, setFormData] = useState({ nome: '', quantidade: 0 });
+  const { success, error, confirm } = useToast();
 
   async function loadInsumos() {
     try {
       const response = await api.get('/inventory/insumos');
       setInsumos(response.data);
     } catch {
-      // silent
+      error('Não foi possível carregar os insumos.');
     } finally {
       setLoading(false);
     }
@@ -37,12 +39,13 @@ export default function Insumos() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Excluir este insumo?')) return;
+    if (!await confirm('Excluir este insumo?')) return;
     try {
       await api.delete(`/inventory/insumos/${id}`);
       loadInsumos();
+      success('Insumo excluído com sucesso.');
     } catch {
-      alert('Erro ao excluir insumo.');
+      error('Erro ao excluir insumo.');
     }
   };
 
@@ -58,14 +61,15 @@ export default function Insumos() {
       setEditingItem(null);
       setFormData({ nome: '', quantidade: 0 });
       loadInsumos();
+      success(editingItem ? 'Insumo atualizado com sucesso.' : 'Insumo adicionado com sucesso.');
     } catch {
-      alert('Erro ao salvar insumo.');
+      error('Erro ao salvar insumo.');
     }
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="page-header">
         <div>
           <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>Gestão de Insumos</h1>
           <p className="text-muted">Controle de materiais e descartáveis</p>

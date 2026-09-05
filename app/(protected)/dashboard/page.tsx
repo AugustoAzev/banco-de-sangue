@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Users, Droplet, Activity, AlertTriangle, Calendar } from 'lucide-react';
 import api from '../../../src/services/api';
+import { useToast } from '../../../src/contexts/ToastContext';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -12,6 +13,7 @@ export default function Dashboard() {
     nivelCritico: '-'
   });
   const [loading, setLoading] = useState(true);
+  const { error } = useToast();
 
   const formatType = (type: string) => {
     if (!type) return '-';
@@ -67,14 +69,14 @@ export default function Dashboard() {
           coletasHoje: totalColetasHoje,
           nivelCritico: tipoCriticoFormatado
         });
-      } catch (error) {
-        console.error("Erro ao carregar estatísticas", error);
+      } catch {
+        error('Não foi possível carregar as estatísticas do painel.');
       } finally {
         setLoading(false);
       }
     }
     loadStats();
-  }, []);
+  }, [error]);
 
   const cards = [
     { title: 'Total de Doadores', value: loading ? '-' : stats.doadores, icon: Users, color: '#3b82f6', bg: '#eff6ff', desc: 'Cadastrados no sistema', path: '/doadores' },
@@ -84,8 +86,8 @@ export default function Dashboard() {
   ];
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <div className="dashboard-page">
+      <div className="page-header">
         <div>
           <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>Painel de Controle</h1>
           <p className="text-muted">Visão geral do hemocentro</p>
@@ -96,7 +98,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+      <div className="dashboard-stats">
         {cards.map((card, index) => (
           <a
             key={index}
@@ -105,14 +107,13 @@ export default function Dashboard() {
             style={{ textDecoration: 'none' }}
           >
             <div
-              className="card"
+              className="card stat-card"
               style={{
-                transition: 'transform 0.2s, box-shadow 0.2s',
                 cursor: card.path ? 'pointer' : 'default',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                <div style={{ backgroundColor: card.bg, padding: '0.75rem', borderRadius: '12px', color: card.color }}>
+                <div className="stat-icon" style={{ backgroundColor: card.bg, color: card.color }}>
                   <card.icon size={24} />
                 </div>
                 {index === 3 && <span className="badge badge-warning">Atenção</span>}
@@ -125,9 +126,9 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+      <div className="dashboard-lower">
         <div className="card">
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>Movimentações Recentes</h2>
+          <h2 className="panel-title">Movimentações Recentes</h2>
           <div style={{ marginTop: '1rem', borderTop: '1px solid var(--color-border)' }}>
             <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
               Nenhuma movimentação registrada hoje.
@@ -136,7 +137,7 @@ export default function Dashboard() {
         </div>
 
         <div className="card" style={{ backgroundColor: '#fff7ed', borderColor: '#fed7aa' }}>
-          <h2 style={{ fontSize: '1.1rem', color: '#9a3412', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+          <h2 className="panel-title" style={{ color: '#9a3412' }}>
             <AlertTriangle size={18} /> Avisos do Sistema
           </h2>
           <p style={{ fontSize: '0.9rem', color: '#9a3412', marginTop: '0.5rem', lineHeight: 1.6 }}>

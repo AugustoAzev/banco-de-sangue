@@ -35,8 +35,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!nome) return res.status(400).json({ detail: 'nome é obrigatório' });
     if (!cpf) return res.status(400).json({ detail: 'cpf é obrigatório' });
+    // CPF deve conter apenas dígitos (com ou sem máscara)
+    const cpfDigits = cpf.replace(/\D/g, '');
+    if (cpfDigits.length !== 11) {
+      return res.status(400).json({ detail: 'CPF deve conter 11 dígitos' });
+    }
     if (!tipo_sanguineo) return res.status(400).json({ detail: 'tipo_sanguineo é obrigatório' });
-    if (idade === undefined || idade === null) return res.status(400).json({ detail: 'idade é obrigatória' });
+
+    if (
+      idade === undefined ||
+      idade === null ||
+      !Number.isInteger(idade) ||
+      idade < 16 ||
+      idade > 69
+    ) {
+      return res.status(400).json({
+        detail: 'idade deve ser um número inteiro entre 16 e 69 anos'
+      });
+    }
+    
     if (!sexo) return res.status(400).json({ detail: 'sexo é obrigatório' });
     if (!condicao_1 || !condicao_2 || !condicao_3) {
       return res.status(400).json({ detail: 'Doador não atende aos critérios de triagem' });

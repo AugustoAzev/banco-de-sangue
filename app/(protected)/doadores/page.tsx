@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../src/services/api';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { useToast } from '../../../src/contexts/ToastContext';
 
 interface Doador {
   id_doador: string;
@@ -21,8 +22,7 @@ export default function Doadores() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const { success, error, confirm } = useToast();
 
   const initialFormState = {
     nome: '', documento: 'RG', cpf: '', tipo_sanguineo: '', idade: '',
@@ -43,7 +43,7 @@ export default function Doadores() {
       const response = await api.get('/donors/');
       setDoadores(response.data);
     } catch {
-      // silent
+      error('Não foi possível carregar os doadores.');
     } finally {
       setLoading(false);
     }
@@ -63,14 +63,14 @@ export default function Doadores() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este doador?')) return;
+    if (!await confirm('Tem certeza que deseja excluir este doador?')) return;
     try {
       await api.delete(`/donors/${id}`);
-      setSuccess('Doador removido com sucesso.');
+      success('Doador removido com sucesso.');
       loadDoadores();
     } catch (err: any) {
       const msg = err.response?.data?.detail || 'Erro ao excluir.';
-      alert(typeof msg === 'string' ? msg : JSON.stringify(msg));
+      error(typeof msg === 'string' ? msg : JSON.stringify(msg));
     }
   };
 
@@ -78,14 +78,10 @@ export default function Doadores() {
     setShowForm(false);
     setEditingId(null);
     setFormData(initialFormState);
-    setError('');
-    setSuccess('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     try {
       const payload = {
@@ -97,14 +93,14 @@ export default function Doadores() {
 
       if (editingId) {
         await api.put(`/donors/${editingId}`, payload);
-        setSuccess('Doador atualizado com sucesso!');
+        success('Doador atualizado com sucesso!');
       } else {
         if (!formData.condicao_1 || !formData.condicao_2 || !formData.condicao_3) {
-          setError('O doador não atende aos critérios de elegibilidade.');
+          error('O doador não atende aos critérios de elegibilidade.');
           return;
         }
         await api.post('/donors/', payload);
-        setSuccess('Doador cadastrado com sucesso!');
+        success('Doador cadastrado com sucesso!');
       }
 
       handleCancel();
@@ -113,7 +109,7 @@ export default function Doadores() {
       const errorData = err.response?.data?.detail;
       let errorMsg = 'Erro ao salvar dados.';
       if (typeof errorData === 'string') errorMsg = errorData;
-      setError(errorMsg);
+      error(errorMsg);
     }
   };
 
@@ -129,7 +125,7 @@ export default function Doadores() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="page-header">
         <div>
           <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>Gestão de Doadores</h1>
           <p className="text-muted">Cadastre, edite e gerencie os doadores</p>
@@ -140,9 +136,6 @@ export default function Doadores() {
           </button>
         )}
       </div>
-
-      {error && <div className="card" style={{ marginBottom: '1rem', backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca' }}>{error}</div>}
-      {success && <div className="card" style={{ marginBottom: '1rem', backgroundColor: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>{success}</div>}
 
       {showForm && (
         <div className="card" style={{ marginBottom: '2rem', borderLeft: `4px solid ${editingId ? '#f59e0b' : 'var(--color-primary)'}` }}>
@@ -159,7 +152,7 @@ export default function Doadores() {
               </div>
               <div className="input-group">
                 <label>CPF</label>
-                <input name="cpf" value={formData.cpf} onChange={handleInputChange} className="input-field" placeholder="000.000.000-00" required disabled={!!editingId} />
+                <input name="cpf" value={formData.cpf} onChange={handleInputChange} className="input-field" placeholder="000.000.000-00" pattern="[0-9.-]*" inputMode="numeric" required disabled={!!editingId} />
               </div>
               <div className="input-group">
                 <label>Idade</label>
