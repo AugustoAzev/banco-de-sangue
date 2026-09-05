@@ -142,6 +142,34 @@ td {
 .bg-red-50 { background-color: #fef2f2; color: #991b1b; }
 .bg-blue-50 { background-color: #eff6ff; color: #1d4ed8; }
 
+.toast-viewport {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  z-index: 1000;
+  display: flex;
+  width: min(480px, calc(100vw - 2rem));
+  flex-direction: column;
+  gap: .65rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.system-toast { display: flex; align-items: flex-start; gap: .7rem; padding: .9rem 1rem; border: 1px solid; border-radius: 10px; box-shadow: 0 12px 28px rgb(40 38 38 / .16); font-size: .9rem; font-weight: 600; animation: toast-enter .25s ease both; pointer-events: auto; }
+.system-toast span { flex: 1; }
+.system-toast-success { border-color: #bbf7d0; background: #f0fdf4; color: #166534; }
+.system-toast-error { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
+.system-toast-warning { border-color: #fed7aa; background: #fff7ed; color: #9a3412; }
+.system-toast-info { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+.toast-close { display: grid; flex: 0 0 auto; place-items: center; padding: .1rem; border: 0; background: transparent; color: currentColor; cursor: pointer; opacity: .7; }
+.toast-close:hover { opacity: 1; }
+.confirmation-backdrop { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 1rem; background: rgb(40 38 38 / .35); }
+.confirmation-dialog { width: min(100%, 390px); padding: 1.5rem; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); box-shadow: var(--shadow-md); color: var(--color-text-main); }
+.confirmation-dialog > svg { color: #c2410c; }
+.confirmation-dialog h2 { margin-top: .65rem; font-size: 1.15rem; }
+.confirmation-dialog p { margin-top: .55rem; color: var(--color-text-muted); }
+.confirmation-actions { display: flex; justify-content: flex-end; gap: .65rem; margin-top: 1.35rem; }
+@keyframes toast-enter { from { opacity: 0; transform: translateY(-.6rem); } to { opacity: 1; transform: translateY(0); } }
+
 .login-page { min-height: 100vh; display: grid; grid-template-columns: minmax(380px, .92fr) minmax(460px, 1.08fr); background: #f7f9f8; }
 .login-brand-panel { position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; padding: 4rem clamp(3rem, 7vw, 7rem); overflow: hidden; color: #fff; background: linear-gradient(145deg, #7f171b 0%, #a91f24 53%, #d6413d 100%); }
 .login-brand-panel::before, .login-brand-panel::after { content: ''; position: absolute; border: 1px solid rgb(255 255 255 / .2); border-radius: 50%; pointer-events: none; }

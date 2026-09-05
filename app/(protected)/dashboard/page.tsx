@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Users, Droplet, Activity, AlertTriangle, Calendar } from 'lucide-react';
 import api from '../../../src/services/api';
+import { useToast } from '../../../src/contexts/ToastContext';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -12,6 +13,7 @@ export default function Dashboard() {
     nivelCritico: '-'
   });
   const [loading, setLoading] = useState(true);
+  const { error } = useToast();
 
   const formatType = (type: string) => {
     if (!type) return '-';
@@ -67,14 +69,14 @@ export default function Dashboard() {
           coletasHoje: totalColetasHoje,
           nivelCritico: tipoCriticoFormatado
         });
-      } catch (error) {
-        console.error("Erro ao carregar estatísticas", error);
+      } catch {
+        error('Não foi possível carregar as estatísticas do painel.');
       } finally {
         setLoading(false);
       }
     }
     loadStats();
-  }, []);
+  }, [error]);
 
   const cards = [
     { title: 'Total de Doadores', value: loading ? '-' : stats.doadores, icon: Users, color: '#3b82f6', bg: '#eff6ff', desc: 'Cadastrados no sistema', path: '/doadores' },

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import api from '../services/api';
+import { useToast } from './ToastContext';
 
 // Define a estrutura do usuário que vem do backend
 interface User {
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const { warning } = useToast();
 
   // Função de SignOut definida antes para ser usada no useEffect
   const signOut = () => {
@@ -54,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       (error) => {
         // Se o erro for 401 (Unauthorized) e não for na rota de login (pra não loopar se errar senha)
         if (error.response?.status === 401) {
-            console.warn("Sessão expirada. Deslogando usuário...");
+          warning('Sua sessão expirou. Entre novamente para continuar.');
             signOut();
         }
         return Promise.reject(error);
