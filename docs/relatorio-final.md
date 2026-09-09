@@ -1,107 +1,51 @@
-# Relatório Final — Manutenção Corretiva
+# Relatório Final — Manutenção Preventiva
 
 **Disciplina:** Manutenção e Integração de Software
-**Instituição:** Universidade Federal do Amazonas — ICET
+**Sistema:** Banco de Sangue
 
----
+## Situação encontrada
 
-## 1. Descrição do Sistema
+O cadastro de doadores já funcionava, mas a política de elegibilidade estava distribuída entre a API e a tela de cadastro. Os limites de idade estavam fixos no servidor, e os critérios de triagem eram mantidos como textos independentes na interface.
 
-O **Banco de Sangue** é uma aplicação web para gestão de hemocentros. Permite cadastrar doadores de sangue, controlar o estoque de bolsas por tipo sanguíneo, gerenciar insumos e acompanhar estatísticas de coleta. Detalhes completos em [apresentacao-sistema.md](./apresentacao-sistema.md).
+## Problema de manutenibilidade e mudança futura
 
-## 2. Resumo dos Bugs Identificados
+Uma futura alteração regulatória plausível — idade máxima de 69 para 65 anos e prazo após vacina contra gripe de 48 para 72 horas — exigiria modificar mais de um ponto de produção. Isso poderia gerar divergência entre o que a interface informa e o que a API aplica.
 
-| # | Tipo | Severidade | Local | Branch de fix |
-|---|------|------------|-------|---------------|
-| 1 | Lógico | Alta | `pages/api/inventory/bolsas.ts` | `fix/issue-1-bolsa-id-zero` |
-| 2 | Lógico | Média | `pages/api/donors/index.ts` | `fix/issue-2-idade-sem-validacao` |
-| 3 | Validação / Segurança | Alta | `pages/api/donors/index.ts` | `fix/issue-3-cpf-aceita-emojis` |
+O diagnóstico detalhado está em [diagnostico-manutencao-preventiva.md](./diagnostico-manutencao-preventiva.md).
 
-Detalhes completos de cada bug em [bugs-e-classificacao.md](./bugs-e-classificacao.md).
+## Intervenção realizada
 
-## 3. Issues e PRs (quando criados no GitHub)
+Foi criado `src/lib/donor-eligibility.ts`, a fonte única para:
 
-Quando esses artefatos forem criados no GitHub, esta seção conterá os links:
+- idade mínima e máxima permitidas;
+- prazo após vacina contra gripe;
+- textos dos critérios de triagem;
+- validação reutilizável de idade.
 
-- **Issue #1:** Bolsas agrupadas retornam `id: 0`, impedindo exclusão
-  - Documentação local: [docs/issues/issue-1-bolsa-id-zero.md](./issues/issue-1-bolsa-id-zero.md)
-  - Branch de fix: `fix/issue-1-bolsa-id-zero`
-  - PR: `fix(bolsas): preservar id real das bolsas no agrupamento (fixes #1)`
+`pages/api/donors/index.ts` agora usa a função e a mensagem centralizadas. A tela `app/(protected)/doadores/page.tsx` usa os textos do mesmo módulo. O comportamento vigente foi preservado: idades de 16 a 69 anos são aceitas e os demais valores são rejeitados.
 
-- **Issue #2:** Idade negativa ou absurda aceita no cadastro de doadores
-  - Documentação local: [docs/issues/issue-2-idade-sem-validacao.md](./issues/issue-2-idade-sem-validacao.md)
-  - Branch de fix: `fix/issue-2-idade-sem-validacao`
-  - PR: `fix(donors): validar idade no intervalo de 16 a 69 anos (fixes #2)`
+## Evidências e validação
 
-- **Issue #3:** Campo CPF aceita caracteres não-numéricos (emojis, letras)
-  - Documentação local: [docs/issues/issue-3-cpf-aceita-emojis.md](./issues/issue-3-cpf-aceita-emojis.md)
-  - Branch de fix: `fix/issue-3-cpf-aceita-emojis`
-  - PR: `fix(donors): validar formato do CPF (apenas dígitos) (fixes #3)`
+- Testes de unidade: `tests/donor-eligibility.test.ts` cobre limites, valores inválidos, prazo de vacina, textos e mensagem de validação.
+- Testes de regressão existentes: preservados.
+- Build: concluído com sucesso após a alteração.
+- Vídeo Antes: adicionar o link publicado na Issue #68.
+- Vídeo Depois: adicionar o link publicado na Issue #68 após a demonstração final.
 
-## 4. Evidências de Validação
+## Melhoria estrutural
 
-Cada bug corrigido possui teste de regressão automatizado:
+| Indicador | Antes | Depois |
+| --- | --- | --- |
+| Fonte oficial das regras | API e interface | `src/lib/donor-eligibility.ts` |
+| Pontos de produção para alterar uma regra | Dois ou mais | Um |
+| Risco de divergência | Maior | Reduzido |
 
-| Bug | Arquivo de teste | Cenários cobertos |
-|-----|------------------|-------------------|
-| #1 | `tests/api-bolsas.test.ts` | Agrupamento com múltiplos tipos, lista vazia, filtro |
-| #2 | `tests/api-donors-idade.test.ts` | Idade negativa, zero, > 69, válida |
-| #3 | `tests/api-donors-cpf.test.ts` | CPF com emoji, letras, símbolo, válido com máscara, válido sem máscara |
+## Rastreabilidade
 
-**Execução dos testes:**
+- Issue: [#68 — Centralizar regras de elegibilidade](https://github.com/AugustoAzev/banco-de-sangue/issues/68)
+- Branch: `68-manutencao-preventiva-centralizar-regras-de-elegibilidade-de-doadores`
+- Pull Request: adicionar o link após a abertura.
 
-```bash
-$ npx jest
+## Conclusão
 
-PASS tests/api-bolsas.test.ts
-PASS tests/api-donors-cpf.test.ts
-PASS tests/api-donors-idade.test.ts
-
-Tests:       9 passed, 9 total
-Test Suites: 2 passed, 2 total
-```
-
-## 5. Estrutura do Trabalho no Repositório
-
-```
-banco-de-sangue/
-├── docs/
-│   ├── apresentacao-sistema.md       # Etapa 1
-│   ├── bugs-e-classificacao.md       # Etapa 2
-│   ├── relatorio-final.md            # Etapa 7 (este arquivo)
-│   └── issues/                       # Etapa 3 (pré-registro)
-│       ├── issue-1-bolsa-id-zero.md
-│       ├── issue-2-idade-sem-validacao.md
-│       └── issue-3-cpf-aceita-emojis.md
-├── .github/
-│   └── ISSUE_TEMPLATE/
-│       └── bug_report.md             # Etapa 3 (template)
-├── tests/
-│   ├── api-bolsas.test.ts            # Regressão #1
-│   ├── api-donors-idade.test.ts      # Regressão #2
-│   └── api-donors-cpf.test.ts        # Regressão #3
-└── (código-fonte sem alteração de estrutura)
-```
-
-## 6. Fluxo de Triagem Aplicado
-
-Cada bug passou pelas seguintes etapas:
-
-1. **Open:** Identificação inicial via code review
-2. **Confirmed:** Documentação em `docs/issues/issue-N-*.md` com passos, evidências e classificação
-3. **In Progress:** Branch criada a partir de `master`, correção implementada
-4. **Closed (esperado após merge):** PR com `fixes #N` fecha a issue automaticamente
-
-## 7. Retrabalho
-
-Não houve retrabalho nesta execução: cada branch foi corrigida em um único commit (ou dois commits no caso de pequenas correções de teste), e os testes de regressão passaram na primeira tentativa após correções pontuais.
-
-## 8. Ferramentas de Apoio Utilizadas
-
-- **Code review manual:** identificação dos 3 bugs via leitura do código-fonte
-- **Jest + ts-jest:** framework de testes para regressão
-- **Dependabot:** considerado para varredura de dependências vulneráveis (recomenda-se ativar em Settings → Security → Code security and analysis no GitHub)
-
----
-
-**Conclusão:** O fluxo completo de manutenção corretiva foi aplicado — identificação, classificação, documentação, correção, testes de regressão e estruturação do trabalho seguindo as boas práticas do TP. Cada bug é rastreável via branch, commit, e documentação local que simula as issues do GitHub.
+Esta é uma manutenção preventiva porque elimina antecipadamente a duplicação das regras de triagem, antes de uma alteração regulatória real. A nova estrutura reduz o impacto de mudanças futuras e preserva o funcionamento atual do sistema.

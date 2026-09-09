@@ -3,6 +3,7 @@ import { supabaseFetch, getServiceHeaders } from '../../../src/lib/supabase';
 import { requireAuth } from '../../../src/lib/auth-helpers';
 import { randomUUID } from 'crypto';
 import type { DoadorCreate, Doador } from '../../../src/lib/types';
+import { donorAgeValidationMessage, isDonorAgeEligible } from '../../../src/lib/donor-eligibility';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = await requireAuth(req);
@@ -42,15 +43,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     if (!tipo_sanguineo) return res.status(400).json({ detail: 'tipo_sanguineo é obrigatório' });
 
-    if (
-      idade === undefined ||
-      idade === null ||
-      !Number.isInteger(idade) ||
-      idade < 16 ||
-      idade > 69
-    ) {
+    if (!isDonorAgeEligible(idade)) {
       return res.status(400).json({
-        detail: 'idade deve ser um número inteiro entre 16 e 69 anos'
+        detail: donorAgeValidationMessage
       });
     }
     
