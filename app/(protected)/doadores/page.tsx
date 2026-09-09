@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../src/services/api';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
+import { DONOR_SCREENING_CRITERIA } from '../../../src/lib/donor-eligibility';
 
 interface Doador {
   id_doador: string;
@@ -192,11 +193,7 @@ export default function Doadores() {
             {!editingId && (
               <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Critérios de Triagem</h3>
-                {[
-                  { name: 'condicao_1', label: 'Doador tem entre 16 e 69 anos' },
-                  { name: 'condicao_2', label: 'Doador pesa mais de 50kg' },
-                  { name: 'condicao_3', label: 'Não tomou vacina contra gripe nas últimas 48h' },
-                ].map(c => (
+                {DONOR_SCREENING_CRITERIA.map(c => (
                   <label key={c.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', marginTop: '0.5rem' }}>
                     <input type="checkbox" name={c.name} checked={(formData as any)[c.name]} onChange={handleCheckboxChange} />
                     {c.label}
