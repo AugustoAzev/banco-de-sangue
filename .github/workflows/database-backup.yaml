@@ -1,0 +1,38 @@
+name: Database Backup
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Todos os dias as 13:00 no horario de Brasilia (16:00 UTC)
+    - cron: "0 16 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    name: Backup do Supabase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Instalar PostgreSQL Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Gerar dump do banco
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          pg_dump "$SUPABASE_DB_URL" \
+            --no-owner \
+            --no-privileges \
+            > backup.sql
+
+      - name: Salvar dump como Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-backup
+          path: backup.sql
+          retention-days: 1
