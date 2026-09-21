@@ -2,6 +2,8 @@
 
 Sistema de gestão de hemocentros para cadastro de doadores, controle de estoque de sangue e administração de insumos.
 
+> **TP3 — Manutenção Adaptativa:** este repositório passou por três adaptações (mudança de dependência, mudança de regulamentação LGPD e integração de API externa). Síntese em [`RELATORIO.md`](./RELATORIO.md), detalhes e evidências em [`manutencao-adaptativa/`](./manutencao-adaptativa/).
+
 ---
 
 ## Tecnologias
@@ -118,8 +120,12 @@ banco-de-sangue/
 │   ├── lib/                 # Supabase helpers, types, auth
 │   └── services/            # Axios API client
 ├── pages/api/               # API Routes legadas
-├── tests/                   # Playwright
+│   ├── cep/[cep]            # Proxy para ViaCEP (TP3)
+│   └── donors/[id]/anonymize # Anonimização LGPD (TP3)
+├── tests/                   # Jest (unit) + Playwright (E2E)
+├── manutencao-adaptativa/   # Evidências e plano do TP3
 ├── supabase_migration.sql   # Schema do banco
+├── RELATORIO.md             # Síntese das adaptações (TP3)
 └── package.json
 ```
 
