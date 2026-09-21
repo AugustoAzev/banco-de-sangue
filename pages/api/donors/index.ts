@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'POST') {
     const body = req.body as DoadorCreate;
-    const { nome, cpf, tipo_sanguineo, idade, sexo, condicao_1, condicao_2, condicao_3 } = body;
+    const { nome, cpf, tipo_sanguineo, idade, sexo, condicao_1, condicao_2, condicao_3, consentimento_lgpd } = body;
 
     if (!nome) return res.status(400).json({ detail: 'nome é obrigatório' });
     if (!cpf) return res.status(400).json({ detail: 'cpf é obrigatório' });
@@ -48,10 +48,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         detail: donorAgeValidationMessage
       });
     }
-    
+
     if (!sexo) return res.status(400).json({ detail: 'sexo é obrigatório' });
     if (!condicao_1 || !condicao_2 || !condicao_3) {
       return res.status(400).json({ detail: 'Doador não atende aos critérios de triagem' });
+    }
+    if (!consentimento_lgpd) {
+      return res.status(400).json({ detail: 'É necessário o consentimento do doador para o tratamento de dados pessoais (LGPD)' });
     }
 
     const cpfCheck = await supabaseFetch(
@@ -78,6 +81,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       email: body.email ?? null,
       telefone: body.telefone ?? null,
       endereco: body.endereco ?? null,
+      consentimento_lgpd: true,
+      consentimento_lgpd_em: now,
       criado_em: now,
       atualizado_em: now,
     };

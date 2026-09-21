@@ -42,6 +42,7 @@ const basePayload = {
   condicao_1: true,
   condicao_2: true,
   condicao_3: true,
+  consentimento_lgpd: true,
 };
 
 describe('POST /api/donors — validação de CPF (Issue #3)', () => {

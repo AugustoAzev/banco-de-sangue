@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import api from '../../../src/services/api';
-import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, ShieldOff } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
 import { DONOR_SCREENING_CRITERIA } from '../../../src/lib/donor-eligibility';
 
@@ -16,6 +16,7 @@ interface Doador {
   email: string;
   telefone: string;
   endereco: string;
+  anonimizado_em?: string | null;
 }
 
 export default function Doadores() {
@@ -28,7 +29,8 @@ export default function Doadores() {
   const initialFormState = {
     nome: '', documento: 'RG', cpf: '', tipo_sanguineo: '', idade: '',
     sexo: '', email: '', telefone: '', endereco: '',
-    condicao_1: false, condicao_2: false, condicao_3: false
+    condicao_1: false, condicao_2: false, condicao_3: false,
+    consentimento_lgpd: false
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -57,7 +59,8 @@ export default function Doadores() {
       nome: doador.nome_completo, documento: 'RG', cpf: doador.cpf,
       tipo_sanguineo: doador.tipo_sanguineo || '', idade: doador.idade ? doador.idade.toString() : '',
       sexo: doador.sexo || '', email: doador.email || '', telefone: doador.telefone || '',
-      endereco: doador.endereco || '', condicao_1: true, condicao_2: true, condicao_3: true
+      endereco: doador.endereco || '', condicao_1: true, condicao_2: true, condicao_3: true,
+      consentimento_lgpd: true
     });
     setEditingId(doador.id_doador);
     setShowForm(true);
@@ -75,6 +78,17 @@ export default function Doadores() {
     }
   };
 
+  const handleAnonymize = async (id: string) => {
+    if (!await confirm('Anonimizar este doador? Nome, CPF, e-mail, telefone e endereço serão removidos permanentemente e não poderão ser recuperados. O histórico de doações é mantido por exigência regulatória (LGPD art. 18, VI).')) return;
+    try {
+      await api.patch(`/donors/${id}/anonymize`);
+      success('Doador anonimizado com sucesso.');
+      loadDoadores();
+    } catch {
+      error('Erro ao anonimizar doador.');
+    }
+  };
+
   const handleCancel = () => {
     setShowForm(false);
     setEditingId(null);
@@ -89,7 +103,8 @@ export default function Doadores() {
         nome: formData.nome, documento: formData.documento, cpf: formData.cpf,
         tipo_sanguineo: formData.tipo_sanguineo, idade: parseInt(formData.idade), sexo: formData.sexo,
         email: formData.email, telefone: formData.telefone, endereco: formData.endereco,
-        condicao_1: formData.condicao_1, condicao_2: formData.condicao_2, condicao_3: formData.condicao_3
+        condicao_1: formData.condicao_1, condicao_2: formData.condicao_2, condicao_3: formData.condicao_3,
+        consentimento_lgpd: formData.consentimento_lgpd
       };
 
       if (editingId) {
@@ -98,6 +113,10 @@ export default function Doadores() {
       } else {
         if (!formData.condicao_1 || !formData.condicao_2 || !formData.condicao_3) {
           error('O doador não atende aos critérios de elegibilidade.');
+          return;
+        }
+        if (!formData.consentimento_lgpd) {
+          error('É necessário o consentimento do doador para o tratamento de dados pessoais (LGPD).');
           return;
         }
         await api.post('/donors/', payload);
@@ -202,6 +221,26 @@ export default function Doadores() {
               </div>
             )}
 
+            {!editingId && (
+              <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#fff7ed', borderRadius: '8px', border: '1px solid #fed7aa' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Privacidade e Proteção de Dados (LGPD)</h3>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.9rem' }}>
+                  <input
+                    type="checkbox"
+                    name="consentimento_lgpd"
+                    checked={formData.consentimento_lgpd}
+                    onChange={handleCheckboxChange}
+                    required
+                  />
+                  <span>
+                    Autorizo o tratamento dos meus dados pessoais (nome, CPF, contato e histórico de doações) pela
+                    unidade de coleta, exclusivamente para fins de triagem, controle de doações e cumprimento de
+                    obrigações regulatórias, conforme a Lei nº 13.709/2018 (LGPD).
+                  </span>
+                </label>
+              </div>
+            )}
+
             <div style={{ marginTop: '1.5rem', display: 'flex', gap: '10px' }}>
               <button type="submit" className="btn btn-primary">{editingId ? 'Salvar Alterações' : 'Cadastrar Doador'}</button>
               <button type="button" onClick={handleCancel} className="btn" style={{ border: '1px solid #ccc' }}>Cancelar</button>
@@ -225,20 +264,30 @@ export default function Doadores() {
             ) : (
               doadores.map((d) => {
                 const estilo = formatTipoSanguineo(d.tipo_sanguineo);
+                const anonimizado = !!d.anonimizado_em;
                 return (
                   <tr key={d.id_doador}>
-                    <td style={{ fontWeight: 500 }}>{d.nome_completo}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.95rem' }}>{d.cpf}</td>
+                    <td style={{ fontWeight: 500, fontStyle: anonimizado ? 'italic' : 'normal', color: anonimizado ? '#6b7280' : 'inherit' }}>{d.nome_completo}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: anonimizado ? '#9ca3af' : 'inherit' }}>{d.cpf ?? '—'}</td>
                     <td>
                       <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: estilo.bg, color: estilo.color, fontWeight: 'bold', fontSize: '0.85rem' }}>
                         {estilo.text}
                       </div>
                     </td>
                     <td>{d.idade} anos</td>
-                    <td><span className="badge bg-green-50">Ativo</span></td>
+                    <td>
+                      {anonimizado
+                        ? <span className="badge" style={{ backgroundColor: '#f3f4f6', color: '#4b5563' }}>Anonimizado (LGPD)</span>
+                        : <span className="badge bg-green-50">Ativo</span>}
+                    </td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                        <button onClick={() => handleEdit(d)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6', padding: '4px' }}><Pencil size={18} /></button>
+                        {!anonimizado && (
+                          <button onClick={() => handleEdit(d)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6', padding: '4px' }}><Pencil size={18} /></button>
+                        )}
+                        {!anonimizado && (
+                          <button onClick={() => handleAnonymize(d.id_doador)} title="Anonimizar dados (LGPD)" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f59e0b', padding: '4px' }}><ShieldOff size={18} /></button>
+                        )}
                         <button onClick={() => handleDelete(d.id_doador)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '4px' }}><Trash2 size={18} /></button>
                       </div>
                     </td>

@@ -45,6 +45,9 @@ export interface Doador {
   endereco?: string;
   criado_em?: string;
   atualizado_em?: string;
+  consentimento_lgpd?: boolean;
+  consentimento_lgpd_em?: string | null;
+  anonimizado_em?: string | null;
 }
 
 export interface DoadorCreate {
@@ -60,6 +63,7 @@ export interface DoadorCreate {
   condicao_1: boolean;
   condicao_2: boolean;
   condicao_3: boolean;
+  consentimento_lgpd: boolean;
 }
 
 export interface Bolsa {
