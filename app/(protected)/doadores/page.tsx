@@ -28,11 +28,12 @@ export default function Doadores() {
 
   const initialFormState = {
     nome: '', documento: 'RG', cpf: '', tipo_sanguineo: '', idade: '',
-    sexo: '', email: '', telefone: '', endereco: '',
+    sexo: '', email: '', telefone: '', cep: '', endereco: '',
     condicao_1: false, condicao_2: false, condicao_3: false,
     consentimento_lgpd: false
   };
   const [formData, setFormData] = useState(initialFormState);
+  const [cepStatus, setCepStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const formatTipoSanguineo = (tipo: string) => {
     if (!tipo) return { text: '-', color: '#6b7280', bg: '#f3f4f6' };
@@ -59,7 +60,7 @@ export default function Doadores() {
       nome: doador.nome_completo, documento: 'RG', cpf: doador.cpf,
       tipo_sanguineo: doador.tipo_sanguineo || '', idade: doador.idade ? doador.idade.toString() : '',
       sexo: doador.sexo || '', email: doador.email || '', telefone: doador.telefone || '',
-      endereco: doador.endereco || '', condicao_1: true, condicao_2: true, condicao_3: true,
+      cep: '', endereco: doador.endereco || '', condicao_1: true, condicao_2: true, condicao_3: true,
       consentimento_lgpd: true
     });
     setEditingId(doador.id_doador);
@@ -136,6 +137,25 @@ export default function Doadores() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'cep') setCepStatus('idle');
+  };
+
+  const handleCepBlur = async () => {
+    const cepDigits = formData.cep.replace(/\D/g, '');
+    if (cepDigits.length !== 8) return;
+
+    setCepStatus('loading');
+    try {
+      const response = await api.get(`/cep/${cepDigits}`);
+      const { logradouro, bairro, cidade, uf } = response.data;
+      const enderecoFormatado = [logradouro, bairro, cidade && uf ? `${cidade} - ${uf}` : cidade || uf]
+        .filter(Boolean)
+        .join(', ');
+      setFormData(prev => ({ ...prev, endereco: enderecoFormatado }));
+      setCepStatus('success');
+    } catch {
+      setCepStatus('error');
+    }
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,6 +222,16 @@ export default function Doadores() {
               <div className="input-group">
                 <label>Telefone</label>
                 <input name="telefone" type="tel" value={formData.telefone} onChange={handleInputChange} className="input-field" />
+              </div>
+              <div className="input-group">
+                <label>CEP</label>
+                <input
+                  name="cep" type="text" value={formData.cep} onChange={handleInputChange} onBlur={handleCepBlur}
+                  className="input-field" placeholder="00000-000" pattern="[0-9-]*" inputMode="numeric" maxLength={9}
+                />
+                {cepStatus === 'loading' && <small style={{ color: '#6b7280' }}>Buscando endereço...</small>}
+                {cepStatus === 'success' && <small style={{ color: '#16a34a' }}>Endereço preenchido automaticamente.</small>}
+                {cepStatus === 'error' && <small style={{ color: '#dc2626' }}>CEP não encontrado, preencha o endereço manualmente.</small>}
               </div>
               <div className="input-group">
                 <label>Endereço</label>

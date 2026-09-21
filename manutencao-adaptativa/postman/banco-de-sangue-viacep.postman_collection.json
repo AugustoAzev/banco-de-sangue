@@ -1,0 +1,221 @@
+{
+  "info": {
+    "name": "Banco de Sangue - Integracao ViaCEP (Estrategia 3 - Manutencao Adaptativa)",
+    "description": "Requisicoes usadas para validar a integracao com a API publica ViaCEP antes de integrar ao sistema (autofill de endereco no cadastro de doador), e o proxy interno /api/cep/{cep}. Respostas de exemplo foram capturadas de execucoes reais em 21/09/2026.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. ViaCEP (externa)",
+      "item": [
+        {
+          "name": "CEP valido - Avenida Paulista/SP",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://viacep.com.br/ws/01310100/json/",
+              "protocol": "https",
+              "host": ["viacep", "com", "br"],
+              "path": ["ws", "01310100", "json", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "url": "https://viacep.com.br/ws/01310100/json/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"cep\": \"01310-100\",\n  \"logradouro\": \"Avenida Paulista\",\n  \"complemento\": \"de 612 a 1510 - lado par\",\n  \"unidade\": \"\",\n  \"bairro\": \"Bela Vista\",\n  \"localidade\": \"São Paulo\",\n  \"uf\": \"SP\",\n  \"estado\": \"São Paulo\",\n  \"regiao\": \"Sudeste\",\n  \"ibge\": \"3550308\",\n  \"gia\": \"1004\",\n  \"ddd\": \"11\",\n  \"siafi\": \"7107\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "CEP valido - Praca Pio X/RJ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://viacep.com.br/ws/20040020/json/",
+              "protocol": "https",
+              "host": ["viacep", "com", "br"],
+              "path": ["ws", "20040020", "json", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "url": "https://viacep.com.br/ws/20040020/json/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"cep\": \"20040-020\",\n  \"logradouro\": \"Praça Pio X\",\n  \"complemento\": \"lado ímpar\",\n  \"unidade\": \"\",\n  \"bairro\": \"Centro\",\n  \"localidade\": \"Rio de Janeiro\",\n  \"uf\": \"RJ\",\n  \"estado\": \"Rio de Janeiro\",\n  \"regiao\": \"Sudeste\",\n  \"ibge\": \"3304557\",\n  \"gia\": \"\",\n  \"ddd\": \"21\",\n  \"siafi\": \"6001\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "CEP inexistente (8 digitos validos, sem endereco)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://viacep.com.br/ws/00000000/json/",
+              "protocol": "https",
+              "host": ["viacep", "com", "br"],
+              "path": ["ws", "00000000", "json", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK (erro=true)",
+              "originalRequest": {
+                "method": "GET",
+                "url": "https://viacep.com.br/ws/00000000/json/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"erro\": \"true\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "CEP mal formatado (menos de 8 digitos)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://viacep.com.br/ws/123/json/",
+              "protocol": "https",
+              "host": ["viacep", "com", "br"],
+              "path": ["ws", "123", "json", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request (HTML, nao JSON)",
+              "originalRequest": {
+                "method": "GET",
+                "url": "https://viacep.com.br/ws/123/json/"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "html",
+              "header": [{ "key": "Content-Type", "value": "text/html; charset=UTF-8" }],
+              "body": "<html>...<h1>Http 400</h1><h3>Verifique a URL</h3>...</html>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Proxy interno /api/cep (apos integracao)",
+      "item": [
+        {
+          "name": "GET /api/cep/01310100 (autenticado)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/cep/01310100",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cep", "01310100"]
+            },
+            "description": "Requer login previo (POST /api/auth/login) para obter {{jwt_token}}. base_url padrao local: http://localhost:3000"
+          },
+          "response": [
+            {
+              "name": "200 OK (normalizado)",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"cep\": \"01310-100\",\n  \"logradouro\": \"Avenida Paulista\",\n  \"bairro\": \"Bela Vista\",\n  \"cidade\": \"São Paulo\",\n  \"uf\": \"SP\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/cep/00000000 (CEP inexistente)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/cep/00000000",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cep", "00000000"]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"detail\": \"CEP não encontrado\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/cep/123 (formato invalido)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/cep/123",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cep", "123"]
+            },
+            "description": "Validado ANTES de chamar o ViaCEP - evita repassar o erro HTML 400 do provedor externo pro cliente."
+          },
+          "response": [
+            {
+              "name": "400 Bad Request",
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"detail\": \"CEP deve conter 8 dígitos\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/cep/01310100 (sem token)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/cep/01310100",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cep", "01310100"]
+            }
+          },
+          "response": [
+            {
+              "name": "401 Unauthorized",
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"detail\": \"Não autenticado\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "jwt_token", "value": "" }
+  ]
+}
