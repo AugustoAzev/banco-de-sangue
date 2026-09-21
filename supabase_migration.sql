@@ -125,6 +125,21 @@ END;
 $$;
 
 -- ============================================================
+-- 3.1 LGPD - Consentimento e Anonimizacao de Doadores (Lei 13.709/2018)
+-- Migration aditiva: adiciona colunas sem alterar as existentes.
+-- ============================================================
+
+ALTER TABLE doadores
+  ADD COLUMN IF NOT EXISTS consentimento_lgpd    BOOLEAN     NOT NULL DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS consentimento_lgpd_em TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS anonimizado_em         TIMESTAMPTZ;
+
+COMMENT ON COLUMN doadores.consentimento_lgpd IS
+  'Doador autorizou o tratamento de dados pessoais para triagem/controle de doacoes (LGPD art. 8). Registros legados ficam em FALSE ate reconfirmacao, mesmo que o tratamento ja seja legitimo por obrigacao legal/regulatoria (LGPD art. 7, II - regulacao ANVISA).';
+COMMENT ON COLUMN doadores.anonimizado_em IS
+  'Quando preenchido, indica que os dados pessoais identificaveis do doador foram anonimizados a pedido (direito de eliminacao, LGPD art. 18, VI). Nao usamos hard delete porque o historico de doacoes tem retencao legal obrigatoria.';
+
+-- ============================================================
 -- 4. DADOS SEED
 -- ============================================================
 
