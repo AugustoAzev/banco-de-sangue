@@ -85,4 +85,16 @@ Tests:       29 passed, 29 total
 
 ## Evidência visual (interface antes/depois)
 
-Ver `manutencao-adaptativa/screenshots/` — capturas reais da tela `/doadores` rodando localmente (`next dev`), incluindo o formulário com o bloco de consentimento LGPD e a ação de anonimizar. Detalhes de como essas capturas foram geradas (sem depender de um Supabase real) estão documentados em `plano-estrategia.md`.
+Capturas reais da tela `/doadores` rodando localmente (`next dev`), via script Playwright (metodologia detalhada em `plano-estrategia.md`).
+
+**Antes de confirmar — formulário com o bloco de consentimento LGPD (desmarcado) e a lista já mostrando um doador ativo ao lado de um doador anonimizado, para contraste:**
+
+![Formulário com bloco de consentimento LGPD](./screenshots/2-formulario-lgpd-sem-consentimento.png)
+
+**Ação "Anonimizar" — diálogo de confirmação com a base legal (LGPD art. 18, VI):**
+
+![Confirmação de anonimização](./screenshots/5-confirmacao-anonimizar.png)
+
+**Depois de confirmar — "Maria Oliveira Santos" (linha 1) passa a "Doador Anonimizado (LGPD)", CPF mascarado, selo atualizado:**
+
+![Lista após anonimizar](./screenshots/6-lista-apos-anonimizar.png)

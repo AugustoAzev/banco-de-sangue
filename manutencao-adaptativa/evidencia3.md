@@ -83,4 +83,6 @@ Tests:       33 passed, 33 total
 
 ## Evidência visual (execução no sistema)
 
-Ver `manutencao-adaptativa/screenshots/` — capturas reais do formulário de doador rodando localmente (`next dev`), mostrando o campo CEP preenchendo "Endereço" automaticamente com dados reais retornados pelo ViaCEP. Detalhes de como essas capturas foram geradas estão documentados em `plano-estrategia.md`.
+Captura real do formulário rodando localmente (`next dev`) após digitar o CEP `01310-100`: o campo "Endereço" foi preenchido automaticamente com `Avenida Paulista, Bela Vista, São Paulo - SP`, exatamente o dado devolvido pelo ViaCEP capturado no Postman (metodologia em `plano-estrategia.md`):
+
+![CEP preenchendo endereço automaticamente](./screenshots/3-cep-autofill-endereco.png)
