@@ -55,14 +55,15 @@ export default function Estoque() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!await confirm('Deseja remover este registro de estoque?')) return;
+  const handleDelete = async (item: Bolsa) => {
+    const rotulo = formatTipoSanguineo(item.tipo_sangue).text;
+    if (!await confirm(`Remover o lote inteiro de ${item.quantidade} bolsa(s) do tipo ${rotulo} do estoque?`)) return;
     try {
-      await api.delete(`/inventory/bolsas/${id}`);
+      await api.delete(`/inventory/bolsas/${item.id}`);
       loadBolsas();
-      success('Registro removido do estoque.');
+      success('Lote removido do estoque.');
     } catch {
-      error('Erro ao excluir registro.');
+      error('Erro ao excluir lote.');
     }
   };
 
@@ -169,7 +170,7 @@ export default function Estoque() {
                     </td>
                     <td><span className="badge bg-green-50" style={{ color: '#166534' }}>Disponível</span></td>
                     <td style={{textAlign: 'right'}}>
-                      <button onClick={() => handleDelete(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }} title="Excluir Lote">
+                      <button onClick={() => handleDelete(item)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }} title="Excluir Lote">
                         <Trash2 size={18} />
                       </button>
                     </td>
