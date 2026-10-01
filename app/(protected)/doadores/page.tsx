@@ -35,6 +35,13 @@ export default function Doadores() {
   const [formData, setFormData] = useState(initialFormState);
   const [cepStatus, setCepStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
+  const formatCpf = (cpf: string) => {
+    if (!cpf) return '—';
+    const d = cpf.replace(/\D/g, '');
+    if (d.length !== 11) return cpf;
+    return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+  };
+
   const formatTipoSanguineo = (tipo: string) => {
     if (!tipo) return { text: '-', color: '#6b7280', bg: '#f3f4f6' };
     const [grupo, rh] = tipo.split('_');
@@ -196,7 +203,7 @@ export default function Doadores() {
               </div>
               <div className="input-group">
                 <label>Idade</label>
-                <input name="idade" type="number" value={formData.idade} onChange={handleInputChange} className="input-field" required />
+                <input name="idade" type="number" min={16} max={69} value={formData.idade} onChange={handleInputChange} className="input-field" required />
               </div>
               <div className="input-group">
                 <label>Sexo</label>
@@ -298,7 +305,7 @@ export default function Doadores() {
                 return (
                   <tr key={d.id_doador}>
                     <td style={{ fontWeight: 500, fontStyle: anonimizado ? 'italic' : 'normal', color: anonimizado ? '#6b7280' : 'inherit' }}>{d.nome_completo}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: anonimizado ? '#9ca3af' : 'inherit' }}>{d.cpf ?? '—'}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: anonimizado ? '#9ca3af' : 'inherit' }}>{formatCpf(d.cpf)}</td>
                     <td>
                       <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: estilo.bg, color: estilo.color, fontWeight: 'bold', fontSize: '0.85rem' }}>
                         {estilo.text}

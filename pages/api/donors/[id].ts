@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseFetch, getServiceHeaders } from '../../../src/lib/supabase';
 import { requireAuth } from '../../../src/lib/auth-helpers';
 import type { Doador } from '../../../src/lib/types';
+import { isDonorAgeEligible, donorAgeValidationMessage } from '../../../src/lib/donor-eligibility';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = await requireAuth(req);
@@ -23,6 +24,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!body || Object.keys(body).length === 0) {
       return res.status(400).json({ detail: 'Nenhum campo para atualizar' });
+    }
+
+    // Revalida idade também na edição (o POST já valida; o PUT deixava passar)
+    if (body.idade !== undefined && !isDonorAgeEligible(body.idade)) {
+      return res.status(400).json({ detail: donorAgeValidationMessage });
     }
 
     const check = await supabaseFetch(
