@@ -134,6 +134,14 @@ ALTER TABLE doadores
   ADD COLUMN IF NOT EXISTS consentimento_lgpd_em TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS anonimizado_em         TIMESTAMPTZ;
 
+-- CPF passa a ser anulavel: doadores anonimizados tem o CPF removido
+-- (direito de eliminacao). O cadastro continua exigindo CPF na camada de
+-- aplicacao; a constraint UNIQUE permanece e aceita multiplos NULLs.
+ALTER TABLE doadores ALTER COLUMN cpf DROP NOT NULL;
+
+-- Garante que a API (PostgREST) recarregue o cache de schema apos as mudancas.
+NOTIFY pgrst, 'reload schema';
+
 COMMENT ON COLUMN doadores.consentimento_lgpd IS
   'Doador autorizou o tratamento de dados pessoais para triagem/controle de doacoes (LGPD art. 8). Registros legados ficam em FALSE ate reconfirmacao, mesmo que o tratamento ja seja legitimo por obrigacao legal/regulatoria (LGPD art. 7, II - regulacao ANVISA).';
 COMMENT ON COLUMN doadores.anonimizado_em IS

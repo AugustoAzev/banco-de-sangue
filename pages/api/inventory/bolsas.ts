@@ -79,6 +79,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     const id_unidade = ucs[0].id_unidade;
 
+    // id_registrador é FK para usuarios(id_usuario) (UUID). O token guarda o
+    // e-mail em `sub`, então resolvemos o id_usuario real antes de gravar —
+    // caso contrário o INSERT viola a foreign key.
+    const userRes = await supabaseFetch(
+      `/rest/v1/usuarios?email=eq.${encodeURIComponent(auth.user!.sub)}&select=id_usuario&limit=1`,
+      { method: 'GET' }
+    );
+    if (!userRes.ok) {
+      return res.status(502).json({ detail: 'Erro ao identificar o usuário registrador' });
+    }
+    const usuarios: { id_usuario: string }[] = await userRes.json();
+    if (usuarios.length === 0) {
+      return res.status(400).json({ detail: 'Usuário registrador não encontrado' });
+    }
+    const id_registrador = usuarios[0].id_usuario;
+
     const now = new Date().toISOString();
 
     const bolsaPayloads = Array.from({ length: quantidade }, () => ({
@@ -88,7 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       tipo_sanguineo_coletado: tipo_sangue,
       volume_ml: 450,
       status: 'EM_ESTOQUE',
-      id_registrador: auth.user!.sub,
+      id_registrador,
       criado_em: now,
       atualizado_em: now,
     }));

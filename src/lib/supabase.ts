@@ -30,6 +30,31 @@ export function checkEnvVars() {
   return missing;
 }
 
+/**
+ * fetch com retry para erros transitórios de rede (ex.: ConnectTimeoutError).
+ * Usado apenas em requisições idempotentes (GET/leituras) — nunca em POST,
+ * para não arriscar inserção duplicada caso a resposta se perca após gravar.
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  attempts = 3
+): Promise<Response> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fetch(url, options);
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts - 1) {
+        // backoff progressivo antes de tentar de novo
+        await new Promise((resolve) => setTimeout(resolve, 600 * (i + 1)));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 export async function supabaseFetch(
   path: string,
   options: RequestInit = {},
@@ -42,7 +67,11 @@ export async function supabaseFetch(
   const url = `${SUPABASE_URL}${path}`;
   const headers = serviceRole ? getServiceHeaders() : getSupabaseHeaders();
 
-  const response = await fetch(url, {
+  // Retry só é seguro para leituras (GET) e checagens idempotentes.
+  const method = (options.method ?? 'GET').toUpperCase();
+  const doFetch = method === 'GET' ? fetchWithRetry : fetch;
+
+  const response = await doFetch(url, {
     ...options,
     headers: {
       ...headers,
