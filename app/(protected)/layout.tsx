@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../src/contexts/AuthContext';
@@ -97,6 +97,18 @@ function Sidebar() {
 function ProtectedContent({ children }: { children: React.ReactNode }) {
   const { signed, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const previousPath = useRef<string | null>(null);
+
+  // Ao trocar de tela pelo menu, o foco iria continuar no link clicado e o próximo Tab
+  // andaria pelo resto do menu. Levamos o foco para o conteúdo da nova tela (WCAG 2.4.3).
+  // No primeiro carregamento não mexemos: o primeiro Tab mostra "Pular para o conteúdo".
+  useEffect(() => {
+    if (previousPath.current !== null && previousPath.current !== pathname) {
+      document.getElementById('conteudo')?.focus({ preventScroll: true });
+    }
+    previousPath.current = pathname;
+  }, [pathname]);
 
   useEffect(() => {
     if (!loading && !signed) {

@@ -434,7 +434,7 @@ export default function Doadores() {
           <thead>
             <tr>
               <th scope="col">Nome</th><th scope="col">CPF</th><th scope="col">Tipo</th><th scope="col">Idade</th>
-              <th scope="col">Status</th><th scope="col" style={{ textAlign: 'right' }}>Ações</th>
+              <th scope="col">Status</th><th scope="col">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -455,7 +455,7 @@ export default function Doadores() {
                 const sistema = isGenericDonor(d);
                 return (
                   <tr key={d.id_doador}>
-                    <td style={{ fontWeight: 500, fontStyle: anonimizado ? 'italic' : 'normal', color: anonimizado ? 'var(--color-text-muted)' : 'inherit' }}>{d.nome_completo}</td>
+                    <td className="cell-wrap" style={{ fontWeight: 500, fontStyle: anonimizado ? 'italic' : 'normal', color: anonimizado ? 'var(--color-text-muted)' : 'inherit' }}>{d.nome_completo}</td>
                     <td style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: anonimizado ? 'var(--color-text-muted)' : 'inherit' }}>{formatCpf(d.cpf)}</td>
                     <td>
                       <span className="blood-type-chip" aria-hidden="true">{formatBloodType(d.tipo_sanguineo)}</span>
@@ -469,9 +469,9 @@ export default function Doadores() {
                           ? <span className="badge badge-neutral">Anonimizado (LGPD)</span>
                           : <span className="badge badge-success">Ativo</span>}
                     </td>
-                    <td style={{ textAlign: 'right' }}>
+                    <td>
                       {sistema ? (
-                        <span className="field-hint">Usado nas entradas de estoque</span>
+                        <span className="field-hint cell-note">Usado nas entradas de estoque</span>
                       ) : (
                         <div className="row-actions">
                           {!anonimizado && (

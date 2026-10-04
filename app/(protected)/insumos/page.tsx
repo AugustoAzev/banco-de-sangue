@@ -178,7 +178,7 @@ export default function Insumos() {
           <thead>
             <tr>
               <th scope="col">ID</th><th scope="col">Material / Insumo</th><th scope="col">Quantidade em Estoque</th>
-              <th scope="col">Status</th><th scope="col" style={{ textAlign: 'right' }}>Ações</th>
+              <th scope="col">Status</th><th scope="col">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -190,14 +190,14 @@ export default function Insumos() {
               insumos.map((item) => (
                 <tr key={item.id}>
                   <td className="text-muted">#{item.id}</td>
-                  <td style={{ fontWeight: 500 }}>{item.nome}</td>
+                  <td className="cell-wrap" style={{ fontWeight: 500 }}>{item.nome}</td>
                   <td style={{ fontSize: '1.1rem' }}>{item.quantidade}</td>
                   <td>
                     {isSupplyLow(item.quantidade)
                       ? <span className="badge badge-warning">Baixo Estoque</span>
                       : <span className="badge badge-success">Normal</span>}
                   </td>
-                  <td style={{ textAlign: 'right' }}>
+                  <td>
                     <div className="row-actions">
                       <button
                         id={`editar-insumo-${item.id}`} className="icon-btn icon-btn-edit" onClick={() => handleEdit(item)}

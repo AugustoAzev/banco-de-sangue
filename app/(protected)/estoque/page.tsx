@@ -360,7 +360,7 @@ export default function Estoque() {
           <thead>
             <tr>
               <th scope="col">Tipo Sanguíneo</th><th scope="col">Bolsas Disponíveis</th><th scope="col">Última Entrada</th>
-              <th scope="col">Situação</th><th scope="col" style={{ textAlign: 'right' }}>Ações</th>
+              <th scope="col">Situação</th><th scope="col">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -391,7 +391,7 @@ export default function Estoque() {
                           ? <span className="badge badge-warning">Abaixo do mínimo</span>
                           : <span className="badge badge-success">Adequado</span>}
                     </td>
-                    <td style={{ textAlign: 'right' }}>
+                    <td>
                       {item.quantidade > 0 && (
                         <div className="row-actions">
                           <button
