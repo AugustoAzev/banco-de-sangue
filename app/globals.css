@@ -346,3 +346,53 @@ td {
   .form-actions { flex-direction: column; }
   .filter-bar .field-hint { margin-left: 0 !important; }
 }
+
+/* ------------------------------------------------------------------
+   TP4 — Manutenção evolutiva: saída de bolsas, movimentações e busca.
+   ------------------------------------------------------------------ */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.header-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+.btn:disabled { cursor: not-allowed; opacity: .55; }
+.link-button { padding: 0; border: 0; background: none; color: var(--color-primary); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+.form-card-exit { border-left-color: #1d4ed8; }
+.choice-group { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.15rem; padding: 0; border: 0; }
+.choice-group legend { margin-bottom: .5rem; color: #514b49; font-size: .78rem; font-weight: 700; }
+.main-content form label.choice { display: flex; align-items: flex-start; gap: .65rem; padding: .85rem 1rem; border: 1px solid var(--color-border); border-radius: 9px; background: #fffdfa; color: var(--color-text-main); font-size: .9rem; font-weight: 400; cursor: pointer; }
+.main-content form label.choice strong { display: block; font-weight: 700; }
+.main-content form label.choice small { display: block; margin-top: .15rem; color: var(--color-text-muted); font-size: .8rem; }
+.main-content form label.choice-selected { border-color: var(--color-primary); background: #fff5f4; box-shadow: 0 0 0 1px var(--color-primary) inset; }
+.choice input { margin-top: .2rem; }
+
+.panel-header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.panel-link { color: var(--color-primary); font-size: .85rem; font-weight: 600; }
+.movements-card { margin-top: 1.5rem; }
+.movements-empty { padding: 1.5rem 0; color: var(--color-text-muted); text-align: center; }
+.movements-list { list-style: none; border-top: 1px solid var(--color-border); }
+.movement-item { display: flex; align-items: center; gap: .85rem; padding: .75rem 0; border-bottom: 1px solid var(--color-border); }
+.movement-item:last-child { border-bottom: 0; }
+.movement-icon { display: grid; flex: 0 0 auto; width: 2.1rem; height: 2.1rem; place-items: center; border-radius: 9px; }
+.movement-in .movement-icon { background: #dcfce7; color: #166534; }
+.movement-out .movement-icon { background: #dbeafe; color: #1d4ed8; }
+.movement-discard .movement-icon { background: #fee2e2; color: #991b1b; }
+.movement-body { flex: 1; min-width: 0; font-size: .9rem; }
+.movement-note { color: var(--color-text-muted); font-size: .8rem; overflow-wrap: anywhere; }
+.movement-time { flex: 0 0 auto; color: var(--color-text-muted); font-size: .8rem; }
+
+.search-bar { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(130px, 1fr) minmax(150px, 1fr) auto; align-items: end; gap: 1rem; margin-bottom: 1.25rem; padding: 1rem 1.25rem; }
+.search-field { display: flex; flex-direction: column; gap: .35rem; }
+.search-field label { color: #514b49; font-size: .78rem; font-weight: 700; }
+.search-input-wrap { display: flex; align-items: center; gap: .5rem; padding-left: .75rem; border: 1px solid var(--color-border); border-radius: 9px; background: #fffdfa; color: var(--color-text-muted); }
+.search-input-wrap:focus-within { border-color: var(--color-primary); }
+.search-input-wrap .input-field { border: 0; background: transparent; box-shadow: none; }
+.search-clear { height: 46px; }
+.search-result { grid-column: 1 / -1; color: var(--color-text-muted); font-size: .82rem; }
+
+@media (max-width: 900px) {
+  .search-bar { grid-template-columns: 1fr 1fr; }
+  .search-field:first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 760px) {
+  .choice-group, .search-bar { grid-template-columns: 1fr; }
+  .header-actions { flex-direction: column; align-items: stretch; }
+}

@@ -2,11 +2,18 @@
 
 import { useState, useEffect, useRef } from 'react';
 import api from '../../../src/services/api';
-import { Plus, Pencil, Trash2, X, ShieldOff, UserPlus, UserCog } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, ShieldOff, UserPlus, UserCog, Search } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
 import { DONOR_SCREENING_CRITERIA } from '../../../src/lib/donor-eligibility';
 import { BLOOD_TYPES, formatBloodType } from '../../../src/lib/blood-types';
 import { isGenericDonor } from '../../../src/lib/system-records';
+import {
+  filterDonors,
+  isSearchActive,
+  EMPTY_DONOR_SEARCH,
+  type DonorSearchCriteria,
+  type DonorStatusFilter,
+} from '../../../src/lib/donor-search';
 import {
   validateDonorForm,
   fieldForApiError,
@@ -34,6 +41,7 @@ export default function Doadores() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [errors, setErrors] = useState<DonorFormErrors>({});
   const [submitAttempt, setSubmitAttempt] = useState(0);
+  const [busca, setBusca] = useState<DonorSearchCriteria>(EMPTY_DONOR_SEARCH);
   const formRef = useRef<HTMLFormElement>(null);
   const { success, error, confirm } = useToast();
 
@@ -198,6 +206,13 @@ export default function Doadores() {
     clearError(name === 'consentimento_lgpd' ? 'consentimento_lgpd' : 'triagem');
   };
 
+  const doadoresFiltrados = filterDonors(doadores, busca);
+  const buscaAtiva = isSearchActive(busca);
+  const limparBusca = () => {
+    setBusca(EMPTY_DONOR_SEARCH);
+    document.getElementById('busca-texto')?.focus();
+  };
+
   const fieldClass = (field: keyof DonorFormErrors) => `input-field${errors[field] ? ' input-error' : ''}`;
   const FieldError = ({ field }: { field: keyof DonorFormErrors }) =>
     errors[field] ? <p className="field-error">{errors[field]}</p> : null;
@@ -331,6 +346,50 @@ export default function Doadores() {
         </div>
       )}
 
+      <section className="card search-bar" aria-label="Buscar doadores" role="search">
+        <div className="search-field">
+          <label htmlFor="busca-texto">Buscar por nome ou CPF</label>
+          <div className="search-input-wrap">
+            <Search size={18} aria-hidden="true" />
+            <input
+              id="busca-texto" type="search" className="input-field"
+              placeholder="Ex.: Maria ou 111.444"
+              value={busca.texto}
+              onChange={e => setBusca({ ...busca, texto: e.target.value })}
+              aria-describedby="busca-resultado"
+            />
+          </div>
+        </div>
+        <div className="search-field">
+          <label htmlFor="busca-tipo">Tipo sanguíneo</label>
+          <select id="busca-tipo" className="input-field" value={busca.tipo} onChange={e => setBusca({ ...busca, tipo: e.target.value })}>
+            <option value="">Todos</option>
+            {BLOOD_TYPES.map(t => <option key={t} value={t}>{formatBloodType(t)}</option>)}
+          </select>
+        </div>
+        <div className="search-field">
+          <label htmlFor="busca-status">Situação</label>
+          <select
+            id="busca-status" className="input-field" value={busca.status}
+            onChange={e => setBusca({ ...busca, status: e.target.value as DonorStatusFilter })}
+          >
+            <option value="TODOS">Todas</option>
+            <option value="ATIVOS">Ativos</option>
+            <option value="ANONIMIZADOS">Anonimizados (LGPD)</option>
+          </select>
+        </div>
+        <button type="button" className="btn btn-secondary search-clear" onClick={limparBusca} disabled={!buscaAtiva}>
+          Limpar busca
+        </button>
+        <p id="busca-resultado" className="search-result" role="status" aria-live="polite">
+          {loading
+            ? ''
+            : buscaAtiva
+              ? `${doadoresFiltrados.length} de ${doadores.length} doadores encontrados`
+              : `${doadores.length} doadores cadastrados`}
+        </p>
+      </section>
+
       <div className="table-container">
         <table>
           <thead>
@@ -343,8 +402,15 @@ export default function Doadores() {
               <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Carregando doadores...</td></tr>
             ) : doadores.length === 0 ? (
               <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Nenhum doador cadastrado.</td></tr>
+            ) : doadoresFiltrados.length === 0 ? (
+              <tr>
+                <td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>
+                  Nenhum doador encontrado para esta busca.{' '}
+                  <button type="button" className="link-button" onClick={limparBusca}>Limpar busca</button>
+                </td>
+              </tr>
             ) : (
-              doadores.map((d) => {
+              doadoresFiltrados.map((d) => {
                 const anonimizado = !!d.anonimizado_em;
                 const sistema = isGenericDonor(d);
                 return (

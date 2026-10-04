@@ -7,6 +7,7 @@ import api from '../../../src/services/api';
 import { useToast } from '../../../src/contexts/ToastContext';
 import { formatBloodType } from '../../../src/lib/blood-types';
 import { INVENTORY_POLICY, isSupplyLow, summarizeStock, type StockSummary } from '../../../src/lib/inventory-policy';
+import MovementsList from '../_components/MovementsList';
 
 interface DashboardData {
   doadores: number;
@@ -105,12 +106,11 @@ export default function Dashboard() {
 
       <div className="dashboard-lower">
         <div className="card">
-          <h2 className="panel-title">Movimentações Recentes</h2>
-          <div style={{ marginTop: '1rem', borderTop: '1px solid var(--color-border)' }}>
-            <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-              Nenhuma movimentação registrada hoje.
-            </p>
+          <div className="panel-header">
+            <h2 className="panel-title">Movimentações Recentes</h2>
+            <Link href="/estoque" className="panel-link">Ver estoque</Link>
           </div>
+          <MovementsList limite={6} />
         </div>
 
         {temTipoCritico ? (
