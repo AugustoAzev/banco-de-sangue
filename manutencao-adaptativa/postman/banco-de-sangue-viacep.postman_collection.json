@@ -6,6 +6,54 @@
   },
   "item": [
     {
+      "name": "0. Autenticacao (obter token)",
+      "item": [
+        {
+          "name": "POST /api/auth/login (salva {{jwt_token}} automaticamente)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data && data.access_token) {",
+                  "  pm.collectionVariables.set('jwt_token', data.access_token);",
+                  "  console.log('Token salvo na variavel jwt_token');",
+                  "}",
+                  "pm.test('login retornou 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@pulse.com\",\n  \"password\": \"12345678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Requer o sistema rodando (npm run dev) com Supabase configurado e a migration executada (que cria o usuario admin@pulse.com / senha 12345678). O access_token retornado eh salvo automaticamente na variavel de colecao {{jwt_token}}, usada pelas requisicoes do proxy /api/cep."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"token_type\": \"bearer\",\n  \"role\": \"ADMINISTRADOR\",\n  \"name\": \"Administrador do Sistema\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "1. ViaCEP (externa)",
       "item": [
         {

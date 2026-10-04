@@ -27,6 +27,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const donors: Doador[] = await response.json();
+    // Evita que o navegador sirva uma lista desatualizada (304) apos cadastro/anonimizacao
+    res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json(donors);
   }
 
@@ -57,8 +59,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ detail: 'É necessário o consentimento do doador para o tratamento de dados pessoais (LGPD)' });
     }
 
+    // Checagem por CPF normalizado (só dígitos): evita duplicado quando o mesmo
+    // CPF é digitado com e sem máscara.
     const cpfCheck = await supabaseFetch(
-      `/rest/v1/doadores?cpf=eq.${encodeURIComponent(cpf)}&select=id_doador&limit=1`,
+      `/rest/v1/doadores?cpf=eq.${encodeURIComponent(cpfDigits)}&select=id_doador&limit=1`,
       { method: 'GET' }
     );
     if (cpfCheck.ok) {
@@ -74,7 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const payload = {
       id_doador,
       nome_completo: nome,
-      cpf,
+      cpf: cpfDigits,
       tipo_sanguineo,
       idade,
       sexo,
@@ -95,6 +99,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!serviceResponse.ok) {
       const errText = await serviceResponse.text();
+      // Mapeia violação de unicidade (CPF) para mensagem amigável em vez de vazar o erro cru do Postgres
+      if (serviceResponse.status === 409 || /duplicate key|23505/i.test(errText)) {
+        return res.status(400).json({ detail: 'CPF já cadastrado' });
+      }
       return res.status(502).json({ detail: `Erro ao criar doador: ${errText}` });
     }
 
