@@ -1,6 +1,6 @@
 {
   "label": "antes",
-  "data": "2026-10-04T20:19:58.076Z",
+  "data": "2026-10-04T20:51:40.860Z",
   "paginas": {
     "login": {
       "axe": [
@@ -189,7 +189,11 @@
       "dentroDoDialogo": false,
       "elemento": "BUTTON",
       "texto": ""
-    }
+    },
+    "focoDentroDoDialogoAposTresTabs": false,
+    "focoAoFecharDialogo": "(nenhum — foco perdido no documento)",
+    "primeiroElementoNoTab": "Painel Geral",
+    "teclasAteNovoDoadorComAtalho": null
   },
   "lighthouse": {
     "dashboard": {

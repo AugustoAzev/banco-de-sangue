@@ -36,6 +36,9 @@ const context = await chromium.launchPersistentContext(userDataDir, {
   args: [`--remote-debugging-port=${PORT}`],
 });
 const page = context.pages()[0] ?? (await context.newPage());
+// O Supabase gratuito pode demorar alguns segundos por conexão; tempos folgados evitam falso erro.
+page.setDefaultNavigationTimeout(120000);
+page.setDefaultTimeout(60000);
 
 async function runAxe() {
   await page.addScriptTag({ content: AXE_SRC });
@@ -143,8 +146,42 @@ if (await acoes.count()) {
   });
   await page.screenshot({ path: `${shotsDir}/${String(n++).padStart(2, '0')}-dialogo-confirmacao.png` });
   results.paginas['dialogo-confirmacao'] = { axe: await runAxe() };
+  // Três Tabs com o diálogo aberto: o foco continua dentro dele?
+  for (let i = 0; i < 3; i++) await page.keyboard.press('Tab');
+  results.teclado.focoDentroDoDialogoAposTresTabs = await page.evaluate(
+    () => !!document.activeElement?.closest('[role="alertdialog"],[role="dialog"]'),
+  );
   await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
+  results.teclado.focoAoFecharDialogo = await page.evaluate(() => {
+    const el = document.activeElement;
+    if (!el || el === document.body) return '(nenhum — foco perdido no documento)';
+    return el.getAttribute('aria-label') || el.getAttribute('title') || el.tagName;
+  });
 }
+
+// Atalho "Pular para o conteúdo": Tab → Enter → Tab até o botão principal.
+await page.goto(`${BASE}/doadores`, { waitUntil: 'networkidle' });
+await page.waitForTimeout(700);
+await page.keyboard.press('Tab');
+const primeiroFoco = await page.evaluate(() => (document.activeElement?.textContent || '').trim());
+await page.waitForTimeout(400); // espera a transição do atalho terminar antes da captura
+await page.screenshot({ path: `${shotsDir}/${String(n++).padStart(2, '0')}-primeiro-tab.png` });
+let teclasComAtalho = null;
+if (/pular para o conte/i.test(primeiroFoco)) {
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Tab');
+  const ativo = await page.evaluate(() => (document.activeElement?.textContent || '').trim());
+  if (/novo doador/i.test(ativo)) teclasComAtalho = 3;
+}
+results.teclado.primeiroElementoNoTab = primeiroFoco;
+results.teclado.teclasAteNovoDoadorComAtalho = teclasComAtalho;
+
+// Foco visível em um campo de formulário
+await page.getByRole('button', { name: /novo doador/i }).click();
+await page.waitForTimeout(300);
+await page.locator('input[name="nome"]').focus();
+await page.screenshot({ path: `${shotsDir}/${String(n++).padStart(2, '0')}-foco-campo.png`, clip: { x: 248, y: 0, width: 1118, height: 420 } });
 
 // 3) Lighthouse (categoria acessibilidade) nas rotas, reaproveitando a sessão logada
 results.lighthouse = {};
