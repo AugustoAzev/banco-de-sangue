@@ -2,7 +2,12 @@
 
 Sistema de gestão de hemocentros para cadastro de doadores, controle de estoque de sangue e administração de insumos.
 
-> **TP3 — Manutenção Adaptativa:** este repositório passou por três adaptações (mudança de dependência, mudança de regulamentação LGPD e integração de API externa). Síntese em [`RELATORIO.md`](./RELATORIO.md), detalhes e evidências em [`manutencao-adaptativa/`](./manutencao-adaptativa/).
+> **TP4 — Redesign e Manutenção Evolutiva (versão 1.2.0):** o objetivo que atravessa o trabalho é que **qualquer profissional do hemocentro consiga operar o sistema**, inclusive quem tem baixa visão, usa só o teclado ou usa leitor de tela.
+> - **Etapa 1 — Redesign:** [avaliação heurística (Nielsen)](./docs/redesign/avaliacao-heuristica.md) e [melhorias com antes/depois](./docs/redesign/melhorias-implementadas.md).
+> - **Etapa 2 — Evolução:** [planejamento das funcionalidades](./docs/evolucao/planejamento.md) (saída de bolsas com histórico e busca de doadores) e [melhoria de acessibilidade](./docs/evolucao/acessibilidade.md) (Lighthouse 90–96 → 100).
+> - Histórico de versões: [`CHANGELOG.md`](./CHANGELOG.md).
+>
+> **TP3 — Manutenção Adaptativa:** três adaptações (mudança de dependência, mudança de regulamentação LGPD e integração de API externa). Síntese em [`RELATORIO.md`](./RELATORIO.md), detalhes e evidências em [`manutencao-adaptativa/`](./manutencao-adaptativa/).
 
 ---
 
@@ -72,17 +77,46 @@ Acessar: http://localhost:3000
 | Rota | Descrição |
 |------|-----------|
 | `/` | Login |
-| `/dashboard` | Painel com estatísticas |
-| `/doadores` | Gestão de doadores |
-| `/estoque` | Controle de estoque de sangue |
-| `/insumos` | Administração de insumos |
+| `/dashboard` | Painel: total de doadores e de bolsas, menor estoque, insumos em baixo estoque, avisos de tipos abaixo do mínimo e movimentações recentes |
+| `/doadores` | Gestão de doadores: cadastro com triagem e consentimento LGPD, edição, anonimização e **busca** por nome/CPF, tipo sanguíneo e situação |
+| `/estoque` | Estoque de sangue por tipo: **entrada**, **saída (despacho ou descarte)**, situação em relação ao estoque mínimo e histórico de movimentações |
+| `/insumos` | Administração de insumos e materiais |
+
+## Funcionalidades adicionadas no TP4
+
+| Funcionalidade | Rotas da API | Documentação |
+|---|---|---|
+| Saída de bolsas (despacho/descarte) com histórico | `POST /api/inventory/saidas`, `GET /api/inventory/movimentacoes` | [planejamento](./docs/evolucao/planejamento.md#2-funcionalidade-1--registro-de-saída-de-bolsas-despacho-e-descarte) |
+| Busca de doadores | — (feita na tela, sobre `GET /api/donors`) | [planejamento](./docs/evolucao/planejamento.md#3-funcionalidade-2--busca-de-doadores) |
+
+Nenhuma das duas exige mudança no banco: elas usam os status `DESPACHADA` e `DESCARTADA`, que o schema já previa.
+
+## Acessibilidade
+
+O sistema segue a **WCAG 2.1 nível AA**:
+
+- **Teclado:** todas as telas podem ser operadas só pelo teclado, e o link "Pular para o conteúdo principal" é o primeiro item no Tab.
+- **Leitor de tela:** botões de ícone com nome acessível que inclui o item afetado, e campos com rótulo e erro associados.
+- **Diálogos:** os diálogos de confirmação controlam o foco.
+- **Contraste:** o texto tem contraste mínimo de 4,5:1.
+
+Para medir de novo (Lighthouse e axe-core):
+
+```bash
+npm run build && npm start -- -p 3100        # em outro terminal
+npm install --no-save lighthouse@12 axe-core@4
+node scripts/capturar-evidencias.mjs depois docs/evolucao/screenshots/acessibilidade docs/evolucao/evidencias
+```
+
+Detalhes e roteiro de verificação manual: [`docs/evolucao/acessibilidade.md`](./docs/evolucao/acessibilidade.md).
 
 ---
 
-## Testes (Playwright)
+## Testes
 
 ```bash
-npx playwright test
+npx jest                 # testes de unidade e de API (80 testes)
+npx playwright test      # E2E (requer o sistema rodando)
 npx playwright show-report
 ```
 
@@ -104,28 +138,35 @@ npx playwright show-report
 
 ```
 banco-de-sangue/
-├── app/                    # Next.js App Router
-│   ├── (protected)/         # Rotas autenticadas
+├── app/                     # Next.js App Router (telas)
+│   ├── (protected)/          # Rotas autenticadas
+│   │   ├── _components/      # Componentes compartilhados (histórico de movimentações)
 │   │   ├── dashboard/
 │   │   ├── doadores/
 │   │   ├── estoque/
 │   │   └── insumos/
-│   └── page.tsx             # Login
-├── api/                     # API Routes (App Router)
-│   ├── auth/
-│   ├── donors/
-│   └── inventory/
+│   ├── globals.css
+│   └── page.tsx              # Login
+├── pages/api/                # API Routes (Pages Router)
+│   ├── auth/                 # login, me
+│   ├── cep/[cep]             # Proxy para ViaCEP (TP3)
+│   ├── donors/               # CRUD + [id]/anonymize (LGPD, TP3)
+│   └── inventory/            # bolsas, insumos, saidas e movimentacoes (TP4)
 ├── src/
-│   ├── contexts/            # React Context (Auth)
-│   ├── lib/                 # Supabase helpers, types, auth
-│   └── services/            # Axios API client
-├── pages/api/               # API Routes legadas
-│   ├── cep/[cep]            # Proxy para ViaCEP (TP3)
-│   └── donors/[id]/anonymize # Anonimização LGPD (TP3)
-├── tests/                   # Jest (unit) + Playwright (E2E)
-├── manutencao-adaptativa/   # Evidências e plano do TP3
-├── supabase_migration.sql   # Schema do banco
-├── RELATORIO.md             # Síntese das adaptações (TP3)
+│   ├── contexts/             # Auth e avisos/diálogo de confirmação
+│   ├── hooks/                # use-focus-target (gestão de foco, TP4)
+│   ├── lib/                  # Regras de negócio e helpers (elegibilidade, política de estoque,
+│   │                         #   tipos sanguíneos, busca, movimentações, Supabase, auth)
+│   └── services/             # Cliente Axios
+├── tests/                    # Jest (unidade/API) + Playwright (E2E)
+├── scripts/                  # capturar-evidencias.mjs (prints, axe, Lighthouse — TP4)
+├── docs/
+│   ├── redesign/             # TP4 Etapa 1: avaliação heurística e melhorias
+│   └── evolucao/             # TP4 Etapa 2: planejamento, acessibilidade e evidências
+├── manutencao-adaptativa/    # Evidências e plano do TP3
+├── supabase_migration.sql    # Schema do banco
+├── CHANGELOG.md              # Histórico de versões
+├── RELATORIO.md              # Síntese das adaptações (TP3)
 └── package.json
 ```
 
