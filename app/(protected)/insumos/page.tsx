@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../../src/services/api';
 import { Plus, Trash2, Pencil, X, Package } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
 import { INVENTORY_POLICY, isSupplyLow } from '../../../src/lib/inventory-policy';
+import { useFocusTarget } from '../../../src/hooks/use-focus-target';
 
 interface Insumo {
   id: number;
@@ -22,6 +23,8 @@ export default function Insumos() {
   const [formData, setFormData] = useState({ nome: '', quantidade: '0' });
   const [errors, setErrors] = useState<InsumoErrors>({});
   const { success, error, confirm } = useToast();
+  const openerIdRef = useRef('btn-novo-insumo');
+  const focusOn = useFocusTarget();
 
   async function loadInsumos() {
     try {
@@ -41,6 +44,8 @@ export default function Insumos() {
     setFormData({ nome: '', quantidade: '0' });
     setErrors({});
     setShowForm(true);
+    openerIdRef.current = 'btn-novo-insumo';
+    focusOn('insumo-nome');
   };
 
   const handleEdit = (item: Insumo) => {
@@ -48,6 +53,8 @@ export default function Insumos() {
     setEditingItem(item);
     setErrors({});
     setShowForm(true);
+    openerIdRef.current = `editar-insumo-${item.id}`;
+    focusOn('insumo-nome');
   };
 
   const closeForm = () => {
@@ -55,6 +62,7 @@ export default function Insumos() {
     setEditingItem(null);
     setFormData({ nome: '', quantidade: '0' });
     setErrors({});
+    focusOn(openerIdRef.current);
   };
 
   const handleDelete = async (item: Insumo) => {
@@ -82,7 +90,10 @@ export default function Insumos() {
     e.preventDefault();
     const found = validate();
     setErrors(found);
-    if (Object.keys(found).length > 0) return;
+    if (Object.keys(found).length > 0) {
+      document.getElementById(found.nome ? 'insumo-nome' : 'insumo-quantidade')?.focus();
+      return;
+    }
     const payload = { nome: formData.nome.trim(), quantidade: Number(formData.quantidade) };
     try {
       if (editingItem) {
@@ -106,41 +117,49 @@ export default function Insumos() {
           <p className="text-muted">Controle de materiais e descartáveis</p>
         </div>
         {!showForm && (
-          <button className="btn btn-primary" onClick={openNew}>
+          <button id="btn-novo-insumo" className="btn btn-primary" onClick={openNew}>
             <Plus size={20} /> Adicionar Item
           </button>
         )}
       </div>
 
       {showForm && (
-        <div className="card form-card">
+        <section className="card form-card" aria-labelledby="insumo-titulo">
           <div className="form-card-header">
-            <h2><Package size={20} /> {editingItem ? `Editar Insumo: ${editingItem.nome}` : 'Novo Insumo'}</h2>
-            <button type="button" className="icon-btn" onClick={closeForm} title="Fechar formulário"><X size={20} /></button>
+            <h2 id="insumo-titulo"><Package size={20} /> {editingItem ? `Editar Insumo: ${editingItem.nome}` : 'Novo Insumo'}</h2>
+            <button type="button" className="icon-btn" onClick={closeForm} title="Fechar formulário" aria-label="Fechar formulário de insumo"><X size={20} /></button>
           </div>
           <form onSubmit={handleSubmit} noValidate>
             <div className="form-grid form-grid-wide">
               <div className="input-group">
-                <label>Nome do Material</label>
+                <label htmlFor="insumo-nome">Nome do Material *</label>
                 <input
-                  className="input-field"
+                  id="insumo-nome"
+                  required
+                  aria-invalid={!!errors.nome}
+                  aria-describedby={errors.nome ? 'insumo-nome-erro' : undefined}
+                  className={`input-field${errors.nome ? ' input-error' : ''}`}
                   placeholder="Ex: Seringas descartáveis 5ml"
                   value={formData.nome}
                   onChange={e => setFormData({ ...formData, nome: e.target.value })}
                 />
-                {errors.nome && <p className="field-error">{errors.nome}</p>}
+                {errors.nome && <p id="insumo-nome-erro" className="field-error">{errors.nome}</p>}
               </div>
               <div className="input-group">
-                <label>Quantidade</label>
+                <label htmlFor="insumo-quantidade">Quantidade *</label>
                 <input
+                  id="insumo-quantidade"
                   type="number" min="0" step="1"
-                  className="input-field"
+                  required
+                  aria-invalid={!!errors.quantidade}
+                  aria-describedby={errors.quantidade ? 'insumo-quantidade-erro' : 'insumo-quantidade-dica'}
+                  className={`input-field${errors.quantidade ? ' input-error' : ''}`}
                   value={formData.quantidade}
                   onChange={e => setFormData({ ...formData, quantidade: e.target.value })}
                 />
                 {errors.quantidade
-                  ? <p className="field-error">{errors.quantidade}</p>
-                  : <p className="field-hint">Abaixo de {INVENTORY_POLICY.lowSupplyThreshold} unidades o item aparece como baixo estoque.</p>}
+                  ? <p id="insumo-quantidade-erro" className="field-error">{errors.quantidade}</p>
+                  : <p id="insumo-quantidade-dica" className="field-hint">Abaixo de {INVENTORY_POLICY.lowSupplyThreshold} unidades o item aparece como baixo estoque.</p>}
               </div>
             </div>
             <div className="form-actions">
@@ -150,14 +169,16 @@ export default function Insumos() {
               <button type="button" className="btn btn-secondary" onClick={closeForm}>Cancelar</button>
             </div>
           </form>
-        </div>
+        </section>
       )}
 
       <div className="table-container">
-        <table>
+        <table aria-busy={loading}>
+          <caption className="sr-only">Insumos e materiais em estoque</caption>
           <thead>
             <tr>
-              <th>ID</th><th>Material / Insumo</th><th>Quantidade em Estoque</th><th>Status</th><th style={{ textAlign: 'right' }}>Ações</th>
+              <th scope="col">ID</th><th scope="col">Material / Insumo</th><th scope="col">Quantidade em Estoque</th>
+              <th scope="col">Status</th><th scope="col" style={{ textAlign: 'right' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -178,10 +199,16 @@ export default function Insumos() {
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     <div className="row-actions">
-                      <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(item)} title="Editar insumo">
+                      <button
+                        id={`editar-insumo-${item.id}`} className="icon-btn icon-btn-edit" onClick={() => handleEdit(item)}
+                        title="Editar insumo" aria-label={`Editar insumo ${item.nome}`}
+                      >
                         <Pencil size={18} />
                       </button>
-                      <button className="icon-btn icon-btn-danger" onClick={() => handleDelete(item)} title="Excluir insumo">
+                      <button
+                        className="icon-btn icon-btn-danger" onClick={() => handleDelete(item)}
+                        title="Excluir insumo" aria-label={`Excluir insumo ${item.nome}`}
+                      >
                         <Trash2 size={18} />
                       </button>
                     </div>

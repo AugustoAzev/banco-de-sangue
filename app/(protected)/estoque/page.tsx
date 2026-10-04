@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../../src/services/api';
 import { Droplet, Plus, Filter, Calendar, Trash2, X, PackageMinus } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
@@ -8,6 +8,7 @@ import { BLOOD_TYPES, formatBloodType, speakBloodType } from '../../../src/lib/b
 import { INVENTORY_POLICY } from '../../../src/lib/inventory-policy';
 import { STOCK_EXIT_LABELS, STOCK_EXIT_NOTE_MAX_LENGTH, type StockExitStatus } from '../../../src/lib/stock-movements';
 import MovementsList from '../_components/MovementsList';
+import { useFocusTarget } from '../../../src/hooks/use-focus-target';
 
 interface Bolsa {
   id: string;
@@ -35,6 +36,9 @@ export default function Estoque() {
   const [saidaErrors, setSaidaErrors] = useState<SaidaErrors>({});
   const [movementsKey, setMovementsKey] = useState(0);
   const [todasBolsas, setTodasBolsas] = useState<Bolsa[]>([]);
+  // Foco: ao abrir, primeiro campo do formulário; ao fechar, volta ao botão que o abriu.
+  const openerIdRef = useRef('btn-registrar-entrada');
+  const focusOn = useFocusTarget();
 
   async function loadBolsas() {
     try {
@@ -63,16 +67,26 @@ export default function Estoque() {
     setErrors({});
     setSaida(SAIDA_INICIAL);
     setSaidaErrors({});
+    focusOn(openerIdRef.current);
+  };
+
+  const openEntrada = () => {
+    openerIdRef.current = 'btn-registrar-entrada';
+    setFormMode('entrada');
+    focusOn('entrada-tipo_sangue');
   };
 
   const disponivel = (tipo: string) => todasBolsas.find(b => b.tipo_sangue === tipo)?.quantidade ?? 0;
   const tiposComEstoque = BLOOD_TYPES.filter(t => disponivel(t) > 0);
 
   const openSaida = (tipo = '') => {
+    // Pela linha da tabela o tipo já vem escolhido; o foco vai direto para a quantidade.
+    openerIdRef.current = tipo ? `saida-linha-${tipo}` : 'btn-registrar-saida';
     setSaida({ ...SAIDA_INICIAL, tipo_sangue: tipo });
     setSaidaErrors({});
     setFormMode('saida');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    focusOn(tipo ? 'saida-quantidade' : 'saida-tipo_sangue');
   };
 
   const validateSaida = (): SaidaErrors => {
@@ -129,7 +143,10 @@ export default function Estoque() {
     e.preventDefault();
     const found = validate();
     setErrors(found);
-    if (Object.keys(found).length > 0) return;
+    if (Object.keys(found).length > 0) {
+      document.getElementById(found.tipo_sangue ? 'entrada-tipo_sangue' : 'entrada-quantidade')?.focus();
+      return;
+    }
     try {
       await api.post('/inventory/bolsas', { tipo_sangue: novaBolsa.tipo_sangue, quantidade: Number(novaBolsa.quantidade) });
       const qtd = Number(novaBolsa.quantidade);
@@ -169,10 +186,10 @@ export default function Estoque() {
         </div>
         {!formMode && (
           <div className="header-actions">
-            <button className="btn btn-secondary" onClick={() => openSaida()} disabled={tiposComEstoque.length === 0}>
+            <button id="btn-registrar-saida" className="btn btn-secondary" onClick={() => openSaida()} disabled={tiposComEstoque.length === 0}>
               <PackageMinus size={20} aria-hidden="true" /> Registrar Saída
             </button>
-            <button className="btn btn-primary" onClick={() => setFormMode('entrada')}>
+            <button id="btn-registrar-entrada" className="btn btn-primary" onClick={openEntrada}>
               <Plus size={20} /> Registrar Entrada
             </button>
           </div>
@@ -180,35 +197,43 @@ export default function Estoque() {
       </div>
 
       {showForm && (
-        <div className="card form-card">
+        <section className="card form-card" aria-labelledby="entrada-titulo">
           <div className="form-card-header">
-            <h2><Droplet size={20} /> Registrar Entrada de Bolsas</h2>
-            <button type="button" className="icon-btn" onClick={closeForm} title="Fechar formulário"><X size={20} /></button>
+            <h2 id="entrada-titulo"><Droplet size={20} /> Registrar Entrada de Bolsas</h2>
+            <button type="button" className="icon-btn" onClick={closeForm} title="Fechar formulário" aria-label="Fechar formulário de entrada"><X size={20} /></button>
           </div>
           <form onSubmit={handleSubmit} noValidate>
             <div className="form-grid">
               <div className="input-group">
-                <label>Tipo Sanguíneo</label>
+                <label htmlFor="entrada-tipo_sangue">Tipo Sanguíneo *</label>
                 <select
-                  className="input-field"
+                  id="entrada-tipo_sangue"
+                  className={`input-field${errors.tipo_sangue ? ' input-error' : ''}`}
                   value={novaBolsa.tipo_sangue}
-                  onChange={e => setNovaBolsa({ ...novaBolsa, tipo_sangue: e.target.value })}
+                  onChange={e => { setNovaBolsa({ ...novaBolsa, tipo_sangue: e.target.value }); setErrors(prev => ({ ...prev, tipo_sangue: undefined })); }}
+                  required
+                  aria-invalid={!!errors.tipo_sangue}
+                  aria-describedby={errors.tipo_sangue ? 'entrada-tipo_sangue-erro' : undefined}
                 >
                   <option value="">Selecione...</option>
                   {BLOOD_TYPES.map(t => <option key={t} value={t}>{formatBloodType(t)}</option>)}
                 </select>
-                {errors.tipo_sangue && <p className="field-error">{errors.tipo_sangue}</p>}
+                {errors.tipo_sangue && <p id="entrada-tipo_sangue-erro" className="field-error">{errors.tipo_sangue}</p>}
               </div>
               <div className="input-group">
-                <label>Quantidade de bolsas</label>
+                <label htmlFor="entrada-quantidade">Quantidade de bolsas *</label>
                 <input
-                  type="number" className="input-field" min="1" step="1"
+                  id="entrada-quantidade"
+                  type="number" className={`input-field${errors.quantidade ? ' input-error' : ''}`} min="1" step="1"
                   value={novaBolsa.quantidade}
-                  onChange={e => setNovaBolsa({ ...novaBolsa, quantidade: e.target.value })}
+                  onChange={e => { setNovaBolsa({ ...novaBolsa, quantidade: e.target.value }); setErrors(prev => ({ ...prev, quantidade: undefined })); }}
+                  required
+                  aria-invalid={!!errors.quantidade}
+                  aria-describedby={errors.quantidade ? 'entrada-quantidade-erro' : 'entrada-quantidade-dica'}
                 />
                 {errors.quantidade
-                  ? <p className="field-error">{errors.quantidade}</p>
-                  : <p className="field-hint">Cada unidade corresponde a uma bolsa de {INVENTORY_POLICY.bagVolumeMl} mL.</p>}
+                  ? <p id="entrada-quantidade-erro" className="field-error">{errors.quantidade}</p>
+                  : <p id="entrada-quantidade-dica" className="field-hint">Cada unidade corresponde a uma bolsa de {INVENTORY_POLICY.bagVolumeMl} mL.</p>}
               </div>
             </div>
             <div className="form-actions">
@@ -216,7 +241,7 @@ export default function Estoque() {
               <button type="button" className="btn btn-secondary" onClick={closeForm}>Cancelar</button>
             </div>
           </form>
-        </div>
+        </section>
       )}
 
 
@@ -313,8 +338,9 @@ export default function Estoque() {
 
       <div className="card filter-bar">
         <Filter size={18} className="text-muted" />
-        <span className="text-muted" style={{ fontSize: '0.9rem' }}>Filtrar por:</span>
+        <label htmlFor="filtro-tipo" className="text-muted" style={{ fontSize: '0.9rem' }}>Filtrar por tipo sanguíneo:</label>
         <select
+          id="filtro-tipo"
           className="input-field"
           style={{ width: '200px', margin: 0 }}
           value={filtroTipo}
@@ -329,10 +355,12 @@ export default function Estoque() {
       </div>
 
       <div className="table-container">
-        <table>
+        <table aria-busy={loading}>
+          <caption className="sr-only">Estoque de bolsas por tipo sanguíneo</caption>
           <thead>
             <tr>
-              <th>Tipo Sanguíneo</th><th>Bolsas Disponíveis</th><th>Última Entrada</th><th>Situação</th><th style={{ textAlign: 'right' }}>Ações</th>
+              <th scope="col">Tipo Sanguíneo</th><th scope="col">Bolsas Disponíveis</th><th scope="col">Última Entrada</th>
+              <th scope="col">Situação</th><th scope="col" style={{ textAlign: 'right' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -343,7 +371,10 @@ export default function Estoque() {
                 const abaixo = item.quantidade < INVENTORY_POLICY.minimumBagsPerType;
                 return (
                   <tr key={item.tipo_sangue}>
-                    <td><span className="blood-type-chip">{formatBloodType(item.tipo_sangue)}</span></td>
+                    <td>
+                      <span className="blood-type-chip" aria-hidden="true">{formatBloodType(item.tipo_sangue)}</span>
+                      <span className="sr-only">{speakBloodType(item.tipo_sangue)}</span>
+                    </td>
                     <td style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{item.quantidade}</td>
                     <td>
                       {item.created_at ? (
@@ -364,12 +395,16 @@ export default function Estoque() {
                       {item.quantidade > 0 && (
                         <div className="row-actions">
                           <button
+                            id={`saida-linha-${item.tipo_sangue}`}
                             className="icon-btn icon-btn-action" onClick={() => openSaida(item.tipo_sangue)}
                             title="Registrar saída" aria-label={`Registrar saída de bolsas ${speakBloodType(item.tipo_sangue)}`}
                           >
                             <PackageMinus size={18} aria-hidden="true" />
                           </button>
-                          <button className="icon-btn icon-btn-danger" onClick={() => handleDelete(item)} title="Excluir lote (lançamento incorreto)">
+                          <button
+                            className="icon-btn icon-btn-danger" onClick={() => handleDelete(item)} title="Excluir lote (lançamento incorreto)"
+                            aria-label={`Excluir lote de ${speakBloodType(item.tipo_sangue)} (corrigir lançamento incorreto)`}
+                          >
                             <Trash2 size={18} />
                           </button>
                         </div>

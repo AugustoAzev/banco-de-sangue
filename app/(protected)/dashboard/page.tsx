@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Users, Droplet, AlertTriangle, Calendar, Package, CheckCircle2 } from 'lucide-react';
 import api from '../../../src/services/api';
 import { useToast } from '../../../src/contexts/ToastContext';
-import { formatBloodType } from '../../../src/lib/blood-types';
+import { formatBloodType, speakBloodType } from '../../../src/lib/blood-types';
 import { INVENTORY_POLICY, isSupplyLow, summarizeStock, type StockSummary } from '../../../src/lib/inventory-policy';
 import MovementsList from '../_components/MovementsList';
 
@@ -53,7 +53,7 @@ export default function Dashboard() {
   const cards = [
     {
       title: 'Total de Doadores', value: valor(data?.doadores), icon: Users, color: '#2563eb', bg: '#eff6ff',
-      desc: 'Cadastrados no sistema', path: '/doadores', alerta: false,
+      desc: 'Cadastrados no sistema', path: '/doadores', alerta: false, spoken: undefined as string | undefined,
     },
     {
       title: 'Bolsas em Estoque', value: valor(estoque?.totalBags), icon: Droplet, color: '#dc2626', bg: '#fef2f2',
@@ -61,6 +61,7 @@ export default function Dashboard() {
     },
     {
       title: 'Menor Estoque', value: valor(estoque && formatBloodType(estoque.lowest.tipo)), icon: AlertTriangle,
+      spoken: estoque ? speakBloodType(estoque.lowest.tipo) : undefined,
       color: '#d97706', bg: '#fffbeb', path: '/estoque', alerta: temTipoCritico,
       desc: estoque
         ? `${estoque.lowest.quantidade} ${plural(estoque.lowest.quantidade, 'bolsa disponível', 'bolsas disponíveis')}`
@@ -81,7 +82,7 @@ export default function Dashboard() {
           <p className="text-muted">Visão geral do hemocentro</p>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', color: 'var(--color-text-muted)' }}>
-          <Calendar size={18} />
+          <Calendar size={18} aria-hidden="true" />
           <span>{new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
         </div>
       </div>
@@ -97,7 +98,9 @@ export default function Dashboard() {
                 {card.alerta && <span className="badge badge-warning">Atenção</span>}
               </div>
               <p className="stat-title">{card.title}</p>
-              <p className="stat-value">{card.value}</p>
+              {card.spoken
+                ? <p className="stat-value"><span aria-hidden="true">{card.value}</span><span className="sr-only">{card.spoken}</span></p>
+                : <p className="stat-value">{card.value}</p>}
               <p className="stat-desc">{card.desc}</p>
             </div>
           </Link>
@@ -125,7 +128,8 @@ export default function Dashboard() {
             <ul className="notice-list">
               {estoque!.belowMinimum.map(t => (
                 <li key={t.tipo}>
-                  <strong>{formatBloodType(t.tipo)}</strong>
+                  <strong aria-hidden="true">{formatBloodType(t.tipo)}</strong>
+                  <span className="sr-only">{speakBloodType(t.tipo)}:</span>
                   <span>{t.quantidade === 0 ? 'sem estoque' : `${t.quantidade} ${plural(t.quantidade, 'bolsa', 'bolsas')}`}</span>
                 </li>
               ))}
