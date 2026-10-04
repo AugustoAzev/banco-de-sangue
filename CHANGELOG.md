@@ -14,7 +14,7 @@ Documentação: [`docs/redesign/`](./docs/redesign/) (Etapa 1) e [`docs/evolucao
 - **Política de estoque** ([`src/lib/inventory-policy.ts`](./src/lib/inventory-policy.ts)): estoque mínimo de 3 bolsas por tipo e limite de baixo estoque de insumos, definidos num só lugar.
 - **Card "Insumos em Baixo Estoque"** no painel.
 - **Roteiro de evidências** [`scripts/capturar-evidencias.mjs`](./scripts/capturar-evidencias.mjs): capturas de tela, axe-core e Lighthouse.
-- **Testes de ponta a ponta** [`scripts/testar-tp4-e2e.mjs`](./scripts/testar-tp4-e2e.mjs): 44 verificações pela interface, contra o sistema rodando e o banco real ([resultado](./docs/checklist-testes-tp4.md)).
+- **Testes de ponta a ponta** [`scripts/testar-tp4-e2e.mjs`](./scripts/testar-tp4-e2e.mjs): 46 verificações pela interface, contra o sistema rodando e o banco real ([resultado](./docs/checklist-testes-tp4.md)).
 - **47 testes automatizados novos**: de 33 para 80.
 
 ### Alterado
@@ -26,6 +26,7 @@ Documentação: [`docs/redesign/`](./docs/redesign/) (Etapa 1) e [`docs/evolucao
 - **Confirmações específicas:** citam o item afetado e explicam a consequência.
 - **Rótulo único de tipo sanguíneo** em todas as telas.
 - **Perfil legível:** o perfil do usuário aparece como "Administrador" ou "Atendente".
+- **Layout em telas menores ou com zoom** (ajustes da revisão do grupo): os cards do painel ficam com a mesma altura; nomes longos e o aviso da coluna Ações quebram em duas linhas em vez de alargar a tabela; o título "Ações" e os botões ficam alinhados à esquerda, como as demais colunas.
 
 ### Corrigido
 
@@ -51,6 +52,7 @@ Documentação: [`docs/redesign/`](./docs/redesign/) (Etapa 1) e [`docs/evolucao
 - **Contraste:** o texto secundário passou de 4,34:1 para 5,18:1 e as descrições, de 2,54:1 para 5,73:1.
 - **Avisos e animações:** os avisos de erro não somem sozinhos, e as animações respeitam a opção "reduzir movimento".
 - **Títulos de página:** cada tela tem título próprio.
+- **Troca de tela pelo menu:** o foco vai para o conteúdo da nova tela, e o próximo Tab não percorre o menu de novo.
 - **Resultado medido:** Lighthouse de 90–96 para **100** nas 5 telas; axe-core sem violações.
 
 ## [1.1.0] — 2026-09-21 — TP3: Manutenção Adaptativa

@@ -9,7 +9,7 @@ Saídas dos roteiros automáticos, sem edição. Os números dos documentos do T
 | [`relatorio-antes.json`](./relatorio-antes.json) | Original, antes do TP4 (commit `014e608`) | [`scripts/capturar-evidencias.mjs`](../../../scripts/capturar-evidencias.mjs) | [avaliação heurística §4](../../redesign/avaliacao-heuristica.md#4-achados-de-acessibilidade-base-para-a-etapa-2), [acessibilidade §1 e §4](../acessibilidade.md#4-evidências) |
 | [`relatorio-pos-redesign.json`](./relatorio-pos-redesign.json) | Depois da Etapa 1, antes da Etapa 2 | [`scripts/capturar-evidencias.mjs`](../../../scripts/capturar-evidencias.mjs) | [melhorias do redesign](../../redesign/melhorias-implementadas.md#evidências-quantitativas), [acessibilidade §4](../acessibilidade.md#4-evidências) |
 | [`relatorio-depois.json`](./relatorio-depois.json) | Estado final, fim do TP4 | [`scripts/capturar-evidencias.mjs`](../../../scripts/capturar-evidencias.mjs) | [acessibilidade §4](../acessibilidade.md#4-evidências) |
-| [`resultado-e2e.json`](./resultado-e2e.json) | Estado final, 44 verificações pela interface | [`scripts/testar-tp4-e2e.mjs`](../../../scripts/testar-tp4-e2e.mjs) | [checklist e testes](../../checklist-testes-tp4.md) |
+| [`resultado-e2e.json`](./resultado-e2e.json) | Estado final, 46 verificações pela interface | [`scripts/testar-tp4-e2e.mjs`](../../../scripts/testar-tp4-e2e.mjs) | [checklist e testes](../../checklist-testes-tp4.md) |
 
 **O que tem em cada relatório de captura:**
 

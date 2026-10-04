@@ -1,5 +1,5 @@
 {
-  "data": "2026-10-04T21:54:03.939Z",
+  "data": "2026-10-04T23:44:10.341Z",
   "tipoTeste": "AB-",
   "limpeza": [
     "2 bolsas de teste",
@@ -22,7 +22,7 @@
       "desc": "Senha errada mostra erro e o aviso de erro não some sozinho (9 s)",
       "ok": true,
       "detail": "mensagem continua visível após 9 s",
-      "segundos": 16.8
+      "segundos": 16.4
     },
     {
       "id": "B3",
@@ -46,7 +46,7 @@
       "desc": "Login válido leva ao painel",
       "ok": true,
       "detail": "",
-      "segundos": 18.9
+      "segundos": 18.6
     },
     {
       "id": "C10",
@@ -62,7 +62,7 @@
       "desc": "Cada tela tem título próprio na aba",
       "ok": true,
       "detail": "Painel Geral — Banco de Sangue | Doadores — Banco de Sangue | Estoque de Sangue — Banco de Sangue | Insumos — Banco de Sangue",
-      "segundos": 25.5
+      "segundos": 25.3
     },
     {
       "id": "C2",
@@ -70,7 +70,7 @@
       "desc": "Os 4 cards do painel são links que levam à tela certa",
       "ok": true,
       "detail": "todos navegam",
-      "segundos": 72.3
+      "segundos": 72.1
     },
     {
       "id": "C1",
@@ -78,7 +78,7 @@
       "desc": "Números do painel batem com as telas de estoque, doadores e insumos",
       "ok": true,
       "detail": "bolsas 10, menor AB- (0), 7 tipos abaixo do mínimo, 13 doadores, 0 insumos baixos",
-      "segundos": 25.7
+      "segundos": 30.8
     },
     {
       "id": "C3",
@@ -86,7 +86,7 @@
       "desc": "Estoque lista os 8 tipos, sem \"ID Lote\", com situação coerente",
       "ok": true,
       "detail": "Tipo Sanguíneo | Bolsas Disponíveis | Última Entrada | Situação | Ações",
-      "segundos": 6
+      "segundos": 6.2
     },
     {
       "id": "C11",
@@ -94,7 +94,7 @@
       "desc": "Dicas de preenchimento visíveis (450 mL, mínimo, limite de insumos, CEP)",
       "ok": true,
       "detail": "",
-      "segundos": 7.9
+      "segundos": 7.7
     },
     {
       "id": "C7",
@@ -102,7 +102,7 @@
       "desc": "Todo botão de ícone tem dica (title)",
       "ok": true,
       "detail": "",
-      "segundos": 13.1
+      "segundos": 13.3
     },
     {
       "id": "C4",
@@ -126,7 +126,7 @@
       "desc": "Erro de CPF aparece junto do campo, recebe o foco e continua após 8 s",
       "ok": true,
       "detail": "O CPF deve ter 11 dígitos (foram informados 3).",
-      "segundos": 9.6
+      "segundos": 9.5
     },
     {
       "id": "G1",
@@ -134,7 +134,7 @@
       "desc": "Cadastro válido aparece na lista com CPF formatado; aviso de sucesso some sozinho",
       "ok": true,
       "detail": "",
-      "segundos": 28
+      "segundos": 28.2
     },
     {
       "id": "G2",
@@ -142,7 +142,7 @@
       "desc": "CPF duplicado (mesmo número com máscara) é recusado junto do campo",
       "ok": true,
       "detail": "CPF já cadastrado",
-      "segundos": 6.9
+      "segundos": 4.7
     },
     {
       "id": "G4",
@@ -169,12 +169,20 @@
       "segundos": 0.8
     },
     {
+      "id": "F9",
+      "area": "Acessibilidade (2.4.3)",
+      "desc": "Ao trocar de tela pelo menu (Enter), o próximo Tab já vai para o conteúdo, não para o resto do menu",
+      "ok": true,
+      "detail": "Tab seguinte: \"Novo Doador\"",
+      "segundos": 12.6
+    },
+    {
       "id": "F8",
       "area": "Acessibilidade (2.1.1)",
       "desc": "Cadastro completo de doador usando só o teclado",
       "ok": true,
       "detail": "gravado com sexo, tipo e idade escolhidos pelo teclado",
-      "segundos": 8.5
+      "segundos": 7.6
     },
     {
       "id": "F3",
@@ -182,7 +190,7 @@
       "desc": "Diálogo: foco no \"Cancelar\", Tab preso, Esc fecha e devolve o foco ao botão",
       "ok": true,
       "detail": "confirmação cita o nome do doador",
-      "segundos": 1.5
+      "segundos": 1.2
     },
     {
       "id": "F5",
@@ -190,7 +198,7 @@
       "desc": "Botões de ação anunciam a ação e o nome do item",
       "ok": true,
       "detail": "editar, anonimizar e excluir",
-      "segundos": 1.1
+      "segundos": 0.8
     },
     {
       "id": "F4",
@@ -198,7 +206,7 @@
       "desc": "Todos os campos dos formulários e filtros têm rótulo associado",
       "ok": true,
       "detail": "doador, busca, estoque (filtro e entrada) e insumo",
-      "segundos": 3.9
+      "segundos": 4.7
     },
     {
       "id": "E1",
@@ -213,7 +221,7 @@
       "area": "Funcionalidade 2 — busca",
       "desc": "CPF parcial com e sem máscara encontra o mesmo doador",
       "ok": true,
-      "detail": "\"929301\" e \"929.301\" → E2E TP4 Teste 293017 Mouse Editado",
+      "detail": "\"986224\" e \"986.224\" → E2E TP4 Teste 862249 Mouse Editado",
       "segundos": 1.2
     },
     {
@@ -238,7 +246,7 @@
       "desc": "Doadores com busca ativa e formulário aberto sem violações (axe)",
       "ok": true,
       "detail": "",
-      "segundos": 1.1
+      "segundos": 1.2
     },
     {
       "id": "G5",
@@ -262,7 +270,7 @@
       "desc": "Criar, sinalizar baixo estoque no painel, editar, validar negativo e excluir",
       "ok": true,
       "detail": "painel 0 → 1; -3 recusado; 50 → Normal; excluído",
-      "segundos": 53.5
+      "segundos": 52.5
     },
     {
       "id": "F1c",
@@ -278,7 +286,7 @@
       "desc": "Entrada de bolsas em AB- (tipo sem estoque) atualiza tabela e painel",
       "ok": true,
       "detail": "AB-: 0 → 3 (Adequado); painel 10 → 13; campos vazios recusados",
-      "segundos": 43
+      "segundos": 42
     },
     {
       "id": "D2",
@@ -286,7 +294,7 @@
       "desc": "Saída pela linha da tabela já vem com o tipo e o foco na quantidade",
       "ok": true,
       "detail": "axe sem violações no formulário de saída",
-      "segundos": 6.6
+      "segundos": 6.8
     },
     {
       "id": "D3",
@@ -294,7 +302,7 @@
       "desc": "Mais bolsas do que o estoque é bloqueado sem gravar nada",
       "ok": true,
       "detail": "Há apenas 3 bolsa(s) de AB- em estoque. · API → 400 (Há apenas 3 bolsa(s) de AB- em estoque)",
-      "segundos": 12.4
+      "segundos": 12.3
     },
     {
       "id": "D4",
@@ -310,7 +318,7 @@
       "desc": "Descarte exige motivo; com motivo, estoque −1",
       "ok": true,
       "detail": "API sem motivo → 400 (Informe o motivo do descarte)",
-      "segundos": 8.6
+      "segundos": 8.5
     },
     {
       "id": "D6",
@@ -318,7 +326,7 @@
       "desc": "Histórico mostra entrada, despacho e descarte (estoque e painel), mesmo após recarregar",
       "ok": true,
       "detail": "estoque, recarregado e painel; ?limite=2 respeitado",
-      "segundos": 13.3
+      "segundos": 13.5
     },
     {
       "id": "G8",
@@ -326,7 +334,7 @@
       "desc": "Filtro por tipo e \"Excluir lote\" continuam funcionando",
       "ok": true,
       "detail": "AB- voltou a 0 (Sem estoque)",
-      "segundos": 18.6
+      "segundos": 18.5
     },
     {
       "id": "F1d",
@@ -334,7 +342,7 @@
       "desc": "Painel, estoque (com formulário de entrada) e diálogo aberto sem violações (axe)",
       "ok": true,
       "detail": "",
-      "segundos": 20.3
+      "segundos": 20.5
     },
     {
       "id": "G10",
@@ -342,7 +350,15 @@
       "desc": "Celular (390 px): sem rolagem horizontal da página em nenhuma tela",
       "ok": true,
       "detail": "/dashboard 390px, /doadores 390px, /estoque 390px, /insumos 390px",
-      "segundos": 25.6
+      "segundos": 25.5
+    },
+    {
+      "id": "G12",
+      "area": "Regressão — layout",
+      "desc": "Notebook com zoom (1280 px): cards do painel com a mesma altura, tabelas sem estourar e \"Ações\" alinhado como as demais colunas",
+      "ok": true,
+      "detail": "cards 217px, /doadores 928/928px, /estoque 928/928px, /insumos 928/928px",
+      "segundos": 25
     },
     {
       "id": "B5",

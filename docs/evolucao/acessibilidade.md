@@ -42,7 +42,7 @@ Nota de acessibilidade do Lighthouse no estado original: **90 a 96**.
 | A2 | **Rótulos ligados aos campos** (`label htmlFor` + `id`) em todos os formulários e filtros; campos obrigatórios marcados com `required` e "*". | 1.3.1 Informação e relações · 3.3.2 Rótulos ou instruções | todas as telas com formulário |
 | A3 | **Erros ligados ao campo:** `aria-invalid` e `aria-describedby` apontam para a mensagem, e o foco vai para o primeiro campo com erro. O leitor anuncia o rótulo, que o campo está inválido e a mensagem ("O CPF deve ter 11 dígitos (foram informados 3)"). | 3.3.1 Identificação do erro · 3.3.3 Sugestão de correção | `doadores`, `estoque`, `insumos` |
 | A4 | **Diálogo de confirmação acessível:** o foco entra no "Cancelar", a opção segura; o Tab fica preso dentro do diálogo; Esc cancela; ao fechar, o foco volta ao botão que abriu. | 2.4.3 Ordem do foco · 2.1.2 Sem armadilha de teclado | [`src/contexts/ToastContext.tsx`](../../src/contexts/ToastContext.tsx) |
-| A5 | **Foco gerenciado nos formulários:** ao abrir, o foco vai para o primeiro campo; ao fechar ou salvar, volta ao botão de origem. | 2.4.3 Ordem do foco | [`src/hooks/use-focus-target.ts`](../../src/hooks/use-focus-target.ts) |
+| A5 | **Foco gerenciado nos formulários e na troca de tela:** ao abrir um formulário, o foco vai para o primeiro campo; ao fechar ou salvar, volta ao botão de origem. Ao trocar de tela pelo menu, o foco vai para o conteúdo da nova tela, e o próximo Tab não percorre o menu de novo. | 2.4.3 Ordem do foco | [`src/hooks/use-focus-target.ts`](../../src/hooks/use-focus-target.ts), [`app/(protected)/layout.tsx`](../../app/(protected)/layout.tsx) |
 | A6 | **"Pular para o conteúdo principal"**, primeiro item no Tab; `main` identificado; menu com `aria-label`; título de página próprio por tela ("Doadores — Banco de Sangue"). | 2.4.1 Ignorar blocos · 2.4.2 Página com título | [`app/(protected)/layout.tsx`](../../app/(protected)/layout.tsx); títulos nos metadados de [`app/layout.tsx`](../../app/layout.tsx) e do `layout.tsx` de cada tela |
 | A7 | **Indicador de foco visível e igual em todo o sistema:** contorno azul de 3 px, com contraste de 6:1 sobre o fundo. | 2.4.7 Foco visível | [`app/globals.css`](../../app/globals.css) |
 | A8 | **Contraste corrigido** (ver tabela abaixo). | 1.4.3 Contraste mínimo | [`app/globals.css`](../../app/globals.css) |
@@ -98,7 +98,7 @@ As três medições usam o mesmo roteiro ([`scripts/capturar-evidencias.mjs`](..
 | Foco depois de 3 Tabs com o diálogo aberto | fora do diálogo | **continua dentro do diálogo** |
 | Foco ao fechar o diálogo | perdido no documento | **volta ao botão que o abriu** |
 
-Testes de ponta a ponta pela interface (44 verificações, inclusive cadastro feito só pelo teclado): [checklist e testes](../checklist-testes-tp4.md).
+Testes de ponta a ponta pela interface (46 verificações, inclusive cadastro feito só pelo teclado): [checklist e testes](../checklist-testes-tp4.md).
 
 Dados brutos: [`relatorio-antes.json`](./evidencias/relatorio-antes.json), [`relatorio-pos-redesign.json`](./evidencias/relatorio-pos-redesign.json), [`relatorio-depois.json`](./evidencias/relatorio-depois.json). Os campos `ariaMain` e `ariaForm` registram a árvore de acessibilidade, que é o que o leitor de tela recebe, de cada tela.
 
@@ -121,7 +121,9 @@ Todas as telas do estado final, inclusive no celular, com a descrição de cada 
 ## 5. Como verificar manualmente
 
 1. **Teclado:**
-   - Abra **Doadores** e aperte **Tab**: deve aparecer "Pular para o conteúdo principal". Aperte **Enter** e depois **Tab**: o foco vai para "Novo Doador".
+   - **Atalho "Pular para o conteúdo":** abra **Doadores** e recarregue a página (F5) **sem clicar em nada**. Aperte **Tab** uma vez: aparece um botão azul "Pular para o conteúdo principal" no canto superior esquerdo. Ele fica escondido até receber o foco pelo teclado. Aperte **Enter** e depois **Tab**: o foco vai direto para "Novo Doador", sem passar pelos 4 links do menu e pelo "Encerrar Sessão".
+     - Se você clicar em algum ponto da página antes, o Tab começa a partir do ponto clicado. Esse é o comportamento normal do navegador, e por isso o atalho não aparece.
+   - **Troca de tela pelo menu:** com o Tab, chegue a "Estoque de Sangue" no menu e aperte **Enter**. Na tela nova, o próximo **Tab** já vai para o primeiro botão do conteúdo, e não para o próximo item do menu.
    - Abra o cadastro, deixe o CPF com 3 dígitos e envie: o foco vai para o CPF, com a mensagem abaixo.
    - Na tabela, chegue a uma lixeira com Tab e aperte **Enter**: o foco vai para "Cancelar"; Tab circula só entre "Cancelar" e "Confirmar"; **Esc** fecha e devolve o foco à lixeira.
 2. **Leitor de tela:** com o NVDA (gratuito, Windows) ligado, passe pelos botões da tabela de doadores. Cada um deve ser anunciado com a ação e o nome do doador. Na busca, ao digitar "maria", o NVDA deve anunciar a contagem ("1 de 13 doadores encontrados") sem tirar o foco do campo.

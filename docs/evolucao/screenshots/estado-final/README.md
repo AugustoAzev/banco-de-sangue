@@ -20,9 +20,9 @@ Neste estado: **Lighthouse 100** nas 5 telas e **nenhuma violação** WCAG A/AA 
 | [`10-dialogo-confirmacao.png`](./10-dialogo-confirmacao.png) | Diálogo com o foco **dentro**, no "Cancelar" | [antes](../../../redesign/screenshots/antes/10-dialogo-confirmacao.png) | [A4](../../acessibilidade.md#3-solução-implementada) |
 | [`11-primeiro-tab.png`](./11-primeiro-tab.png) | Primeiro Tab: atalho "Pular para o conteúdo principal" | [antes](../../../redesign/screenshots/antes/11-primeiro-tab.png) | [A6](../../acessibilidade.md#3-solução-implementada) |
 | [`12-foco-campo.png`](./12-foco-campo.png) | Campo com foco: contorno azul de 3 px | [antes](../../../redesign/screenshots/antes/12-foco-campo.png) | [A7](../../acessibilidade.md#3-solução-implementada) |
-| [`13-celular-painel.png`](./13-celular-painel.png) | Painel no celular (390 px) | — | [checklist G10](../../../checklist-testes-tp4.md#regressão--áreas-vizinhas-que-poderiam-quebrar-1515) |
-| [`14-celular-doadores.png`](./14-celular-doadores.png) | Doadores no celular: a página cabe na tela e só a tabela rola de lado | — | [checklist G10](../../../checklist-testes-tp4.md#regressão--áreas-vizinhas-que-poderiam-quebrar-1515) |
-| [`15-celular-estoque.png`](./15-celular-estoque.png) | Estoque no celular | — | [checklist G10](../../../checklist-testes-tp4.md#regressão--áreas-vizinhas-que-poderiam-quebrar-1515) |
+| [`13-celular-painel.png`](./13-celular-painel.png) | Painel no celular (390 px) | — | [checklist G10](../../../checklist-testes-tp4.md#regressão--áreas-vizinhas-que-poderiam-quebrar-1616) |
+| [`14-celular-doadores.png`](./14-celular-doadores.png) | Doadores no celular: a página cabe na tela e só a tabela rola de lado | — | [checklist G10](../../../checklist-testes-tp4.md#regressão--áreas-vizinhas-que-poderiam-quebrar-1616) |
+| [`15-celular-estoque.png`](./15-celular-estoque.png) | Estoque no celular | — | [checklist G10](../../../checklist-testes-tp4.md#regressão--áreas-vizinhas-que-poderiam-quebrar-1616) |
 
 ## Galeria
 

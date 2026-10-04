@@ -392,6 +392,17 @@ try {
     assert(a.id === 'btn-novo-doador', `depois do atalho: "${a.id || a.text}"`);
     return '3 teclas';
   });
+  await check('F9', 'Acessibilidade (2.4.3)', 'Ao trocar de tela pelo menu (Enter), o próximo Tab já vai para o conteúdo, não para o resto do menu', async () => {
+    await go('/dashboard');
+    await page.getByRole('link', { name: 'Doadores', exact: true }).focus();
+    await page.keyboard.press('Enter');
+    await page.waitForURL(/doadores/);
+    await waitReady('/doadores');
+    await page.keyboard.press('Tab');
+    const a = await activeInfo();
+    assert(a.id === 'btn-novo-doador', `próximo Tab foi para "${a.id || a.text}"`);
+    return 'Tab seguinte: "Novo Doador"';
+  });
   await check('F8', 'Acessibilidade (2.1.1)', 'Cadastro completo de doador usando só o teclado', async () => {
     await go('/doadores');
     await page.keyboard.press('Tab');
@@ -751,6 +762,29 @@ try {
         assert(w <= 391, `${r}: página com ${w}px`);
       }
       return larg.join(', ');
+    } finally {
+      await page.setViewportSize({ width: 1366, height: 860 });
+    }
+  });
+  await check('G12', 'Regressão — layout', 'Notebook com zoom (1280 px): cards do painel com a mesma altura, tabelas sem estourar e "Ações" alinhado como as demais colunas', async () => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    try {
+      await go('/dashboard');
+      const alturas = await page.$$eval('.stat-card', cs => cs.map(c => Math.round(c.getBoundingClientRect().height)));
+      assert(new Set(alturas).size === 1, `alturas dos cards: ${alturas}`);
+      const out = [`cards ${alturas[0]}px`];
+      for (const r of ['/doadores', '/estoque', '/insumos']) {
+        await go(r);
+        const m = await page.evaluate(() => {
+          const c = document.querySelector('.table-container');
+          const ths = [...document.querySelectorAll('thead th')].map(t => getComputedStyle(t).textAlign);
+          return { visivel: c.clientWidth, tabela: c.scrollWidth, alinhamentos: [...new Set(ths)] };
+        });
+        assert(m.tabela <= m.visivel, `${r}: tabela ${m.tabela}px em ${m.visivel}px`);
+        assert(m.alinhamentos.length === 1, `${r}: cabeçalhos com alinhamentos ${m.alinhamentos}`);
+        out.push(`${r} ${m.tabela}/${m.visivel}px`);
+      }
+      return out.join(', ');
     } finally {
       await page.setViewportSize({ width: 1366, height: 860 });
     }

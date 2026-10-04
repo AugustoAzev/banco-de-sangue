@@ -3,7 +3,7 @@
 > **TP4:** [README](../README.md) · [Relatório do TP4](../RELATORIO-TP4.md) · [Avaliação heurística](./redesign/avaliacao-heuristica.md) · [Melhorias do redesign](./redesign/melhorias-implementadas.md) · [Planejamento da evolução](./evolucao/planejamento.md) · [Acessibilidade](./evolucao/acessibilidade.md) · **Checklist e testes** · [CHANGELOG](../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
 **Data da execução:** 04/10/2026
-**Resultado:** **44 de 44 verificações passaram** pela interface, mais **80 testes automatizados** (Jest), `tsc --noEmit` e `next build` sem erros.
+**Resultado:** **46 de 46 verificações passaram** pela interface, mais **80 testes automatizados** (Jest), `tsc --noEmit` e `next build` sem erros.
 
 ## 1. Como foi testado
 
@@ -23,7 +23,7 @@
 | **Etapa 1** — Antes e depois, com a heurística de cada mudança | [melhorias-implementadas.md](./redesign/melhorias-implementadas.md) (M01–M10 com capturas) | revisão do documento | ✅ |
 | **Etapa 2** — Duas funcionalidades novas, definidas e justificadas num documento de planejamento | [planejamento.md](./evolucao/planejamento.md) | revisão do documento | ✅ |
 | **Etapa 2** — Funcionalidades integradas e funcionando | saída de bolsas e busca de doadores | testes D1–D6 e E1–E4, no banco real | ✅ |
-| **Etapa 2** — Pelo menos uma melhoria de acessibilidade, corrigindo limitação real | [acessibilidade.md](./evolucao/acessibilidade.md) | testes F1a–F1d, F2–F6 e F8 (axe sem violações, teclado, leitor de tela), mais B2 e G1 (avisos de erro e de sucesso) | ✅ |
+| **Etapa 2** — Pelo menos uma melhoria de acessibilidade, corrigindo limitação real | [acessibilidade.md](./evolucao/acessibilidade.md) | testes F1a–F1d, F2–F6, F8 e F9 (axe sem violações, teclado, leitor de tela), mais B2 e G1 (avisos de erro e de sucesso) | ✅ |
 | **Etapa 2** — Justificativa (problema, impacto para pessoas com deficiência, solução) no mesmo diretório do planejamento | [`docs/evolucao/`](./evolucao/) | revisão do documento | ✅ |
 | **Etapa 2** — Documentado no README e no CHANGELOG | [README](../README.md), [CHANGELOG](../CHANGELOG.md) | links conferidos (nenhum quebrado) | ✅ |
 | Versionamento | versão 1.2.0, commits separados por etapa, [PR #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78) | histórico do Git | ✅ |
@@ -62,11 +62,11 @@
 | ID | O que foi verificado | Área | Resultado | Observado |
 |---|---|---|---|---|
 | E1 | Nome sem diferenciar acento e maiúsculas | Funcionalidade 2 — busca | ✅ passou | "JOÃO" → Joao Carlos Pereira |
-| E2 | CPF parcial com e sem máscara encontra o mesmo doador | Funcionalidade 2 — busca | ✅ passou | "929301" e "929.301" → E2E TP4 Teste 293017 Mouse Editado |
+| E2 | CPF parcial com e sem máscara encontra o mesmo doador | Funcionalidade 2 — busca | ✅ passou | "986224" e "986.224" → E2E TP4 Teste 862249 Mouse Editado |
 | E3 | Filtro por tipo sanguíneo e por situação; contagem "X de Y" | Funcionalidade 2 — busca | ✅ passou | O+: 4 de 15 doadores encontrados; anonimizados: 1 |
 | E4 | Sem resultado: mensagem, "Limpar busca" restaura a lista e devolve o foco | Funcionalidade 2 — busca | ✅ passou |  |
 
-### Etapa 2 — Acessibilidade (10/10)
+### Etapa 2 — Acessibilidade (11/11)
 
 | ID | O que foi verificado | Área | Resultado | Observado |
 |---|---|---|---|---|
@@ -80,8 +80,9 @@
 | F5 | Botões de ação anunciam a ação e o nome do item | Acessibilidade (4.1.2) | ✅ passou | editar, anonimizar e excluir |
 | F6 | Cada tela tem título próprio na aba | Acessibilidade (2.4.2) | ✅ passou | Painel Geral — Banco de Sangue / Doadores — Banco de Sangue / Estoque de Sangue — Banco de Sangue / Insumos — Banco de Sangue |
 | F8 | Cadastro completo de doador usando só o teclado | Acessibilidade (2.1.1) | ✅ passou | gravado com sexo, tipo e idade escolhidos pelo teclado |
+| F9 | Ao trocar de tela pelo menu (Enter), o próximo Tab já vai para o conteúdo, não para o resto do menu | Acessibilidade (2.4.3) | ✅ passou | Tab seguinte: "Novo Doador" |
 
-### Regressão — áreas vizinhas que poderiam quebrar (15/15)
+### Regressão — áreas vizinhas que poderiam quebrar (16/16)
 
 | ID | O que foi verificado | Área | Resultado | Observado |
 |---|---|---|---|---|
@@ -100,7 +101,7 @@
 | G8 | Filtro por tipo e "Excluir lote" continuam funcionando | Regressão — estoque | ✅ passou | AB- voltou a 0 (Sem estoque) |
 | G10 | Celular (390 px): sem rolagem horizontal da página em nenhuma tela | Regressão — layout | ✅ passou | /dashboard 390px, /doadores 390px, /estoque 390px, /insumos 390px |
 | G11 | Nenhum erro de JavaScript no console durante todo o roteiro | Regressão — estabilidade | ✅ passou |  |
-
+| G12 | Notebook com zoom (1280 px): cards do painel com a mesma altura, tabelas sem estourar e "Ações" alinhado como as demais colunas | Regressão — layout | ✅ passou | cards 217px, /doadores 928/928px, /estoque 928/928px, /insumos 928/928px |
 
 ## 4. Defeitos que os testes encontraram e que foram corrigidos
 
@@ -112,6 +113,17 @@ A primeira execução teve 38 de 44 aprovações. Das 6 falhas, **2 eram defeito
 | G10 | No celular (390 px), Doadores e Estoque ficavam com 509 px de largura | Os textos só para leitor de tela dentro das tabelas (tipo sanguíneo por extenso) ficavam posicionados fora da área que rola | O contêiner da tabela passou a conter esses textos (`position: relative` em `.table-container`, em [`app/globals.css`](../app/globals.css)) |
 
 Os dois só apareceram no teste pela interface. As capturas e a nota do Lighthouse não pegavam nenhum deles.
+
+### Ajustes da revisão do grupo no navegador
+
+Usando o sistema num notebook com zoom de 150% (área útil de cerca de 1280 px), o grupo encontrou ajustes que as capturas, feitas em 1366 px, não mostravam. Todos foram corrigidos e viraram verificações automáticas.
+
+| Achado | Causa | Correção | Verificação |
+|---|---|---|---|
+| O card "Bolsas em Estoque" ficava mais alto que os outros três | A descrição quebrava em duas linhas, e o card não acompanhava a altura da linha do grid | Os cards ocupam a altura toda da linha ([`app/globals.css`](../app/globals.css)) | G12 |
+| A tabela de Doadores ficava mais larga que a tela, cortando a coluna Ações | "Usado nas entradas de estoque" e os nomes longos não podiam quebrar linha | Esses textos quebram em até duas linhas | G12 |
+| O título "Ações" ficava alinhado à direita, diferente das demais colunas | Alinhamento à direita definido na própria tela | Título e botões alinhados à esquerda nas três tabelas | G12 |
+| Depois de trocar de tela clicando no menu, o Tab continuava percorrendo o menu | O foco ficava no link clicado | Ao trocar de tela, o foco vai para o conteúdo ([`app/(protected)/layout.tsx`](../app/(protected)/layout.tsx)) | F9 |
 
 ## 5. Achado fora do escopo do TP4 (já existia antes)
 

@@ -8,7 +8,7 @@ Sistema de gestão de hemocentros para cadastro de doadores, controle de estoque
 > - **Etapa 2 — Evolução:** [planejamento das funcionalidades](./docs/evolucao/planejamento.md) (saída de bolsas com histórico e busca de doadores) e [melhoria de acessibilidade](./docs/evolucao/acessibilidade.md) (Lighthouse 90–96 → 100).
 > - **Capturas de tela** (cada pasta tem um README com a descrição de cada imagem): [antes do TP4](./docs/redesign/screenshots/antes/) → [depois do redesign](./docs/redesign/screenshots/depois-do-redesign/) → [estado final do sistema](./docs/evolucao/screenshots/estado-final/), e a demonstração das [funcionalidades novas](./docs/evolucao/screenshots/funcionalidades/).
 > - **Medições brutas:** [Lighthouse, axe e teclado nos três estados, e o resultado dos testes](./docs/evolucao/evidencias/), geradas por [`scripts/capturar-evidencias.mjs`](./scripts/capturar-evidencias.mjs) e [`scripts/testar-tp4-e2e.mjs`](./scripts/testar-tp4-e2e.mjs).
-> - **Testes:** [checklist do enunciado e 44 testes pela interface](./docs/checklist-testes-tp4.md), todos aprovados no sistema rodando com o banco real.
+> - **Testes:** [checklist do enunciado e 46 testes pela interface](./docs/checklist-testes-tp4.md), todos aprovados no sistema rodando com o banco real.
 > - **Versionamento:** histórico em [`CHANGELOG.md`](./CHANGELOG.md); todas as mudanças do TP4 estão no [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78).
 >
 > **TP3 — Manutenção Adaptativa:** três adaptações (mudança de dependência, mudança de regulamentação LGPD e integração de API externa). Síntese em [`RELATORIO.md`](./RELATORIO.md), detalhes e evidências em [`manutencao-adaptativa/`](./manutencao-adaptativa/).
@@ -123,7 +123,7 @@ npx jest                 # testes de unidade e de API (80 testes)
 npx playwright test      # E2E (requer o sistema rodando)
 npx playwright show-report
 
-# TP4: 44 verificações pela interface contra o sistema rodando (cria e apaga os próprios dados)
+# TP4: 46 verificações pela interface contra o sistema rodando (cria e apaga os próprios dados)
 npm install --no-save axe-core@4
 node scripts/testar-tp4-e2e.mjs e2e-saida
 ```

@@ -117,7 +117,7 @@ Todas as telas do estado final, inclusive no celular: [`docs/evolucao/screenshot
 
 - **10** melhorias de redesign, ligadas a **17** problemas da avaliação heurística.
 - **2** funcionalidades novas e **11** itens de acessibilidade (WCAG 2.1 AA).
-- **80** testes automatizados (eram 33) e **44** verificações de ponta a ponta pela interface, todos passando.
+- **80** testes automatizados (eram 33) e **46** verificações de ponta a ponta pela interface, todos passando.
 - **0** violações WCAG A/AA no estado final; nota **100** no Lighthouse nas 5 telas.
 - **0** links quebrados na documentação do TP4.
 
@@ -131,6 +131,7 @@ Todas as telas do estado final, inclusive no celular: [`docs/evolucao/screenshot
 | Etapa 2 — acessibilidade | [`feat(a11y): operacao completa por teclado e leitor de tela`](https://github.com/AugustoAzev/banco-de-sangue/commit/421bcbdb3715d8cd23a7bcfb004517eecc7ff9eb) |
 | Etapa 2 — documentação | [`docs(evolucao): planejamento das funcionalidades e melhoria de acessibilidade`](https://github.com/AugustoAzev/banco-de-sangue/commit/9dd80b3b86ec919f8cdde782f0e0689ef02a8347) |
 | Correções encontradas nos testes | [`fix(a11y): titulo de pagina por metadados e largura correta no celular`](https://github.com/AugustoAzev/banco-de-sangue/commit/95c13c4) |
+| Ajustes da revisão do grupo (zoom e foco na troca de tela) | [`fix(ui): ajustes da revisao do grupo em telas com zoom e foco ao trocar de tela`](https://github.com/AugustoAzev/banco-de-sangue/commit/af306d0) |
 | Testes de ponta a ponta | [`test(tp4): 44 verificacoes de ponta a ponta pela interface`](https://github.com/AugustoAzev/banco-de-sangue/commit/4631a1f) |
 
 Histórico completo: [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78/commits).
@@ -146,4 +147,4 @@ Por fim, os **testes de ponta a ponta pela interface pegaram dois defeitos que a
 - o título da aba nunca mudava por tela;
 - no celular, a página ficava mais larga que a tela.
 
-Os dois foram corrigidos. Ferramentas automáticas de acessibilidade medem só parte do problema: verificar o comportamento real, do jeito que uma pessoa usaria, continua indispensável. A validação com um usuário real de leitor de tela fica como próximo passo ([limitações](./docs/evolucao/acessibilidade.md#6-limitações)).
+Os dois foram corrigidos. A revisão do grupo usando o sistema num notebook com zoom ainda encontrou ajustes de layout e de foco que nenhum teste cobria; eles foram corrigidos e viraram verificações automáticas. Ferramentas automáticas de acessibilidade medem só parte do problema: verificar o comportamento real, do jeito que uma pessoa usaria, continua indispensável. A validação com um usuário real de leitor de tela fica como próximo passo ([limitações](./docs/evolucao/acessibilidade.md#6-limitações)).
