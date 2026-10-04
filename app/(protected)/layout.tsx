@@ -7,6 +7,12 @@ import { useAuth } from '../../src/contexts/AuthContext';
 import { AuthProvider } from '../../src/contexts/AuthContext';
 import { LayoutDashboard, Users, Droplet, LogOut, Package } from 'lucide-react';
 
+// O token traz o valor do enum do banco; a interface mostra o nome do perfil.
+const ROLE_LABELS: Record<string, string> = {
+  ADMINISTRADOR: 'Administrador',
+  ATENDENTE: 'Atendente',
+};
+
 function Sidebar() {
   const { signOut, user } = useAuth();
   const pathname = usePathname();
@@ -63,7 +69,7 @@ function Sidebar() {
       <div className="app-user">
         <div style={{ marginBottom: '1rem' }}>
           <p style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user?.name || 'Usuário'}</p>
-          <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{user?.role || 'Acesso Restrito'}</p>
+          <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{ROLE_LABELS[user?.role ?? ''] ?? 'Acesso Restrito'}</p>
         </div>
         <button
           onClick={signOut}

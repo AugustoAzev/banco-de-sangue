@@ -14,8 +14,8 @@ test.describe('Dashboard', () => {
     // Should show the 4 stat cards
     await expect(page.getByText('Total de Doadores')).toBeVisible();
     await expect(page.getByText('Bolsas em Estoque')).toBeVisible();
-    await expect(page.getByText('Coletas Hoje')).toBeVisible();
-    await expect(page.getByText('Nível Crítico')).toBeVisible();
+    await expect(page.getByText('Menor Estoque')).toBeVisible();
+    await expect(page.getByText('Insumos em Baixo Estoque')).toBeVisible();
   });
 
   test('sidebar navigation works', async ({ page }) => {

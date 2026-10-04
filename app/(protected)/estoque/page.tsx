@@ -2,15 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import api from '../../../src/services/api';
-import { Droplet, Plus, Filter, Calendar, Trash2 } from 'lucide-react';
+import { Droplet, Plus, Filter, Calendar, Trash2, X } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
+import { BLOOD_TYPES, formatBloodType } from '../../../src/lib/blood-types';
+import { INVENTORY_POLICY } from '../../../src/lib/inventory-policy';
 
 interface Bolsa {
-  id: number;
+  id: string;
   tipo_sangue: string;
   quantidade: number;
   created_at?: string;
 }
+
+type EntradaErrors = Partial<Record<'tipo_sangue' | 'quantidade', string>>;
 
 export default function Estoque() {
   const [bolsas, setBolsas] = useState<Bolsa[]>([]);
@@ -18,14 +22,8 @@ export default function Estoque() {
   const [showForm, setShowForm] = useState(false);
   const { success, error, confirm } = useToast();
   const [filtroTipo, setFiltroTipo] = useState('');
-  const [novaBolsa, setNovaBolsa] = useState({ tipo_sangue: '', quantidade: 1 });
-
-  const formatTipoSanguineo = (tipo: string) => {
-    if (!tipo) return { text: '-', color: '#6b7280', bg: '#f3f4f6' };
-    const [grupo, rh] = tipo.split('_');
-    const sinal = rh === 'POSITIVO' ? '+' : '-';
-    return { text: `${grupo}${sinal}`, color: '#991b1b', bg: '#fee2e2' };
-  };
+  const [novaBolsa, setNovaBolsa] = useState({ tipo_sangue: '', quantidade: '1' });
+  const [errors, setErrors] = useState<EntradaErrors>({});
 
   async function loadBolsas() {
     try {
@@ -42,26 +40,52 @@ export default function Estoque() {
 
   useEffect(() => { loadBolsas(); }, [filtroTipo]);
 
+  // Mostra todos os tipos (inclusive os zerados) para que a falta de estoque fique visível.
+  const tiposVisiveis = filtroTipo ? [filtroTipo] : [...BLOOD_TYPES];
+  const linhas = tiposVisiveis.map(tipo => bolsas.find(b => b.tipo_sangue === tipo) ?? { id: '', tipo_sangue: tipo, quantidade: 0 });
+
+  const closeForm = () => {
+    setShowForm(false);
+    setNovaBolsa({ tipo_sangue: '', quantidade: '1' });
+    setErrors({});
+  };
+
+  const validate = (): EntradaErrors => {
+    const e: EntradaErrors = {};
+    if (!novaBolsa.tipo_sangue) e.tipo_sangue = 'Selecione o tipo sanguíneo.';
+    const qtd = Number(novaBolsa.quantidade);
+    if (!Number.isInteger(qtd) || qtd < 1) e.quantidade = 'Informe um número inteiro de bolsas, a partir de 1.';
+    return e;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const found = validate();
+    setErrors(found);
+    if (Object.keys(found).length > 0) return;
     try {
-      await api.post('/inventory/bolsas', novaBolsa);
-      setShowForm(false);
-      setNovaBolsa({ tipo_sangue: '', quantidade: 1 });
+      await api.post('/inventory/bolsas', { tipo_sangue: novaBolsa.tipo_sangue, quantidade: Number(novaBolsa.quantidade) });
+      const qtd = Number(novaBolsa.quantidade);
+      success(`${qtd} ${qtd === 1 ? 'bolsa registrada' : 'bolsas registradas'} no estoque de ${formatBloodType(novaBolsa.tipo_sangue)}.`);
+      closeForm();
       loadBolsas();
-      success('Bolsa registrada com sucesso!');
-    } catch {
-      error('Erro ao registrar bolsa. Verifique os dados.');
+    } catch (err: any) {
+      const detail = err.response?.data?.detail;
+      error(typeof detail === 'string' ? detail : 'Erro ao registrar bolsa. Verifique os dados.');
     }
   };
 
   const handleDelete = async (item: Bolsa) => {
-    const rotulo = formatTipoSanguineo(item.tipo_sangue).text;
-    if (!await confirm(`Remover o lote inteiro de ${item.quantidade} bolsa(s) do tipo ${rotulo} do estoque?`)) return;
+    const rotulo = formatBloodType(item.tipo_sangue);
+    const ok = await confirm(
+      `Excluir o lote de ${item.quantidade} bolsa(s) do tipo ${rotulo}? Os registros serão apagados. ` +
+      'Use esta opção apenas para corrigir um lançamento feito por engano.'
+    );
+    if (!ok) return;
     try {
       await api.delete(`/inventory/bolsas/${item.id}`);
       loadBolsas();
-      success('Lote removido do estoque.');
+      success(`Lote de ${rotulo} excluído do estoque.`);
     } catch {
       error('Erro ao excluir lote.');
     }
@@ -74,48 +98,54 @@ export default function Estoque() {
           <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>Estoque de Sangue</h1>
           <p className="text-muted">Monitoramento de hemocomponentes</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
-          <Plus size={20} /> {showForm ? 'Cancelar' : 'Registrar Entrada'}
-        </button>
+        {!showForm && (
+          <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+            <Plus size={20} /> Registrar Entrada
+          </button>
+        )}
       </div>
 
       {showForm && (
-        <div className="card" style={{ marginBottom: '2rem', borderLeft: '4px solid var(--color-primary)' }}>
-          <h3 style={{ marginBottom: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Droplet size={20} /> Registrar Nova Bolsa
-          </h3>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-            <div className="input-group" style={{ flex: '1 1 200px' }}>
-              <label>Tipo Sanguíneo</label>
-              <select
-                className="input-field"
-                value={novaBolsa.tipo_sangue}
-                onChange={e => setNovaBolsa({...novaBolsa, tipo_sangue: e.target.value})}
-                required
-              >
-                <option value="">Selecione...</option>
-                <option value="A_POSITIVO">A+</option>
-                <option value="A_NEGATIVO">A-</option>
-                <option value="B_POSITIVO">B+</option>
-                <option value="B_NEGATIVO">B-</option>
-                <option value="AB_POSITIVO">AB+</option>
-                <option value="AB_NEGATIVO">AB-</option>
-                <option value="O_POSITIVO">O+</option>
-                <option value="O_NEGATIVO">O-</option>
-              </select>
+        <div className="card form-card">
+          <div className="form-card-header">
+            <h2><Droplet size={20} /> Registrar Entrada de Bolsas</h2>
+            <button type="button" className="icon-btn" onClick={closeForm} title="Fechar formulário"><X size={20} /></button>
+          </div>
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="form-grid">
+              <div className="input-group">
+                <label>Tipo Sanguíneo</label>
+                <select
+                  className="input-field"
+                  value={novaBolsa.tipo_sangue}
+                  onChange={e => setNovaBolsa({ ...novaBolsa, tipo_sangue: e.target.value })}
+                >
+                  <option value="">Selecione...</option>
+                  {BLOOD_TYPES.map(t => <option key={t} value={t}>{formatBloodType(t)}</option>)}
+                </select>
+                {errors.tipo_sangue && <p className="field-error">{errors.tipo_sangue}</p>}
+              </div>
+              <div className="input-group">
+                <label>Quantidade de bolsas</label>
+                <input
+                  type="number" className="input-field" min="1" step="1"
+                  value={novaBolsa.quantidade}
+                  onChange={e => setNovaBolsa({ ...novaBolsa, quantidade: e.target.value })}
+                />
+                {errors.quantidade
+                  ? <p className="field-error">{errors.quantidade}</p>
+                  : <p className="field-hint">Cada unidade corresponde a uma bolsa de {INVENTORY_POLICY.bagVolumeMl} mL.</p>}
+              </div>
             </div>
-            <div className="input-group" style={{ flex: '1 1 200px' }}>
-              <label>Quantidade (Unidades)</label>
-              <input type="number" className="input-field" value={novaBolsa.quantidade} onChange={e => setNovaBolsa({...novaBolsa, quantidade: parseInt(e.target.value)})} min="1" required />
-            </div>
-            <div className="input-group" style={{ flex: '0 0 auto' }}>
-              <button type="submit" className="btn btn-primary" style={{ height: '42px' }}>Salvar Entrada</button>
+            <div className="form-actions">
+              <button type="submit" className="btn btn-primary">Salvar Entrada</button>
+              <button type="button" className="btn btn-secondary" onClick={closeForm}>Cancelar</button>
             </div>
           </form>
         </div>
       )}
 
-      <div className="card" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="card filter-bar">
         <Filter size={18} className="text-muted" />
         <span className="text-muted" style={{ fontSize: '0.9rem' }}>Filtrar por:</span>
         <select
@@ -125,40 +155,29 @@ export default function Estoque() {
           onChange={e => setFiltroTipo(e.target.value)}
         >
           <option value="">Todos os Tipos</option>
-          <option value="A_POSITIVO">A+</option>
-          <option value="A_NEGATIVO">A-</option>
-          <option value="B_POSITIVO">B+</option>
-          <option value="B_NEGATIVO">B-</option>
-          <option value="AB_POSITIVO">AB+</option>
-          <option value="AB_NEGATIVO">AB-</option>
-          <option value="O_POSITIVO">O+</option>
-          <option value="O_NEGATIVO">O-</option>
+          {BLOOD_TYPES.map(t => <option key={t} value={t}>{formatBloodType(t)}</option>)}
         </select>
+        <span className="field-hint" style={{ marginLeft: 'auto' }}>
+          Estoque mínimo: {INVENTORY_POLICY.minimumBagsPerType} bolsas por tipo
+        </span>
       </div>
 
       <div className="table-container">
         <table>
           <thead>
             <tr>
-              <th>ID Lote</th><th>Tipo Sanguíneo</th><th>Qtd.</th><th>Data</th><th>Status</th><th style={{textAlign: 'right'}}>Ações</th>
+              <th>Tipo Sanguíneo</th><th>Bolsas Disponíveis</th><th>Última Entrada</th><th>Situação</th><th style={{ textAlign: 'right' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Atualizando estoque...</td></tr>
-            ) : bolsas.length === 0 ? (
-              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>Estoque vazio para este filtro.</td></tr>
+              <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2rem' }}>Atualizando estoque...</td></tr>
             ) : (
-              bolsas.map((item, index) => {
-                const estilo = formatTipoSanguineo(item.tipo_sangue);
+              linhas.map((item) => {
+                const abaixo = item.quantidade < INVENTORY_POLICY.minimumBagsPerType;
                 return (
-                  <tr key={item.id || index}>
-                    <td className="text-muted">#{item.id.toString().slice(0,8)}...</td>
-                    <td>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: estilo.bg, color: estilo.color, fontWeight: 'bold', fontSize: '0.85rem' }}>
-                        {estilo.text}
-                      </div>
-                    </td>
+                  <tr key={item.tipo_sangue}>
+                    <td><span className="blood-type-chip">{formatBloodType(item.tipo_sangue)}</span></td>
                     <td style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{item.quantidade}</td>
                     <td>
                       {item.created_at ? (
@@ -166,13 +185,21 @@ export default function Estoque() {
                           <Calendar size={16} className="text-muted" />
                           {new Date(item.created_at).toLocaleDateString('pt-BR')}
                         </div>
-                      ) : '-'}
+                      ) : <span className="text-muted">—</span>}
                     </td>
-                    <td><span className="badge bg-green-50" style={{ color: '#166534' }}>Disponível</span></td>
-                    <td style={{textAlign: 'right'}}>
-                      <button onClick={() => handleDelete(item)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }} title="Excluir Lote">
-                        <Trash2 size={18} />
-                      </button>
+                    <td>
+                      {item.quantidade === 0
+                        ? <span className="badge badge-danger">Sem estoque</span>
+                        : abaixo
+                          ? <span className="badge badge-warning">Abaixo do mínimo</span>
+                          : <span className="badge badge-success">Adequado</span>}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      {item.quantidade > 0 && (
+                        <button className="icon-btn icon-btn-danger" onClick={() => handleDelete(item)} title="Excluir lote (lançamento incorreto)">
+                          <Trash2 size={18} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );

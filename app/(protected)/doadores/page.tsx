@@ -1,10 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../../src/services/api';
-import { Plus, Pencil, Trash2, X, ShieldOff } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, ShieldOff, UserPlus, UserCog } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
 import { DONOR_SCREENING_CRITERIA } from '../../../src/lib/donor-eligibility';
+import { BLOOD_TYPES, formatBloodType } from '../../../src/lib/blood-types';
+import { isGenericDonor } from '../../../src/lib/system-records';
+import {
+  validateDonorForm,
+  fieldForApiError,
+  DONOR_FORM_FIELD_ORDER,
+  type DonorFormErrors,
+} from '../../../src/lib/donor-form-validation';
 
 interface Doador {
   id_doador: string;
@@ -24,6 +32,9 @@ export default function Doadores() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<DonorFormErrors>({});
+  const [submitAttempt, setSubmitAttempt] = useState(0);
+  const formRef = useRef<HTMLFormElement>(null);
   const { success, error, confirm } = useToast();
 
   const initialFormState = {
@@ -42,13 +53,6 @@ export default function Doadores() {
     return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
   };
 
-  const formatTipoSanguineo = (tipo: string) => {
-    if (!tipo) return { text: '-', color: '#6b7280', bg: '#f3f4f6' };
-    const [grupo, rh] = tipo.split('_');
-    const sinal = rh === 'POSITIVO' ? '+' : '-';
-    return { text: `${grupo}${sinal}`, color: '#991b1b', bg: '#fee2e2' };
-  };
-
   async function loadDoadores() {
     try {
       const response = await api.get('/donors/');
@@ -62,6 +66,15 @@ export default function Doadores() {
 
   useEffect(() => { loadDoadores(); }, []);
 
+  // Depois de um envio com erro, leva a tela até o primeiro campo com problema —
+  // o botão "Cadastrar" fica no fim do formulário e o erro pode estar fora da vista.
+  useEffect(() => {
+    if (submitAttempt === 0) return;
+    const first = DONOR_FORM_FIELD_ORDER.find(f => errors[f]);
+    if (!first) return;
+    formRef.current?.querySelector(`[data-field="${first}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [submitAttempt]);
+
   const handleEdit = (doador: Doador) => {
     setFormData({
       nome: doador.nome_completo, documento: 'RG', cpf: doador.cpf,
@@ -70,15 +83,16 @@ export default function Doadores() {
       cep: '', endereco: doador.endereco || '', condicao_1: true, condicao_2: true, condicao_3: true,
       consentimento_lgpd: true
     });
+    setErrors({});
     setEditingId(doador.id_doador);
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!await confirm('Tem certeza que deseja excluir este doador?')) return;
+  const handleDelete = async (doador: Doador) => {
+    if (!await confirm(`Excluir o doador "${doador.nome_completo}"? Esta ação não pode ser desfeita. Doadores com doações registradas não podem ser excluídos — nesse caso, use a anonimização.`)) return;
     try {
-      await api.delete(`/donors/${id}`);
-      success('Doador removido com sucesso.');
+      await api.delete(`/donors/${doador.id_doador}`);
+      success(`Doador "${doador.nome_completo}" excluído.`);
       loadDoadores();
     } catch (err: any) {
       const msg = err.response?.data?.detail || 'Erro ao excluir.';
@@ -86,25 +100,35 @@ export default function Doadores() {
     }
   };
 
-  const handleAnonymize = async (id: string) => {
-    if (!await confirm('Anonimizar este doador? Nome, CPF, e-mail, telefone e endereço serão removidos permanentemente e não poderão ser recuperados. O histórico de doações é mantido por exigência regulatória (LGPD art. 18, VI).')) return;
+  const handleAnonymize = async (doador: Doador) => {
+    if (!await confirm(`Anonimizar "${doador.nome_completo}"? Nome, CPF, e-mail, telefone e endereço serão removidos permanentemente e não poderão ser recuperados. O histórico de doações é mantido por exigência regulatória (LGPD art. 18, VI).`)) return;
     try {
-      await api.patch(`/donors/${id}/anonymize`);
+      await api.patch(`/donors/${doador.id_doador}/anonymize`);
       success('Doador anonimizado com sucesso.');
       loadDoadores();
-    } catch {
-      error('Erro ao anonimizar doador.');
+    } catch (err: any) {
+      const msg = err.response?.data?.detail;
+      error(typeof msg === 'string' ? msg : 'Erro ao anonimizar doador.');
     }
   };
 
   const handleCancel = () => {
     setShowForm(false);
     setEditingId(null);
+    setErrors({});
     setFormData(initialFormState);
+    setCepStatus('idle');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const found = validateDonorForm(formData, { editing: !!editingId });
+    setErrors(found);
+    if (Object.keys(found).length > 0) {
+      setSubmitAttempt(n => n + 1);
+      return;
+    }
 
     try {
       const payload = {
@@ -117,33 +141,36 @@ export default function Doadores() {
 
       if (editingId) {
         await api.put(`/donors/${editingId}`, payload);
-        success('Doador atualizado com sucesso!');
+        success(`Dados de "${formData.nome}" atualizados.`);
       } else {
-        if (!formData.condicao_1 || !formData.condicao_2 || !formData.condicao_3) {
-          error('O doador não atende aos critérios de elegibilidade.');
-          return;
-        }
-        if (!formData.consentimento_lgpd) {
-          error('É necessário o consentimento do doador para o tratamento de dados pessoais (LGPD).');
-          return;
-        }
         await api.post('/donors/', payload);
-        success('Doador cadastrado com sucesso!');
+        success(`Doador "${formData.nome}" cadastrado com sucesso.`);
       }
 
       handleCancel();
       loadDoadores();
     } catch (err: any) {
-      const errorData = err.response?.data?.detail;
-      let errorMsg = 'Erro ao salvar dados.';
-      if (typeof errorData === 'string') errorMsg = errorData;
-      error(errorMsg);
+      const detail = err.response?.data?.detail;
+      const message = typeof detail === 'string' ? detail : 'Erro ao salvar dados.';
+      // Erro do servidor que pertence a um campo aparece junto dele (ex.: "CPF já cadastrado").
+      const field = fieldForApiError(message);
+      if (field) {
+        setErrors({ [field]: message });
+        setSubmitAttempt(n => n + 1);
+      } else {
+        error(message);
+      }
     }
+  };
+
+  const clearError = (field: keyof DonorFormErrors) => {
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    clearError(name as keyof DonorFormErrors);
     if (name === 'cep') setCepStatus('idle');
   };
 
@@ -168,7 +195,12 @@ export default function Doadores() {
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData(prev => ({ ...prev, [name]: checked }));
+    clearError(name === 'consentimento_lgpd' ? 'consentimento_lgpd' : 'triagem');
   };
+
+  const fieldClass = (field: keyof DonorFormErrors) => `input-field${errors[field] ? ' input-error' : ''}`;
+  const FieldError = ({ field }: { field: keyof DonorFormErrors }) =>
+    errors[field] ? <p className="field-error">{errors[field]}</p> : null;
 
   return (
     <div>
@@ -185,46 +217,57 @@ export default function Doadores() {
       </div>
 
       {showForm && (
-        <div className="card" style={{ marginBottom: '2rem', borderLeft: `4px solid ${editingId ? '#f59e0b' : 'var(--color-primary)'}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>{editingId ? 'Editar Doador' : 'Novo Cadastro'}</h2>
-            <button onClick={handleCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}><X size={24} /></button>
+        <div className={`card form-card${editingId ? ' form-card-editing' : ''}`}>
+          <div className="form-card-header">
+            <h2>
+              {editingId ? <UserCog size={20} /> : <UserPlus size={20} />}
+              {editingId ? `Editar Doador: ${formData.nome}` : 'Novo Cadastro de Doador'}
+            </h2>
+            <button type="button" className="icon-btn" onClick={handleCancel} title="Fechar formulário"><X size={22} /></button>
           </div>
+          <p className="field-hint" style={{ marginBottom: '1rem' }}>Campos marcados com * são obrigatórios.</p>
 
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div className="input-group">
-                <label>Nome Completo</label>
-                <input name="nome" value={formData.nome} onChange={handleInputChange} className="input-field" required />
+          <form ref={formRef} onSubmit={handleSubmit} noValidate>
+            <div className="form-grid">
+              <div className="input-group" data-field="nome">
+                <label>Nome Completo *</label>
+                <input name="nome" value={formData.nome} onChange={handleInputChange} className={fieldClass('nome')} />
+                <FieldError field="nome" />
               </div>
-              <div className="input-group">
-                <label>CPF</label>
-                <input name="cpf" value={formData.cpf} onChange={handleInputChange} className="input-field" placeholder="000.000.000-00" pattern="[0-9.-]*" inputMode="numeric" required disabled={!!editingId} />
+              <div className="input-group" data-field="cpf">
+                <label>CPF *</label>
+                <input name="cpf" value={formData.cpf} onChange={handleInputChange} className={fieldClass('cpf')} placeholder="000.000.000-00" inputMode="numeric" disabled={!!editingId} />
+                {editingId && <p className="field-hint">O CPF não pode ser alterado após o cadastro.</p>}
+                <FieldError field="cpf" />
               </div>
-              <div className="input-group">
-                <label>Idade</label>
-                <input name="idade" type="number" min={16} max={69} value={formData.idade} onChange={handleInputChange} className="input-field" required />
+              <div className="input-group" data-field="idade">
+                <label>Idade *</label>
+                <input name="idade" type="number" min={16} max={69} value={formData.idade} onChange={handleInputChange} className={fieldClass('idade')} />
+                <FieldError field="idade" />
               </div>
-              <div className="input-group">
-                <label>Sexo</label>
-                <select name="sexo" value={formData.sexo} onChange={handleInputChange} className="input-field" required>
+              <div className="input-group" data-field="sexo">
+                <label>Sexo *</label>
+                <select name="sexo" value={formData.sexo} onChange={handleInputChange} className={fieldClass('sexo')}>
                   <option value="">Selecione</option>
                   <option value="Masculino">Masculino</option>
                   <option value="Feminino">Feminino</option>
                 </select>
+                <FieldError field="sexo" />
               </div>
-              <div className="input-group">
-                <label>Tipo Sanguíneo</label>
-                <select name="tipo_sanguineo" value={formData.tipo_sanguineo} onChange={handleInputChange} className="input-field" required>
+              <div className="input-group" data-field="tipo_sanguineo">
+                <label>Tipo Sanguíneo *</label>
+                <select name="tipo_sanguineo" value={formData.tipo_sanguineo} onChange={handleInputChange} className={fieldClass('tipo_sanguineo')}>
                   <option value="">Selecione</option>
-                  {['A_POSITIVO','A_NEGATIVO','B_POSITIVO','B_NEGATIVO','AB_POSITIVO','AB_NEGATIVO','O_POSITIVO','O_NEGATIVO'].map(t => (
-                    <option key={t} value={t}>{t.replace('_', ' ').replace('POSITIVO','+').replace('NEGATIVO','-')}</option>
+                  {BLOOD_TYPES.map(t => (
+                    <option key={t} value={t}>{formatBloodType(t)}</option>
                   ))}
                 </select>
+                <FieldError field="tipo_sanguineo" />
               </div>
-              <div className="input-group">
-                <label>Email</label>
-                <input name="email" type="email" value={formData.email} onChange={handleInputChange} className="input-field" />
+              <div className="input-group" data-field="email">
+                <label>E-mail</label>
+                <input name="email" type="email" value={formData.email} onChange={handleInputChange} className={fieldClass('email')} />
+                <FieldError field="email" />
               </div>
               <div className="input-group">
                 <label>Telefone</label>
@@ -234,11 +277,12 @@ export default function Doadores() {
                 <label>CEP</label>
                 <input
                   name="cep" type="text" value={formData.cep} onChange={handleInputChange} onBlur={handleCepBlur}
-                  className="input-field" placeholder="00000-000" pattern="[0-9-]*" inputMode="numeric" maxLength={9}
+                  className="input-field" placeholder="00000-000" inputMode="numeric" maxLength={9}
                 />
-                {cepStatus === 'loading' && <small style={{ color: '#6b7280' }}>Buscando endereço...</small>}
-                {cepStatus === 'success' && <small style={{ color: '#16a34a' }}>Endereço preenchido automaticamente.</small>}
-                {cepStatus === 'error' && <small style={{ color: '#dc2626' }}>CEP não encontrado, preencha o endereço manualmente.</small>}
+                {cepStatus === 'idle' && <p className="field-hint">Ao sair do campo, o endereço é preenchido automaticamente.</p>}
+                {cepStatus === 'loading' && <p className="field-hint">Buscando endereço...</p>}
+                {cepStatus === 'success' && <p className="field-success">Endereço preenchido automaticamente.</p>}
+                {cepStatus === 'error' && <p className="field-error">CEP não encontrado, preencha o endereço manualmente.</p>}
               </div>
               <div className="input-group">
                 <label>Endereço</label>
@@ -247,27 +291,27 @@ export default function Doadores() {
             </div>
 
             {!editingId && (
-              <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Critérios de Triagem</h3>
+              <div className={`form-section${errors.triagem ? ' form-section-error' : ''}`} data-field="triagem">
+                <h3>Critérios de Triagem *</h3>
                 {DONOR_SCREENING_CRITERIA.map(c => (
-                  <label key={c.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                    <input type="checkbox" name={c.name} checked={(formData as any)[c.name]} onChange={handleCheckboxChange} />
+                  <label key={c.name} className="check-row">
+                    <input type="checkbox" name={c.name} checked={formData[c.name]} onChange={handleCheckboxChange} />
                     {c.label}
                   </label>
                 ))}
+                <FieldError field="triagem" />
               </div>
             )}
 
             {!editingId && (
-              <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#fff7ed', borderRadius: '8px', border: '1px solid #fed7aa' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Privacidade e Proteção de Dados (LGPD)</h3>
-                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.9rem' }}>
+              <div className={`form-section form-section-lgpd${errors.consentimento_lgpd ? ' form-section-error' : ''}`} data-field="consentimento_lgpd">
+                <h3>Privacidade e Proteção de Dados (LGPD) *</h3>
+                <label className="check-row" style={{ alignItems: 'flex-start' }}>
                   <input
                     type="checkbox"
                     name="consentimento_lgpd"
                     checked={formData.consentimento_lgpd}
                     onChange={handleCheckboxChange}
-                    required
                   />
                   <span>
                     Autorizo o tratamento dos meus dados pessoais (nome, CPF, contato e histórico de doações) pela
@@ -275,12 +319,13 @@ export default function Doadores() {
                     obrigações regulatórias, conforme a Lei nº 13.709/2018 (LGPD).
                   </span>
                 </label>
+                <FieldError field="consentimento_lgpd" />
               </div>
             )}
 
-            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '10px' }}>
+            <div className="form-actions">
               <button type="submit" className="btn btn-primary">{editingId ? 'Salvar Alterações' : 'Cadastrar Doador'}</button>
-              <button type="button" onClick={handleCancel} className="btn" style={{ border: '1px solid #ccc' }}>Cancelar</button>
+              <button type="button" onClick={handleCancel} className="btn btn-secondary">Cancelar</button>
             </div>
           </form>
         </div>
@@ -295,38 +340,40 @@ export default function Doadores() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Carregando...</td></tr>
+              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Carregando doadores...</td></tr>
             ) : doadores.length === 0 ? (
               <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Nenhum doador cadastrado.</td></tr>
             ) : (
               doadores.map((d) => {
-                const estilo = formatTipoSanguineo(d.tipo_sanguineo);
                 const anonimizado = !!d.anonimizado_em;
+                const sistema = isGenericDonor(d);
                 return (
                   <tr key={d.id_doador}>
-                    <td style={{ fontWeight: 500, fontStyle: anonimizado ? 'italic' : 'normal', color: anonimizado ? '#6b7280' : 'inherit' }}>{d.nome_completo}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: anonimizado ? '#9ca3af' : 'inherit' }}>{formatCpf(d.cpf)}</td>
-                    <td>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: estilo.bg, color: estilo.color, fontWeight: 'bold', fontSize: '0.85rem' }}>
-                        {estilo.text}
-                      </div>
-                    </td>
+                    <td style={{ fontWeight: 500, fontStyle: anonimizado ? 'italic' : 'normal', color: anonimizado ? 'var(--color-text-muted)' : 'inherit' }}>{d.nome_completo}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: anonimizado ? 'var(--color-text-muted)' : 'inherit' }}>{formatCpf(d.cpf)}</td>
+                    <td><span className="blood-type-chip">{formatBloodType(d.tipo_sanguineo)}</span></td>
                     <td>{d.idade} anos</td>
                     <td>
-                      {anonimizado
-                        ? <span className="badge" style={{ backgroundColor: '#f3f4f6', color: '#4b5563' }}>Anonimizado (LGPD)</span>
-                        : <span className="badge bg-green-50">Ativo</span>}
+                      {sistema
+                        ? <span className="badge badge-neutral">Registro do sistema</span>
+                        : anonimizado
+                          ? <span className="badge badge-neutral">Anonimizado (LGPD)</span>
+                          : <span className="badge badge-success">Ativo</span>}
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                        {!anonimizado && (
-                          <button onClick={() => handleEdit(d)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6', padding: '4px' }}><Pencil size={18} /></button>
-                        )}
-                        {!anonimizado && (
-                          <button onClick={() => handleAnonymize(d.id_doador)} title="Anonimizar dados (LGPD)" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f59e0b', padding: '4px' }}><ShieldOff size={18} /></button>
-                        )}
-                        <button onClick={() => handleDelete(d.id_doador)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '4px' }}><Trash2 size={18} /></button>
-                      </div>
+                      {sistema ? (
+                        <span className="field-hint">Usado nas entradas de estoque</span>
+                      ) : (
+                        <div className="row-actions">
+                          {!anonimizado && (
+                            <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(d)} title="Editar doador"><Pencil size={18} /></button>
+                          )}
+                          {!anonimizado && (
+                            <button className="icon-btn icon-btn-warning" onClick={() => handleAnonymize(d)} title="Anonimizar dados (LGPD)"><ShieldOff size={18} /></button>
+                          )}
+                          <button className="icon-btn icon-btn-danger" onClick={() => handleDelete(d)} title="Excluir doador"><Trash2 size={18} /></button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 );

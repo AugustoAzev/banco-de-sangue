@@ -3,6 +3,7 @@ import { supabaseFetch, getServiceHeaders } from '../../../src/lib/supabase';
 import { requireAuth } from '../../../src/lib/auth-helpers';
 import type { Doador } from '../../../src/lib/types';
 import { isDonorAgeEligible, donorAgeValidationMessage } from '../../../src/lib/donor-eligibility';
+import { isGenericDonor, GENERIC_DONOR_PROTECTED_MESSAGE } from '../../../src/lib/system-records';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = await requireAuth(req);
@@ -32,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const check = await supabaseFetch(
-      `/rest/v1/doadores?id_doador=eq.${encodeURIComponent(id)}&select=id_doador&limit=1`,
+      `/rest/v1/doadores?id_doador=eq.${encodeURIComponent(id)}&select=id_doador,cpf&limit=1`,
       { method: 'GET' }
     );
     if (!check.ok) {
@@ -41,6 +42,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const found: Doador[] = await check.json();
     if (found.length === 0) {
       return res.status(404).json({ detail: 'Doador não encontrado' });
+    }
+    if (isGenericDonor(found[0])) {
+      return res.status(409).json({ detail: GENERIC_DONOR_PROTECTED_MESSAGE });
     }
 
     const payload: Record<string, unknown> = { atualizado_em: new Date().toISOString() };
@@ -68,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'DELETE') {
     const check = await supabaseFetch(
-      `/rest/v1/doadores?id_doador=eq.${encodeURIComponent(id)}&select=id_doador&limit=1`,
+      `/rest/v1/doadores?id_doador=eq.${encodeURIComponent(id)}&select=id_doador,cpf&limit=1`,
       { method: 'GET' }
     );
     if (!check.ok) {
@@ -77,6 +81,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const found: Doador[] = await check.json();
     if (found.length === 0) {
       return res.status(404).json({ detail: 'Doador não encontrado' });
+    }
+    if (isGenericDonor(found[0])) {
+      return res.status(409).json({ detail: GENERIC_DONOR_PROTECTED_MESSAGE });
     }
 
     const donationCheck = await supabaseFetch(

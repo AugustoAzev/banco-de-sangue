@@ -3,6 +3,7 @@ import { supabaseFetch, getServiceHeaders } from '../../../src/lib/supabase';
 import { requireAuth } from '../../../src/lib/auth-helpers';
 import { randomUUID } from 'crypto';
 import type { Bolsa, BolsaCreate } from '../../../src/lib/types';
+import { GENERIC_DONOR_CPF } from '../../../src/lib/system-records';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = await requireAuth(req);
@@ -54,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!quantidade || quantidade < 1) return res.status(400).json({ detail: 'quantidade deve ser >= 1' });
 
     const donorRes = await supabaseFetch(
-      `/rest/v1/doadores?cpf=eq.000.000.000-00&select=id_doador&limit=1`,
+      `/rest/v1/doadores?cpf=eq.${encodeURIComponent(GENERIC_DONOR_CPF)}&select=id_doador&limit=1`,
       { method: 'GET' }
     );
     if (!donorRes.ok) {

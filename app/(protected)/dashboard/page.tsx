@@ -1,73 +1,39 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Users, Droplet, Activity, AlertTriangle, Calendar } from 'lucide-react';
+import Link from 'next/link';
+import { Users, Droplet, AlertTriangle, Calendar, Package, CheckCircle2 } from 'lucide-react';
 import api from '../../../src/services/api';
 import { useToast } from '../../../src/contexts/ToastContext';
+import { formatBloodType } from '../../../src/lib/blood-types';
+import { INVENTORY_POLICY, isSupplyLow, summarizeStock, type StockSummary } from '../../../src/lib/inventory-policy';
+
+interface DashboardData {
+  doadores: number;
+  estoque: StockSummary;
+  insumosBaixos: number;
+}
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({
-    doadores: 0,
-    bolsas: 0,
-    coletasHoje: 0,
-    nivelCritico: '-'
-  });
+  const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const { error } = useToast();
-
-  const formatType = (type: string) => {
-    if (!type) return '-';
-    const parts = type.split('_');
-    const group = parts[0];
-    const rh = parts[1] === 'POSITIVO' ? '+' : '-';
-    return `${group}${rh}`;
-  };
 
   useEffect(() => {
     async function loadStats() {
       try {
-        const [resDoadores, resBolsas] = await Promise.all([
+        const [resDoadores, resBolsas, resInsumos] = await Promise.all([
           api.get('/donors/'),
-          api.get('/inventory/bolsas')
+          api.get('/inventory/bolsas'),
+          api.get('/inventory/insumos'),
         ]);
 
-        const bolsas = resBolsas.data;
-        const hoje = new Date();
-
-        const totalColetasHoje = bolsas.filter((item: { created_at?: string }) => {
-          if (!item.created_at) return false;
-          const dataItem = new Date(item.created_at);
-          return (
-            dataItem.getDate() === hoje.getDate() &&
-            dataItem.getMonth() === hoje.getMonth() &&
-            dataItem.getFullYear() === hoje.getFullYear()
-          );
-        }).length;
-
-        const counts: Record<string, number> = {
-          'A_POSITIVO': 0, 'A_NEGATIVO': 0,
-          'B_POSITIVO': 0, 'B_NEGATIVO': 0,
-          'AB_POSITIVO': 0, 'AB_NEGATIVO': 0,
-          'O_POSITIVO': 0, 'O_NEGATIVO': 0
-        };
-
-        bolsas.forEach((b: { tipo_sangue: string }) => {
-          if (counts[b.tipo_sangue] !== undefined) {
-            counts[b.tipo_sangue]++;
-          }
-        });
-
-        const entries = Object.entries(counts);
-        entries.sort((a, b) => a[1] - b[1]);
-
-        const menorEstoque = entries[0];
-        const tipoCriticoFormatado = formatType(menorEstoque[0]);
-
-        setStats({
+        setData({
           doadores: resDoadores.data.length,
-          bolsas: resBolsas.data.length,
-          coletasHoje: totalColetasHoje,
-          nivelCritico: tipoCriticoFormatado
+          // A API devolve uma linha por tipo sanguíneo; o total é a soma das quantidades
+          // (antes o painel contava as linhas e mostrava o número de tipos).
+          estoque: summarizeStock(resBolsas.data),
+          insumosBaixos: resInsumos.data.filter((i: { quantidade: number }) => isSupplyLow(i.quantidade)).length,
         });
       } catch {
         error('Não foi possível carregar as estatísticas do painel.');
@@ -78,11 +44,32 @@ export default function Dashboard() {
     loadStats();
   }, [error]);
 
+  const estoque = data?.estoque;
+  const temTipoCritico = !!estoque && estoque.belowMinimum.length > 0;
+  const valor = (v: string | number | undefined) => (loading || v === undefined ? '—' : v);
+  const plural = (n: number, um: string, varios: string) => (n === 1 ? um : varios);
+
   const cards = [
-    { title: 'Total de Doadores', value: loading ? '-' : stats.doadores, icon: Users, color: '#3b82f6', bg: '#eff6ff', desc: 'Cadastrados no sistema', path: '/doadores' },
-    { title: 'Bolsas em Estoque', value: loading ? '-' : stats.bolsas, icon: Droplet, color: '#ef4444', bg: '#fef2f2', desc: 'Disponíveis para uso', path: '/estoque' },
-    { title: 'Coletas Hoje', value: loading ? '-' : stats.coletasHoje, icon: Activity, color: '#10b981', bg: '#ecfdf5', desc: 'Registradas até agora', path: null },
-    { title: 'Nível Crítico', value: loading ? '-' : stats.nivelCritico, icon: AlertTriangle, color: '#f59e0b', bg: '#fffbeb', desc: 'Menor estoque atual', path: '/estoque' },
+    {
+      title: 'Total de Doadores', value: valor(data?.doadores), icon: Users, color: '#2563eb', bg: '#eff6ff',
+      desc: 'Cadastrados no sistema', path: '/doadores', alerta: false,
+    },
+    {
+      title: 'Bolsas em Estoque', value: valor(estoque?.totalBags), icon: Droplet, color: '#dc2626', bg: '#fef2f2',
+      desc: 'Somando todos os tipos sanguíneos', path: '/estoque', alerta: false,
+    },
+    {
+      title: 'Menor Estoque', value: valor(estoque && formatBloodType(estoque.lowest.tipo)), icon: AlertTriangle,
+      color: '#d97706', bg: '#fffbeb', path: '/estoque', alerta: temTipoCritico,
+      desc: estoque
+        ? `${estoque.lowest.quantidade} ${plural(estoque.lowest.quantidade, 'bolsa disponível', 'bolsas disponíveis')}`
+        : 'Tipo com menos bolsas',
+    },
+    {
+      title: 'Insumos em Baixo Estoque', value: valor(data?.insumosBaixos), icon: Package, color: '#7c3aed', bg: '#f5f3ff',
+      desc: `Itens com menos de ${INVENTORY_POLICY.lowSupplyThreshold} unidades`, path: '/insumos',
+      alerta: !!data && data.insumosBaixos > 0,
+    },
   ];
 
   return (
@@ -99,30 +86,20 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-stats">
-        {cards.map((card, index) => (
-          <a
-            key={index}
-            href={card.path || '#'}
-            onClick={(e) => { if (!card.path) e.preventDefault(); }}
-            style={{ textDecoration: 'none' }}
-          >
-            <div
-              className="card stat-card"
-              style={{
-                cursor: card.path ? 'pointer' : 'default',
-              }}
-            >
+        {cards.map((card) => (
+          <Link key={card.title} href={card.path} className="stat-card-link">
+            <div className="card stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                 <div className="stat-icon" style={{ backgroundColor: card.bg, color: card.color }}>
                   <card.icon size={24} />
                 </div>
-                {index === 3 && <span className="badge badge-warning">Atenção</span>}
+                {card.alerta && <span className="badge badge-warning">Atenção</span>}
               </div>
-              <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '0.25rem' }}>{card.title}</p>
-              <p style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--color-text-main)' }}>{card.value}</p>
-              <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>{card.desc}</p>
+              <p className="stat-title">{card.title}</p>
+              <p className="stat-value">{card.value}</p>
+              <p className="stat-desc">{card.desc}</p>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
 
@@ -136,24 +113,39 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card" style={{ backgroundColor: '#fff7ed', borderColor: '#fed7aa' }}>
-          <h2 className="panel-title" style={{ color: '#9a3412' }}>
-            <AlertTriangle size={18} /> Avisos do Sistema
-          </h2>
-          <p style={{ fontSize: '0.9rem', color: '#9a3412', marginTop: '0.5rem', lineHeight: 1.6 }}>
-            O estoque de sangue <strong>{stats.nivelCritico}</strong> está abaixo do nível de segurança.
-          </p>
-          <a href="/doadores" className="btn" style={{
-            backgroundColor: '#ffffff',
-            color: '#9a3412',
-            border: '1px solid #fed7aa',
-            marginTop: '1rem',
-            width: '100%',
-            fontSize: '0.85rem'
-          }}>
-            Ver Lista de Doadores
-          </a>
-        </div>
+        {temTipoCritico ? (
+          <div className="card notice-card notice-warning">
+            <h2 className="panel-title">
+              <AlertTriangle size={18} /> Avisos do Sistema
+            </h2>
+            <p>
+              {estoque!.belowMinimum.length} {plural(estoque!.belowMinimum.length, 'tipo sanguíneo está', 'tipos sanguíneos estão')} abaixo
+              do estoque mínimo de {INVENTORY_POLICY.minimumBagsPerType} bolsas:
+            </p>
+            <ul className="notice-list">
+              {estoque!.belowMinimum.map(t => (
+                <li key={t.tipo}>
+                  <strong>{formatBloodType(t.tipo)}</strong>
+                  <span>{t.quantidade === 0 ? 'sem estoque' : `${t.quantidade} ${plural(t.quantidade, 'bolsa', 'bolsas')}`}</span>
+                </li>
+              ))}
+            </ul>
+            <Link href="/doadores" className="btn btn-secondary notice-action">
+              Ver Lista de Doadores
+            </Link>
+          </div>
+        ) : (
+          <div className="card notice-card notice-ok">
+            <h2 className="panel-title">
+              <CheckCircle2 size={18} /> Avisos do Sistema
+            </h2>
+            <p>
+              {loading
+                ? 'Verificando o estoque...'
+                : `Todos os tipos sanguíneos estão com pelo menos ${INVENTORY_POLICY.minimumBagsPerType} bolsas em estoque.`}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

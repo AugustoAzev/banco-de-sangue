@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseFetch, getServiceHeaders } from '../../../../src/lib/supabase';
 import { requireAuth } from '../../../../src/lib/auth-helpers';
 import type { Doador } from '../../../../src/lib/types';
+import { isGenericDonor, GENERIC_DONOR_PROTECTED_MESSAGE } from '../../../../src/lib/system-records';
 
 const CAMPOS_ANONIMIZADOS = {
   nome_completo: 'Doador Anonimizado (LGPD)',
@@ -23,15 +24,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const id = query.id as string;
 
   const check = await supabaseFetch(
-    `/rest/v1/doadores?id_doador=eq.${encodeURIComponent(id)}&select=id_doador,anonimizado_em&limit=1`,
+    `/rest/v1/doadores?id_doador=eq.${encodeURIComponent(id)}&select=id_doador,cpf,anonimizado_em&limit=1`,
     { method: 'GET' }
   );
   if (!check.ok) {
     return res.status(502).json({ detail: 'Erro ao verificar doador' });
   }
-  const found: Pick<Doador, 'id_doador' | 'anonimizado_em'>[] = await check.json();
+  const found: Pick<Doador, 'id_doador' | 'cpf' | 'anonimizado_em'>[] = await check.json();
   if (found.length === 0) {
     return res.status(404).json({ detail: 'Doador não encontrado' });
+  }
+  // Anonimizar o doador genérico removeria o CPF usado para localizar o registro
+  // nas entradas manuais de estoque, quebrando o cadastro de novas bolsas.
+  if (isGenericDonor(found[0])) {
+    return res.status(409).json({ detail: GENERIC_DONOR_PROTECTED_MESSAGE });
   }
 
   // Idempotente: se já foi anonimizado antes, não sobrescreve o timestamp original.
