@@ -1,0 +1,229 @@
+{
+  "label": "antes",
+  "data": "2026-10-04T20:19:58.076Z",
+  "paginas": {
+    "login": {
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 2,
+          "exemplos": [
+            ".login-intro",
+            ".login-footer"
+          ]
+        }
+      ]
+    },
+    "dashboard": {
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 7,
+          "exemplos": [
+            ".app-user > div > p:nth-child(2)",
+            ".text-muted",
+            "div:nth-child(2) > span"
+          ]
+        }
+      ],
+      "ariaMain": "- main:\n  - heading \"Painel de Controle\" [level=1]\n  - paragraph: Visão geral do hemocentro\n  - text: domingo, 4 de outubro\n  - link \"Total de Doadores 13 Cadastrados no sistema\":\n    - /url: /doadores\n    - paragraph: Total de Doadores\n    - paragraph: \"13\"\n    - paragraph: Cadastrados no sistema\n  - link \"Bolsas em Estoque 6 Disponíveis para uso\":\n    - /url: /estoque\n    - paragraph: Bolsas em Estoque\n    - paragraph: \"6\"\n    - paragraph: Disponíveis para uso\n  - link \"Coletas Hoje 0 Registradas até agora\":\n    - /url: \"#\"\n    - paragraph: Coletas Hoje\n    - paragraph: \"0\"\n    - paragraph: Registradas até agora\n  - link \"Atenção Nível Crítico B- Menor estoque atual\":\n    - /url: /estoque\n    - text: Atenção\n    - paragraph: Nível Crítico\n    - paragraph: B-\n    - paragraph: Menor estoque atual\n  - heading \"Movimentações Recentes\" [level=2]\n  - paragraph: Nenhuma movimentação registrada hoje.\n  - heading \"Avisos do Sistema\" [level=2]\n  - paragraph:\n    - text: O estoque de sangue\n    - strong: B-\n    - text: está abaixo do nível de segurança.\n  - link \"Ver Lista de Doadores\":\n    - /url: /doadores"
+    },
+    "doadores": {
+      "axe": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "help": "Buttons must have discernible text",
+          "nodes": 25,
+          "exemplos": [
+            "tr:nth-child(1) > td:nth-child(6) > div > button",
+            "tr:nth-child(2) > td:nth-child(6) > div > button:nth-child(1)",
+            "tr:nth-child(2) > td:nth-child(6) > div > button:nth-child(3)"
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 2,
+          "exemplos": [
+            ".app-user > div > p:nth-child(2)",
+            ".text-muted"
+          ]
+        }
+      ],
+      "ariaMain": "- main:\n  - heading \"Gestão de Doadores\" [level=1]\n  - paragraph: Cadastre, edite e gerencie os doadores\n  - button \"Novo Doador\"\n  - table:\n    - rowgroup:\n      - row \"Nome CPF Tipo Idade Status Ações\":\n        - columnheader \"Nome\"\n        - columnheader \"CPF\"\n        - columnheader \"Tipo\"\n        - columnheader \"Idade\"\n        - columnheader \"Status\"\n        - columnheader \"Ações\"\n    - rowgroup:\n      - row \"Doador Anonimizado (LGPD) — B+ 31 anos Anonimizado (LGPD)\":\n        - cell \"Doador Anonimizado (LGPD)\"\n        - cell \"—\"\n        - cell \"B+\"\n        - cell \"31 anos\"\n        - cell \"Anonimizado (LGPD)\"\n        - cell:\n          - button\n      - row \"Entrada Manual de Estoque 000.000.000-00 O+ 40 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Entrada Manual de Estoque\"\n        - cell \"000.000.000-00\"\n        - cell \"O+\"\n        - cell \"40 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Estefany Absoluta 777.888.999-00 AB+ 42 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Estefany Absoluta\"\n        - cell \"777.888.999-00\"\n        - cell \"AB+\"\n        - cell \"42 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Fernanda Costa Souza 999.888.777-66 A- 25 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Fernanda Costa Souza\"\n        - cell \"999.888.777-66\"\n        - cell \"A-\"\n        - cell \"25 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Joao Carlos Pereira 555.666.888-99 O- 35 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Joao Carlos Pereira\"\n        - cell \"555.666.888-99\"\n        - cell \"O-\"\n        - cell \"35 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Jorge Fernandes 111.111.111-13 B- 35 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Jorge Fernandes\"\n        - cell \"111.111.111-13\"\n        - cell \"B-\"\n        - cell \"35 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Juliana Martins Dias 222.333.444-88 B- 29 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Juliana Martins Dias\"\n        - cell \"222.333.444-88\"\n        - cell \"B-\"\n        - cell \"29 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Luciana Vieira Campos 123.456.789-00 O+ 38 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Luciana Vieira Campos\"\n        - cell \"123.456.789-00\"\n        - cell \"O+\"\n        - cell \"38 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Maria Oliveira Santos 111.444.777-35 A+ 28 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Maria Oliveira Santos\"\n        - cell \"111.444.777-35\"\n        - cell \"A+\"\n        - cell \"28 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Paulo Roberto Nunes 666.777.888-99 AB- 52 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Paulo Roberto Nunes\"\n        - cell \"666.777.888-99\"\n        - cell \"AB-\"\n        - cell \"52 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Roberto Almeida Rocha 444.555.666-77 O+ 48 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Roberto Almeida Rocha\"\n        - cell \"444.555.666-77\"\n        - cell \"O+\"\n        - cell \"48 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Silvano Salles o Cantor Apaixonado 333.222.111-45 AB- 44 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Silvano Salles o Cantor Apaixonado\"\n        - cell \"333.222.111-45\"\n        - cell \"AB-\"\n        - cell \"44 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button\n      - row \"Wilian Tavares 111.111.111-11 O+ 23 anos Ativo Anonimizar dados (LGPD)\":\n        - cell \"Wilian Tavares\"\n        - cell \"111.111.111-11\"\n        - cell \"O+\"\n        - cell \"23 anos\"\n        - cell \"Ativo\"\n        - cell \"Anonimizar dados (LGPD)\":\n          - button\n          - button \"Anonimizar dados (LGPD)\"\n          - button"
+    },
+    "estoque": {
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 2,
+          "exemplos": [
+            ".app-user > div > p:nth-child(2)",
+            ".page-header > div > p"
+          ]
+        },
+        {
+          "id": "select-name",
+          "impact": "critical",
+          "help": "Select element must have an accessible name",
+          "nodes": 1,
+          "exemplos": [
+            "select"
+          ]
+        }
+      ],
+      "ariaMain": "- main:\n  - heading \"Estoque de Sangue\" [level=1]\n  - paragraph: Monitoramento de hemocomponentes\n  - button \"Registrar Entrada\"\n  - text: \"Filtrar por:\"\n  - combobox:\n    - option \"Todos os Tipos\" [selected]\n    - option \"A+\"\n    - option \"A-\"\n    - option \"B+\"\n    - option \"B-\"\n    - option \"AB+\"\n    - option \"AB-\"\n    - option \"O+\"\n    - option \"O-\"\n  - table:\n    - rowgroup:\n      - row \"ID Lote Tipo Sanguíneo Qtd. Data Status Ações\":\n        - columnheader \"ID Lote\"\n        - columnheader \"Tipo Sanguíneo\"\n        - columnheader \"Qtd.\"\n        - columnheader \"Data\"\n        - columnheader \"Status\"\n        - columnheader \"Ações\"\n    - rowgroup:\n      - row \"#3a35ae81... O+ 2 25/06/2026 Disponível Excluir Lote\":\n        - cell \"#3a35ae81...\"\n        - cell \"O+\"\n        - cell \"2\"\n        - cell \"25/06/2026\"\n        - cell \"Disponível\"\n        - cell \"Excluir Lote\":\n          - button \"Excluir Lote\"\n      - row \"#0d891207... A+ 3 25/06/2026 Disponível Excluir Lote\":\n        - cell \"#0d891207...\"\n        - cell \"A+\"\n        - cell \"3\"\n        - cell \"25/06/2026\"\n        - cell \"Disponível\"\n        - cell \"Excluir Lote\":\n          - button \"Excluir Lote\"\n      - row \"#a0add664... AB+ 1 24/06/2026 Disponível Excluir Lote\":\n        - cell \"#a0add664...\"\n        - cell \"AB+\"\n        - cell \"1\"\n        - cell \"24/06/2026\"\n        - cell \"Disponível\"\n        - cell \"Excluir Lote\":\n          - button \"Excluir Lote\"\n      - row \"#9965438e... O- 1 23/06/2026 Disponível Excluir Lote\":\n        - cell \"#9965438e...\"\n        - cell \"O-\"\n        - cell \"1\"\n        - cell \"23/06/2026\"\n        - cell \"Disponível\"\n        - cell \"Excluir Lote\":\n          - button \"Excluir Lote\"\n      - row \"#179b5530... B+ 1 20/06/2026 Disponível Excluir Lote\":\n        - cell \"#179b5530...\"\n        - cell \"B+\"\n        - cell \"1\"\n        - cell \"20/06/2026\"\n        - cell \"Disponível\"\n        - cell \"Excluir Lote\":\n          - button \"Excluir Lote\"\n      - row \"#f1b9c39e... A- 1 19/06/2026 Disponível Excluir Lote\":\n        - cell \"#f1b9c39e...\"\n        - cell \"A-\"\n        - cell \"1\"\n        - cell \"19/06/2026\"\n        - cell \"Disponível\"\n        - cell \"Excluir Lote\":\n          - button \"Excluir Lote\""
+    },
+    "insumos": {
+      "axe": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "help": "Buttons must have discernible text",
+          "nodes": 18,
+          "exemplos": [
+            "tr:nth-child(1) > td:nth-child(5) > button:nth-child(1)",
+            "tr:nth-child(1) > td:nth-child(5) > button:nth-child(2)",
+            "tr:nth-child(2) > td:nth-child(5) > button:nth-child(1)"
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 2,
+          "exemplos": [
+            ".app-user > div > p:nth-child(2)",
+            ".page-header > div > p"
+          ]
+        }
+      ],
+      "ariaMain": "- main:\n  - heading \"Gestão de Insumos\" [level=1]\n  - paragraph: Controle de materiais e descartáveis\n  - button \"Adicionar Item\"\n  - table:\n    - rowgroup:\n      - row \"ID Material / Insumo Quantidade em Estoque Status Ações\":\n        - columnheader \"ID\"\n        - columnheader \"Material / Insumo\"\n        - columnheader \"Quantidade em Estoque\"\n        - columnheader \"Status\"\n        - columnheader \"Ações\"\n    - rowgroup:\n      - row \"#2 Agulhas hipodermicas 20G 350 Normal\":\n        - cell \"#2\"\n        - cell \"Agulhas hipodermicas 20G\"\n        - cell \"350\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button\n      - row \"#3 Tourniquets (garrote) de borracha 200 Normal\":\n        - cell \"#3\"\n        - cell \"Tourniquets (garrote) de borracha\"\n        - cell \"200\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button\n      - row \"#4 Gazeesteril 10x10cm 1000 Normal\":\n        - cell \"#4\"\n        - cell \"Gazeesteril 10x10cm\"\n        - cell \"1000\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button\n      - row \"#5 Algodao hidrofilo 800 Normal\":\n        - cell \"#5\"\n        - cell \"Algodao hidrofilo\"\n        - cell \"800\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button\n      - row \"#6 Alcool 70% (1L) 150 Normal\":\n        - cell \"#6\"\n        - cell \"Alcool 70% (1L)\"\n        - cell \"150\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button\n      - row \"#7 Luvas descartaveis (pares) 2000 Normal\":\n        - cell \"#7\"\n        - cell \"Luvas descartaveis (pares)\"\n        - cell \"2000\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button\n      - row \"#8 Kits de coleta de sangue 300 Normal\":\n        - cell \"#8\"\n        - cell \"Kits de coleta de sangue\"\n        - cell \"300\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button\n      - row \"#9 Tubos de ensaio com EDTA 600 Normal\":\n        - cell \"#9\"\n        - cell \"Tubos de ensaio com EDTA\"\n        - cell \"600\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button\n      - row \"#10 Fitas microhematocrito 400 Normal\":\n        - cell \"#10\"\n        - cell \"Fitas microhematocrito\"\n        - cell \"400\"\n        - cell \"Normal\"\n        - cell:\n          - button\n          - button"
+    },
+    "doadores-formulario": {
+      "axe": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "help": "Buttons must have discernible text",
+          "nodes": 26,
+          "exemplos": [
+            ".card > div > button",
+            "tr:nth-child(1) > td:nth-child(6) > div > button",
+            "tr:nth-child(2) > td:nth-child(6) > div > button:nth-child(1)"
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 2,
+          "exemplos": [
+            ".app-user > div > p:nth-child(2)",
+            ".text-muted"
+          ]
+        },
+        {
+          "id": "label",
+          "impact": "critical",
+          "help": "Form elements must have labels",
+          "nodes": 5,
+          "exemplos": [
+            "input[name=\"nome\"]",
+            "input[min=\"16\"]",
+            "input[type=\"email\"]"
+          ]
+        },
+        {
+          "id": "select-name",
+          "impact": "critical",
+          "help": "Select element must have an accessible name",
+          "nodes": 2,
+          "exemplos": [
+            "select[name=\"sexo\"]",
+            "select[name=\"tipo_sanguineo\"]"
+          ]
+        }
+      ],
+      "ariaForm": "- text: Nome Completo\n- textbox\n- text: CPF\n- textbox \"000.000.000-00\"\n- text: Idade\n- spinbutton\n- text: Sexo\n- combobox:\n  - option \"Selecione\" [selected]\n  - option \"Masculino\"\n  - option \"Feminino\"\n- text: Tipo Sanguíneo\n- combobox:\n  - option \"Selecione\" [selected]\n  - option \"A +\"\n  - option \"A -\"\n  - option \"B +\"\n  - option \"B -\"\n  - option \"AB +\"\n  - option \"AB -\"\n  - option \"O +\"\n  - option \"O -\"\n- text: Email\n- textbox\n- text: Telefone\n- textbox\n- text: CEP\n- textbox \"00000-000\"\n- text: Endereço\n- textbox\n- heading \"Critérios de Triagem\" [level=3]\n- checkbox \"Doador tem entre 16 e 69 anos\"\n- text: Doador tem entre 16 e 69 anos\n- checkbox \"Doador pesa mais de 50kg\"\n- text: Doador pesa mais de 50kg\n- checkbox \"Não tomou vacina contra gripe nas últimas 48h\"\n- text: Não tomou vacina contra gripe nas últimas 48h\n- heading \"Privacidade e Proteção de Dados (LGPD)\" [level=3]\n- checkbox \"Autorizo o tratamento dos meus dados pessoais (nome, CPF, contato e histórico de doações) pela unidade de coleta, exclusivamente para fins de triagem, controle de doações e cumprimento de obrigações regulatórias, conforme a Lei nº 13.709/2018 (LGPD).\"\n- text: Autorizo o tratamento dos meus dados pessoais (nome, CPF, contato e histórico de doações) pela unidade de coleta, exclusivamente para fins de triagem, controle de doações e cumprimento de obrigações regulatórias, conforme a Lei nº 13.709/2018 (LGPD).\n- button \"Cadastrar Doador\"\n- button \"Cancelar\""
+    },
+    "dialogo-confirmacao": {
+      "axe": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "help": "Buttons must have discernible text",
+          "nodes": 25,
+          "exemplos": [
+            "tr:nth-child(1) > td:nth-child(6) > div > button",
+            "tr:nth-child(2) > td:nth-child(6) > div > button:nth-child(1)",
+            "tr:nth-child(2) > td:nth-child(6) > div > button:nth-child(3)"
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 2,
+          "exemplos": [
+            ".app-user > div > p:nth-child(2)",
+            ".text-muted"
+          ]
+        }
+      ]
+    }
+  },
+  "teclado": {
+    "tabsAteNovoDoador": 6,
+    "tabsAtePrimeiraAcaoTabela": 7,
+    "nomeAcessivelPrimeiraAcao": "(sem nome)",
+    "focoAoAbrirDialogo": {
+      "dentroDoDialogo": false,
+      "elemento": "BUTTON",
+      "texto": ""
+    }
+  },
+  "lighthouse": {
+    "dashboard": {
+      "score": 96,
+      "falhas": [
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "doadores": {
+      "score": 90,
+      "falhas": [
+        "Buttons do not have an accessible name",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "estoque": {
+      "score": 92,
+      "falhas": [
+        "Background and foreground colors do not have a sufficient contrast ratio.",
+        "Select elements do not have associated label elements."
+      ]
+    },
+    "insumos": {
+      "score": 90,
+      "falhas": [
+        "Buttons do not have an accessible name",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "login": {
+      "score": 96,
+      "falhas": [
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    }
+  }
+}
