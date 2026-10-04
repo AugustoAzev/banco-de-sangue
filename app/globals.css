@@ -101,6 +101,7 @@ body {
 }
 
 .table-container {
+  position: relative; /* contém os .sr-only das células; sem isso a página fica mais larga que a tela */
   width: 100%;
   overflow-x: auto;
   background: white;

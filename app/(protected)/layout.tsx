@@ -97,13 +97,6 @@ function Sidebar() {
 function ProtectedContent({ children }: { children: React.ReactNode }) {
   const { signed, loading } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
-
-  // Cada tela com título próprio na aba e no leitor de tela (WCAG 2.4.2).
-  useEffect(() => {
-    const pagina = menuItems.find(item => item.path === pathname)?.label;
-    document.title = pagina ? `${pagina} — Banco de Sangue` : 'Banco de Sangue';
-  }, [pathname]);
 
   useEffect(() => {
     if (!loading && !signed) {
