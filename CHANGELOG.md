@@ -8,12 +8,12 @@ Documentação: [`docs/redesign/`](./docs/redesign/) (Etapa 1) e [`docs/evolucao
 
 ### Adicionado
 
-- **Registro de saída de bolsas, por despacho ou descarte.** A saída muda o status da bolsa em vez de apagar o registro. As bolsas mais antigas do tipo saem primeiro, e o motivo é obrigatório no descarte. Novas rotas: `POST /api/inventory/saidas` e `GET /api/inventory/movimentacoes`.
+- **Registro de saída de bolsas, por despacho ou descarte.** A saída muda o status da bolsa em vez de apagar o registro. As bolsas mais antigas do tipo saem primeiro, e o motivo é obrigatório no descarte. Novas rotas: [`POST /api/inventory/saidas`](./pages/api/inventory/saidas.ts) e [`GET /api/inventory/movimentacoes`](./pages/api/inventory/movimentacoes.ts).
 - **Histórico de movimentações** (entradas, despachos e descartes) no painel e na tela de estoque. Substitui o card "Movimentações Recentes", que era um texto fixo.
 - **Busca de doadores** por nome (sem diferenciar acentos) ou CPF (com ou sem máscara), tipo sanguíneo e situação (ativo ou anonimizado).
-- **Política de estoque** (`src/lib/inventory-policy.ts`): estoque mínimo de 3 bolsas por tipo e limite de baixo estoque de insumos, definidos num só lugar.
+- **Política de estoque** ([`src/lib/inventory-policy.ts`](./src/lib/inventory-policy.ts)): estoque mínimo de 3 bolsas por tipo e limite de baixo estoque de insumos, definidos num só lugar.
 - **Card "Insumos em Baixo Estoque"** no painel.
-- **Roteiro de evidências** `scripts/capturar-evidencias.mjs`: capturas de tela, axe-core e Lighthouse.
+- **Roteiro de evidências** [`scripts/capturar-evidencias.mjs`](./scripts/capturar-evidencias.mjs): capturas de tela, axe-core e Lighthouse.
 - **47 testes automatizados novos**: de 33 para 80.
 
 ### Alterado
@@ -59,13 +59,13 @@ Documentação: [`manutencao-adaptativa/`](./manutencao-adaptativa/) e [`RELATOR
 ### Adicionado
 
 - **Consentimento LGPD** obrigatório e datado no cadastro de doador.
-- **Anonimização de doador** (`PATCH /api/donors/{id}/anonymize`), que preserva o histórico de doações.
-- **Integração com o ViaCEP** (`GET /api/cep/{cep}`) para preencher o endereço do doador.
+- **Anonimização de doador** ([`PATCH /api/donors/{id}/anonymize`](./pages/api/donors/[id]/anonymize.ts)), que preserva o histórico de doações.
+- **Integração com o ViaCEP** ([`GET /api/cep/{cep}`](./pages/api/cep/[cep].ts)) para preencher o endereço do doador.
 
 ### Alterado
 
 - **TypeScript fixado em `5.9.3`:** a versão 7 quebra o `ts-jest` e o `next build`.
-- **Regras de elegibilidade de doadores centralizadas** em `src/lib/donor-eligibility.ts` (manutenção preventiva, 2026-09-09).
+- **Regras de elegibilidade de doadores centralizadas** em [`src/lib/donor-eligibility.ts`](./src/lib/donor-eligibility.ts) (manutenção preventiva, 2026-09-09).
 
 ### Corrigido
 
@@ -83,6 +83,6 @@ Documentação: [`manutencao-adaptativa/`](./manutencao-adaptativa/) e [`RELATOR
 
 - **Primeira versão:** login com JWT, cadastro de doadores, estoque de bolsas por tipo sanguíneo, insumos e painel.
 
-[1.2.0]: https://github.com/AugustoAzev/banco-de-sangue/compare/014e608...v1.2.0
+[1.2.0]: https://github.com/AugustoAzev/banco-de-sangue/pull/78
 [1.1.0]: https://github.com/AugustoAzev/banco-de-sangue/compare/release/1.0.0...014e608
 [1.0.0]: https://github.com/AugustoAzev/banco-de-sangue/tree/release/1.0.0

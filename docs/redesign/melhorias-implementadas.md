@@ -1,8 +1,10 @@
 # Melhorias Implementadas — Redesign (TP4, Etapa 1)
 
+> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · **Melhorias do redesign** · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+
 Cada mudança abaixo corrige um ou mais problemas da [avaliação heurística](./avaliacao-heuristica.md) (IDs `P01`…`P17`) e indica a heurística de Nielsen que ela aplica. Todas as capturas "antes" e "depois" foram feitas com o mesmo roteiro automatizado, sobre o mesmo banco de dados, para serem comparáveis.
 
-**Commit:** `feat(redesign): aplicar heuristicas de Nielsen nas telas existentes (TP4 etapa 1)`
+**Pull Request:** [#78](https://github.com/AugustoAzev/banco-de-sangue/pull/78) · **Commit:** [`feat(redesign): aplicar heuristicas de Nielsen nas telas existentes (TP4 etapa 1)`](https://github.com/AugustoAzev/banco-de-sangue/commit/40ab87d4cdf9233c702df28bbbfff06d7dc1eadd)
 **Escopo:** manutenção das telas existentes. Nenhuma tela nova e nenhuma mudança no modelo de dados.
 
 ## Resumo
@@ -33,7 +35,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 **Mudança:**
 - **Total correto:** o painel soma as quantidades de todos os tipos.
-- **Estoque mínimo definido:** foi criada a política `src/lib/inventory-policy.ts`, com mínimo de 3 bolsas por tipo, ponto único de manutenção como o `donor-eligibility.ts` do TP anterior.
+- **Estoque mínimo definido:** foi criada a política [`src/lib/inventory-policy.ts`](../../src/lib/inventory-policy.ts), com mínimo de 3 bolsas por tipo, ponto único de manutenção como o [`donor-eligibility.ts`](../../src/lib/donor-eligibility.ts) do TP anterior.
 - **"Menor Estoque" com a quantidade:** o card mostra o tipo e quantas bolsas há ("B− · 0 bolsas disponíveis").
 - **Aviso só quando há motivo:** o "Avisos do Sistema" lista **todos** os tipos abaixo do mínimo, com a quantidade de cada um. Se nenhum estiver abaixo, mostra uma mensagem verde de que o estoque está adequado. O selo "Atenção" só aparece quando há problema.
 - **Card de insumos no lugar de "Coletas Hoje":** "Coletas Hoje" saiu, porque o sistema registra entradas de estoque, não coletas por doador, e o valor era calculado errado. No lugar entrou "Insumos em Baixo Estoque", que leva à tela de insumos. Agora os quatro cards são links que funcionam.
@@ -42,8 +44,8 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 |---|---|
 | ![Painel antes](screenshots/antes/02-dashboard.png) | ![Painel depois](screenshots/depois/02-dashboard.png) |
 
-**Arquivos:** `app/(protected)/dashboard/page.tsx`, `src/lib/inventory-policy.ts`.
-**Teste:** `tests/redesign-painel-estoque.test.ts` reproduz o estoque real da captura (9 bolsas em 6 tipos) e garante que o total é 9.
+**Arquivos:** [`app/(protected)/dashboard/page.tsx`](../../app/(protected)/dashboard/page.tsx), [`src/lib/inventory-policy.ts`](../../src/lib/inventory-policy.ts).
+**Teste:** [`tests/redesign-painel-estoque.test.ts`](../../tests/redesign-painel-estoque.test.ts) reproduz o estoque real da captura (9 bolsas em 6 tipos) e garante que o total é 9.
 
 ## M02 — Estoque mostra todos os tipos e a situação (H1, H2, H8)
 
@@ -59,7 +61,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 |---|---|
 | ![Estoque antes](screenshots/antes/04-estoque.png) | ![Estoque depois](screenshots/depois/04-estoque.png) |
 
-**Arquivos:** `app/(protected)/estoque/page.tsx`.
+**Arquivos:** [`app/(protected)/estoque/page.tsx`](../../app/(protected)/estoque/page.tsx).
 
 ## M03 — Registro interno do sistema protegido (H5)
 
@@ -67,22 +69,22 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 **Mudança:**
 - **Na tela:** o registro aparece com o selo **"Registro do sistema"** e a nota "Usado nas entradas de estoque", sem botões de ação.
-- **Na API:** `PUT` e `DELETE /api/donors/{id}` e `PATCH /api/donors/{id}/anonymize` passam a recusar esse registro com `409`. A proteção não depende só da interface.
-- **Identificação centralizada:** a regra que reconhece esse doador está em `src/lib/system-records.ts`, também usado pelo `POST /inventory/bolsas`.
+- **Na API:** [`PUT` e `DELETE /api/donors/{id}`](../../pages/api/donors/[id].ts) e [`PATCH /api/donors/{id}/anonymize`](../../pages/api/donors/[id]/anonymize.ts) passam a recusar esse registro com `409`. A proteção não depende só da interface.
+- **Identificação centralizada:** a regra que reconhece esse doador está em [`src/lib/system-records.ts`](../../src/lib/system-records.ts), também usado pelo [`POST /inventory/bolsas`](../../pages/api/inventory/bolsas.ts).
 
 | Antes | Depois |
 |---|---|
 | ![Lista antes](screenshots/antes/03-doadores.png) | ![Lista depois](screenshots/depois/03-doadores.png) |
 
-**Arquivos:** `src/lib/system-records.ts`, `pages/api/donors/[id].ts`, `pages/api/donors/[id]/anonymize.ts`, `pages/api/inventory/bolsas.ts`, `app/(protected)/doadores/page.tsx`.
-**Teste:** `tests/redesign-doadores.test.ts` cobre as três rotas recusando o registro (`409`) sem chegar a gravar no banco.
+**Arquivos:** [`src/lib/system-records.ts`](../../src/lib/system-records.ts), [`pages/api/donors/[id].ts`](../../pages/api/donors/[id].ts), [`pages/api/donors/[id]/anonymize.ts`](../../pages/api/donors/[id]/anonymize.ts), [`pages/api/inventory/bolsas.ts`](../../pages/api/inventory/bolsas.ts), [`app/(protected)/doadores/page.tsx`](../../app/(protected)/doadores/page.tsx).
+**Teste:** [`tests/redesign-doadores.test.ts`](../../tests/redesign-doadores.test.ts) cobre as três rotas recusando o registro (`409`) sem chegar a gravar no banco.
 
 ## M04 — Erros junto ao campo (H9)
 
 **Problema (P08):** o erro aparecia num aviso no topo da tela, longe do campo, e sumia em 6 segundos; o campo com problema ficava fora da vista.
 
 **Mudança:**
-- **Validação antes do envio:** o formulário valida antes de enviar, com as mesmas regras de idade de `donor-eligibility.ts`.
+- **Validação antes do envio:** o formulário valida antes de enviar, com as mesmas regras de idade de [`donor-eligibility.ts`](../../src/lib/donor-eligibility.ts).
 - **Mensagem junto do campo:** cada erro aparece **abaixo do próprio campo**, com borda vermelha e o símbolo ⚠, e diz como corrigir ("O CPF deve ter 11 dígitos (foram informados 3)").
 - **A mensagem fica até a correção:** só some quando o campo é corrigido.
 - **Rolagem até o erro:** depois do envio, a tela rola até o primeiro campo com erro.
@@ -92,8 +94,8 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 |---|---|---|
 | ![Erro antes](screenshots/antes/07-doadores-erro-cpf.png) | ![Erro some](screenshots/antes/08-doadores-erro-apos-6s.png) | ![Erro permanece](screenshots/depois/08-doadores-erro-apos-6s.png) |
 
-**Arquivos:** `src/lib/donor-form-validation.ts`, `app/(protected)/doadores/page.tsx`.
-**Teste:** `tests/redesign-doadores.test.ts` (validação e associação de erros da API ao campo).
+**Arquivos:** [`src/lib/donor-form-validation.ts`](../../src/lib/donor-form-validation.ts), [`app/(protected)/doadores/page.tsx`](../../app/(protected)/doadores/page.tsx).
+**Teste:** [`tests/redesign-doadores.test.ts`](../../tests/redesign-doadores.test.ts) (validação e associação de erros da API ao campo).
 
 ## M05 — Formulários e componentes padronizados (H4)
 
@@ -101,14 +103,14 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 **Mudança:**
 - **Mesmo comportamento nas três telas:** ao abrir o formulário, o botão do cabeçalho some. O formulário tem título com ícone, botão de fechar no canto e, no rodapé, a ação principal e "Cancelar".
-- **Estilos compartilhados:** classes comuns em `app/globals.css` (`.btn-secondary`, `.icon-btn`, `.form-card`, `.field-error`, selos) substituem os estilos inline de cada tela.
-- **Um só rótulo para o tipo sanguíneo:** a conversão do tipo foi para `src/lib/blood-types.ts` e é usada por todas as telas.
+- **Estilos compartilhados:** classes comuns em [`app/globals.css`](../../app/globals.css) (`.btn-secondary`, `.icon-btn`, `.form-card`, `.field-error`, selos) substituem os estilos inline de cada tela.
+- **Um só rótulo para o tipo sanguíneo:** a conversão do tipo foi para [`src/lib/blood-types.ts`](../../src/lib/blood-types.ts) e é usada por todas as telas.
 
 | Antes — doador | Depois — doador |
 |---|---|
 | ![Formulário antes](screenshots/antes/06-doadores-formulario.png) | ![Formulário depois](screenshots/depois/06-doadores-formulario.png) |
 
-**Arquivos:** `app/globals.css`, `src/lib/blood-types.ts`, as três telas.
+**Arquivos:** [`app/globals.css`](../../app/globals.css), [`src/lib/blood-types.ts`](../../src/lib/blood-types.ts) e as três telas ([doadores](../../app/(protected)/doadores/page.tsx), [estoque](../../app/(protected)/estoque/page.tsx), [insumos](../../app/(protected)/insumos/page.tsx)).
 
 ## M06 — Dicas nos botões de ícone (H6)
 
@@ -136,7 +138,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 ## M09 — Perfil em linguagem comum (H2)
 
-**Problema (P11):** o menu mostrava `ADMINISTRADOR`. **Mudança:** mostra "Administrador" ou "Atendente" (`app/(protected)/layout.tsx`).
+**Problema (P11):** o menu mostrava `ADMINISTRADOR`. **Mudança:** mostra "Administrador" ou "Atendente" ([`app/(protected)/layout.tsx`](../../app/(protected)/layout.tsx)).
 
 ## M10 — Orientações nos campos (H10)
 

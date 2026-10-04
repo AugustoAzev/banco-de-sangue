@@ -5,7 +5,8 @@ Sistema de gestão de hemocentros para cadastro de doadores, controle de estoque
 > **TP4 — Redesign e Manutenção Evolutiva (versão 1.2.0):** o objetivo que atravessa o trabalho é que **qualquer profissional do hemocentro consiga operar o sistema**, inclusive quem tem baixa visão, usa só o teclado ou usa leitor de tela.
 > - **Etapa 1 — Redesign:** [avaliação heurística (Nielsen)](./docs/redesign/avaliacao-heuristica.md) e [melhorias com antes/depois](./docs/redesign/melhorias-implementadas.md).
 > - **Etapa 2 — Evolução:** [planejamento das funcionalidades](./docs/evolucao/planejamento.md) (saída de bolsas com histórico e busca de doadores) e [melhoria de acessibilidade](./docs/evolucao/acessibilidade.md) (Lighthouse 90–96 → 100).
-> - Histórico de versões: [`CHANGELOG.md`](./CHANGELOG.md).
+> - **Evidências:** capturas [antes](./docs/redesign/screenshots/antes/) e [depois do redesign](./docs/redesign/screenshots/depois/), [funcionalidades novas](./docs/evolucao/screenshots/funcionalidades/), [estado final de acessibilidade](./docs/evolucao/screenshots/acessibilidade/), medições brutas ([antes](./docs/evolucao/evidencias/relatorio-antes.json), [após redesign](./docs/evolucao/evidencias/relatorio-pos-redesign.json), [depois](./docs/evolucao/evidencias/relatorio-depois.json)) e o roteiro que as gera ([`scripts/capturar-evidencias.mjs`](./scripts/capturar-evidencias.mjs)).
+> - **Versionamento:** histórico em [`CHANGELOG.md`](./CHANGELOG.md); todas as mudanças do TP4 estão no [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78).
 >
 > **TP3 — Manutenção Adaptativa:** três adaptações (mudança de dependência, mudança de regulamentação LGPD e integração de API externa). Síntese em [`RELATORIO.md`](./RELATORIO.md), detalhes e evidências em [`manutencao-adaptativa/`](./manutencao-adaptativa/).
 
@@ -86,8 +87,8 @@ Acessar: http://localhost:3000
 
 | Funcionalidade | Rotas da API | Documentação |
 |---|---|---|
-| Saída de bolsas (despacho/descarte) com histórico | `POST /api/inventory/saidas`, `GET /api/inventory/movimentacoes` | [planejamento](./docs/evolucao/planejamento.md#2-funcionalidade-1--registro-de-saída-de-bolsas-despacho-e-descarte) |
-| Busca de doadores | — (feita na tela, sobre `GET /api/donors`) | [planejamento](./docs/evolucao/planejamento.md#3-funcionalidade-2--busca-de-doadores) |
+| Saída de bolsas (despacho/descarte) com histórico | [`POST /api/inventory/saidas`](./pages/api/inventory/saidas.ts), [`GET /api/inventory/movimentacoes`](./pages/api/inventory/movimentacoes.ts) | [planejamento](./docs/evolucao/planejamento.md#2-funcionalidade-1--registro-de-saída-de-bolsas-despacho-e-descarte) |
+| Busca de doadores | — (feita na tela, sobre [`GET /api/donors`](./pages/api/donors/index.ts)) | [planejamento](./docs/evolucao/planejamento.md#3-funcionalidade-2--busca-de-doadores) |
 
 Nenhuma das duas exige mudança no banco: elas usam os status `DESPACHADA` e `DESCARTADA`, que o schema já previa.
 

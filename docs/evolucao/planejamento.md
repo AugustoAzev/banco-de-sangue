@@ -1,7 +1,10 @@
 # Planejamento da Evolução — TP4, Etapa 2 (Manutenção Evolutiva)
 
+> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · **Planejamento da evolução** · [Acessibilidade](../evolucao/acessibilidade.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+
 **Disciplina:** Manutenção e Integração de Software — TP4
 **Data:** 04/10/2026
+**Pull Request:** [#78](https://github.com/AugustoAzev/banco-de-sangue/pull/78) · **Commit:** [`feat(evolucao): saida de bolsas com historico e busca de doadores (TP4 etapa 2)`](https://github.com/AugustoAzev/banco-de-sangue/commit/8127f27b6a07844533f978b33884f6eb0ed6631a)
 
 ## 1. Objetivo da etapa
 
@@ -59,12 +62,12 @@ A única forma de tirar bolsas do estoque era **excluir o lote**, o que apaga os
 ### Decisões técnicas
 
 - **Sem migration.** Foram usados os status que o banco já tinha e a coluna `observacoes` para o destino ou motivo. Ninguém do grupo precisa rodar SQL no Supabase para a funcionalidade funcionar. Nas bolsas lançadas pelo sistema, `observacoes` vem vazio na entrada; ele só é preenchido quando a saída tem texto.
-- **Histórico reconstruído das próprias bolsas.** `GET /api/inventory/movimentacoes` deriva as movimentações dos registros. Toda bolsa gera uma entrada na `data_doacao`, e as que saíram geram uma saída em `atualizado_em`. Uma entrada de N bolsas é gravada num único `INSERT` e uma saída num único `UPDATE`. Agrupar por tipo, data e status recupera cada operação com a sua quantidade (`src/lib/stock-movements.ts`).
+- **Histórico reconstruído das próprias bolsas.** [`GET /api/inventory/movimentacoes`](../../pages/api/inventory/movimentacoes.ts) deriva as movimentações dos registros. Toda bolsa gera uma entrada na `data_doacao`, e as que saíram geram uma saída em `atualizado_em`. Uma entrada de N bolsas é gravada num único `INSERT` e uma saída num único `UPDATE`. Agrupar por tipo, data e status recupera cada operação com a sua quantidade ([`src/lib/stock-movements.ts`](../../src/lib/stock-movements.ts)).
 - **Regra separada da rota.** A validação (`parseStockExit`) e a reconstrução do histórico (`buildMovements`) são funções puras, testadas sem banco.
 
 ### Contrato da API
 
-`POST /api/inventory/saidas` (autenticado)
+[`POST /api/inventory/saidas`](../../pages/api/inventory/saidas.ts) (autenticado)
 
 ```json
 { "tipo_sangue": "B_NEGATIVO", "quantidade": 1, "status": "DESPACHADA", "observacoes": "Hospital Universitário Getúlio Vargas" }
@@ -76,7 +79,7 @@ A única forma de tirar bolsas do estoque era **excluir o lote**, o que apaga os
   - `401`: sem token;
   - `405`: outro método;
   - `502`: erro no banco.
-- `GET /api/inventory/movimentacoes?limite=8` devolve as últimas movimentações, ordenadas da mais recente para a mais antiga. O limite máximo é 50.
+- [`GET /api/inventory/movimentacoes?limite=8`](../../pages/api/inventory/movimentacoes.ts) devolve as últimas movimentações, ordenadas da mais recente para a mais antiga. O limite máximo é 50.
 
 ### Acessibilidade já incluída
 
@@ -136,7 +139,7 @@ Junto da busca:
 
 ### Decisões técnicas
 
-- **Busca feita na tela.** O `GET /donors` já devolve a lista inteira, então filtrar no navegador evita uma nova consulta ao banco a cada tecla. A regra está em `src/lib/donor-search.ts`, função pura testada à parte.
+- **Busca feita na tela.** O [`GET /donors`](../../pages/api/donors/index.ts) já devolve a lista inteira, então filtrar no navegador evita uma nova consulta ao banco a cada tecla. A regra está em [`src/lib/donor-search.ts`](../../src/lib/donor-search.ts), função pura testada à parte.
 - **Doadores anonimizados não quebram a busca.** O CPF nulo é tratado, e esses doadores continuam encontráveis pelo filtro de situação.
 
 ### Acessibilidade já incluída
@@ -161,8 +164,8 @@ Junto da busca:
 
 | Arquivo | O que cobre |
 |---|---|
-| `tests/evolucao-saidas-movimentacoes.test.ts` | Validação da saída (motivo obrigatório no descarte, tipos e quantidades inválidos); `POST /saidas` usa `PATCH` (não `DELETE`), escolhe as mais antigas, filtra `EM_ESTOQUE`, recusa estoque insuficiente sem gravar; agrupamento do histórico; limites do `GET /movimentacoes` |
-| `tests/evolucao-busca-doadores.test.ts` | Nome sem acento, CPF com e sem máscara, mínimo de 3 dígitos, CPF nulo, filtros por tipo e situação combinados |
+| [`tests/evolucao-saidas-movimentacoes.test.ts`](../../tests/evolucao-saidas-movimentacoes.test.ts) | Validação da saída (motivo obrigatório no descarte, tipos e quantidades inválidos); `POST /saidas` usa `PATCH` (não `DELETE`), escolhe as mais antigas, filtra `EM_ESTOQUE`, recusa estoque insuficiente sem gravar; agrupamento do histórico; limites do `GET /movimentacoes` |
+| [`tests/evolucao-busca-doadores.test.ts`](../../tests/evolucao-busca-doadores.test.ts) | Nome sem acento, CPF com e sem máscara, mínimo de 3 dígitos, CPF nulo, filtros por tipo e situação combinados |
 
 Total do projeto: **80 testes** (33 antes do TP4), todos passando. `next build` e `tsc --noEmit` sem erros.
 

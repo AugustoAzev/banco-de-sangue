@@ -1,5 +1,7 @@
 # Avaliação Heurística — Banco de Sangue (TP4, Etapa 1)
 
+> **TP4:** [README](../../README.md) · **Avaliação heurística** · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+
 **Disciplina:** Manutenção e Integração de Software — TP4 (Redesign)
 **Sistema avaliado:** versão do `master` após o TP3 (commit `014e608`)
 **Data:** 04/10/2026
@@ -98,7 +100,7 @@
 
 | ID | Problema | Sev. | Prioridade |
 |---|---|---|---|
-| P07 | **O registro interno do sistema pode ser destruído pela interface.** O doador genérico (CPF `000.000.000-00`), usado em toda entrada manual de estoque, aparece na lista com editar, anonimizar e excluir. Anonimizá-lo remove o CPF, e o `POST /inventory/bolsas` passa a falhar com "Doador genérico (cpf=000.000.000-00) não encontrado". | 4 | Alta |
+| P07 | **O registro interno do sistema pode ser destruído pela interface.** O doador genérico (CPF `000.000.000-00`), usado em toda entrada manual de estoque, aparece na lista com editar, anonimizar e excluir. Anonimizá-lo remove o CPF, e o [`POST /inventory/bolsas`](../../pages/api/inventory/bolsas.ts) passa a falhar com "Doador genérico (cpf=000.000.000-00) não encontrado". | 4 | Alta |
 | P13 | **Quantidades sem limite.** O insumo aceita quantidade negativa; no estoque, a quantidade vazia vira `NaN` e é enviada assim para a API. | 2 | Média |
 
 ![Lista de doadores antes: o registro do sistema com as mesmas ações](screenshots/antes/03-doadores.png)

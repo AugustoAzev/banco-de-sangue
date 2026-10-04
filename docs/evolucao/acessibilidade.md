@@ -1,8 +1,10 @@
 # Melhoria de Acessibilidade — TP4, Etapa 2
 
+> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · [Planejamento da evolução](../evolucao/planejamento.md) · **Acessibilidade** · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+
 **Melhoria:** operação completa do sistema por **teclado** e por **leitor de tela**, com **contraste adequado** para baixa visão.
 **Referência:** WCAG 2.1, nível AA.
-**Commit:** `feat(a11y): operacao completa por teclado e leitor de tela (TP4 etapa 2)`
+**Pull Request:** [#78](https://github.com/AugustoAzev/banco-de-sangue/pull/78) · **Commit:** [`feat(a11y): operacao completa por teclado e leitor de tela (TP4 etapa 2)`](https://github.com/AugustoAzev/banco-de-sangue/commit/421bcbdb3715d8cd23a7bcfb004517eecc7ff9eb)
 
 ## 1. Problema identificado
 
@@ -39,13 +41,13 @@ Nota de acessibilidade do Lighthouse no estado original: **90 a 96**.
 | A1 | **Nome acessível com contexto em todos os botões de ícone**, por exemplo "Excluir doador Maria Oliveira Santos", "Editar insumo Luvas descartáveis" e "Registrar saída de bolsas O negativo". Os ícones decorativos ficam ocultos para o leitor de tela. | 4.1.2 Nome, função, valor · 2.4.6 Rótulos descritivos | `doadores`, `insumos`, `estoque` |
 | A2 | **Rótulos ligados aos campos** (`label htmlFor` + `id`) em todos os formulários e filtros; campos obrigatórios marcados com `required` e "*". | 1.3.1 Informação e relações · 3.3.2 Rótulos ou instruções | todas as telas com formulário |
 | A3 | **Erros ligados ao campo:** `aria-invalid` e `aria-describedby` apontam para a mensagem, e o foco vai para o primeiro campo com erro. O leitor anuncia o rótulo, que o campo está inválido e a mensagem ("O CPF deve ter 11 dígitos (foram informados 3)"). | 3.3.1 Identificação do erro · 3.3.3 Sugestão de correção | `doadores`, `estoque`, `insumos` |
-| A4 | **Diálogo de confirmação acessível:** o foco entra no "Cancelar", a opção segura; o Tab fica preso dentro do diálogo; Esc cancela; ao fechar, o foco volta ao botão que abriu. | 2.4.3 Ordem do foco · 2.1.2 Sem armadilha de teclado | `src/contexts/ToastContext.tsx` |
-| A5 | **Foco gerenciado nos formulários:** ao abrir, o foco vai para o primeiro campo; ao fechar ou salvar, volta ao botão de origem. | 2.4.3 Ordem do foco | `src/hooks/use-focus-target.ts` |
-| A6 | **"Pular para o conteúdo principal"**, primeiro item no Tab; `main` identificado; menu com `aria-label`; título de página próprio por tela ("Doadores — Banco de Sangue"). | 2.4.1 Ignorar blocos · 2.4.2 Página com título | `app/(protected)/layout.tsx` |
-| A7 | **Indicador de foco visível e igual em todo o sistema:** contorno azul de 3 px, com contraste de 6:1 sobre o fundo. | 2.4.7 Foco visível | `app/globals.css` |
-| A8 | **Contraste corrigido** (ver tabela abaixo). | 1.4.3 Contraste mínimo | `app/globals.css` |
+| A4 | **Diálogo de confirmação acessível:** o foco entra no "Cancelar", a opção segura; o Tab fica preso dentro do diálogo; Esc cancela; ao fechar, o foco volta ao botão que abriu. | 2.4.3 Ordem do foco · 2.1.2 Sem armadilha de teclado | [`src/contexts/ToastContext.tsx`](../../src/contexts/ToastContext.tsx) |
+| A5 | **Foco gerenciado nos formulários:** ao abrir, o foco vai para o primeiro campo; ao fechar ou salvar, volta ao botão de origem. | 2.4.3 Ordem do foco | [`src/hooks/use-focus-target.ts`](../../src/hooks/use-focus-target.ts) |
+| A6 | **"Pular para o conteúdo principal"**, primeiro item no Tab; `main` identificado; menu com `aria-label`; título de página próprio por tela ("Doadores — Banco de Sangue"). | 2.4.1 Ignorar blocos · 2.4.2 Página com título | [`app/(protected)/layout.tsx`](../../app/(protected)/layout.tsx) |
+| A7 | **Indicador de foco visível e igual em todo o sistema:** contorno azul de 3 px, com contraste de 6:1 sobre o fundo. | 2.4.7 Foco visível | [`app/globals.css`](../../app/globals.css) |
+| A8 | **Contraste corrigido** (ver tabela abaixo). | 1.4.3 Contraste mínimo | [`app/globals.css`](../../app/globals.css) |
 | A9 | **Tabelas com legenda e cabeçalhos** (`caption`, `scope="col"`); tipo sanguíneo lido por extenso ("O negativo" em vez de "O traço"). | 1.3.1 Informação e relações | tabelas e painel |
-| A10 | **Avisos de erro não somem sozinhos**; os de sucesso ficam 8 s. Animações respeitam a configuração "reduzir movimento" do sistema operacional. | 2.2.1 Tempo ajustável · 2.3.3 Animação por interação (AAA, extra) | `ToastContext.tsx`, `globals.css` |
+| A10 | **Avisos de erro não somem sozinhos**; os de sucesso ficam 8 s. Animações respeitam a configuração "reduzir movimento" do sistema operacional. | 2.2.1 Tempo ajustável · 2.3.3 Animação por interação (AAA, extra) | [`ToastContext.tsx`](../../src/contexts/ToastContext.tsx), [`globals.css`](../../app/globals.css) |
 | A11 | **Mudanças dinâmicas anunciadas:** a contagem da busca de doadores e o preenchimento do endereço pelo CEP ficam em regiões `aria-live`. | 4.1.3 Mensagens de status | `doadores` |
 
 ### Contraste (texto)
