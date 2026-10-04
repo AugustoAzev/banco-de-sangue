@@ -183,6 +183,15 @@ await page.waitForTimeout(300);
 await page.locator('input[name="nome"]').focus();
 await page.screenshot({ path: `${shotsDir}/${String(n++).padStart(2, '0')}-foco-campo.png`, clip: { x: 248, y: 0, width: 1118, height: 420 } });
 
+// Telas no celular (390 px)
+await page.setViewportSize({ width: 390, height: 844 });
+for (const [name, route] of [['celular-painel', '/dashboard'], ['celular-doadores', '/doadores'], ['celular-estoque', '/estoque']]) {
+  await page.goto(`${BASE}${route}`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(900);
+  await page.screenshot({ path: `${shotsDir}/${String(n++).padStart(2, '0')}-${name}.png`, fullPage: true });
+}
+await page.setViewportSize({ width: 1366, height: 860 });
+
 // 3) Lighthouse (categoria acessibilidade) nas rotas, reaproveitando a sessão logada
 results.lighthouse = {};
 for (const [name, route] of [['login', '/'], ...routes]) {

@@ -3,9 +3,11 @@
 Sistema de gestão de hemocentros para cadastro de doadores, controle de estoque de sangue e administração de insumos.
 
 > **TP4 — Redesign e Manutenção Evolutiva (versão 1.2.0):** o objetivo que atravessa o trabalho é que **qualquer profissional do hemocentro consiga operar o sistema**, inclusive quem tem baixa visão, usa só o teclado ou usa leitor de tela.
+> - **Comece por aqui:** [`RELATORIO-TP4.md`](./RELATORIO-TP4.md), com a síntese das duas etapas, o mapa de onde está cada documento e cada evidência, os números e a reflexão crítica.
 > - **Etapa 1 — Redesign:** [avaliação heurística (Nielsen)](./docs/redesign/avaliacao-heuristica.md) e [melhorias com antes/depois](./docs/redesign/melhorias-implementadas.md).
 > - **Etapa 2 — Evolução:** [planejamento das funcionalidades](./docs/evolucao/planejamento.md) (saída de bolsas com histórico e busca de doadores) e [melhoria de acessibilidade](./docs/evolucao/acessibilidade.md) (Lighthouse 90–96 → 100).
-> - **Evidências:** capturas [antes](./docs/redesign/screenshots/antes/) e [depois do redesign](./docs/redesign/screenshots/depois/), [funcionalidades novas](./docs/evolucao/screenshots/funcionalidades/), [estado final de acessibilidade](./docs/evolucao/screenshots/acessibilidade/), medições brutas ([antes](./docs/evolucao/evidencias/relatorio-antes.json), [após redesign](./docs/evolucao/evidencias/relatorio-pos-redesign.json), [depois](./docs/evolucao/evidencias/relatorio-depois.json)) e o roteiro que as gera ([`scripts/capturar-evidencias.mjs`](./scripts/capturar-evidencias.mjs)).
+> - **Capturas de tela** (cada pasta tem um README com a descrição de cada imagem): [antes do TP4](./docs/redesign/screenshots/antes/) → [depois do redesign](./docs/redesign/screenshots/depois-do-redesign/) → [estado final do sistema](./docs/evolucao/screenshots/estado-final/), e a demonstração das [funcionalidades novas](./docs/evolucao/screenshots/funcionalidades/).
+> - **Medições brutas:** [Lighthouse, axe e teclado nos três estados, e o resultado dos testes](./docs/evolucao/evidencias/), geradas por [`scripts/capturar-evidencias.mjs`](./scripts/capturar-evidencias.mjs) e [`scripts/testar-tp4-e2e.mjs`](./scripts/testar-tp4-e2e.mjs).
 > - **Testes:** [checklist do enunciado e 44 testes pela interface](./docs/checklist-testes-tp4.md), todos aprovados no sistema rodando com o banco real.
 > - **Versionamento:** histórico em [`CHANGELOG.md`](./CHANGELOG.md); todas as mudanças do TP4 estão no [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78).
 >
@@ -107,7 +109,7 @@ Para medir de novo (Lighthouse e axe-core):
 ```bash
 npm run build && npm start -- -p 3100        # em outro terminal
 npm install --no-save lighthouse@12 axe-core@4
-node scripts/capturar-evidencias.mjs depois docs/evolucao/screenshots/acessibilidade docs/evolucao/evidencias
+node scripts/capturar-evidencias.mjs depois docs/evolucao/screenshots/estado-final docs/evolucao/evidencias
 ```
 
 Detalhes e roteiro de verificação manual: [`docs/evolucao/acessibilidade.md`](./docs/evolucao/acessibilidade.md).

@@ -1,6 +1,6 @@
 # Avaliação Heurística — Banco de Sangue (TP4, Etapa 1)
 
-> **TP4:** [README](../../README.md) · **Avaliação heurística** · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+> **TP4:** [README](../../README.md) · [Relatório do TP4](../../RELATORIO-TP4.md) · **Avaliação heurística** · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
 **Disciplina:** Manutenção e Integração de Software — TP4 (Redesign)
 **Sistema avaliado:** versão do `master` após o TP3 (commit `014e608`)
@@ -10,7 +10,7 @@
 
 - **Base:** as 10 heurísticas de usabilidade de Jakob Nielsen.
 - **Objeto:** as cinco telas do sistema (Login, Painel, Doadores, Estoque, Insumos), mais os estados com interação: formulário de doador aberto, envio com erro e diálogo de confirmação.
-- **Ambiente:** build de produção (`npm run build && npm start`) ligado ao banco Supabase do grupo, com os dados reais de teste. As capturas foram feitas de forma automatizada (Playwright, janela de 1366×860), para que o "antes" e o "depois" sejam comparáveis. O roteiro está em [`scripts/capturar-evidencias.mjs`](../../scripts/capturar-evidencias.mjs).
+- **Ambiente:** build de produção (`npm run build && npm start`) ligado ao banco Supabase do grupo, com os dados reais de teste. As capturas foram feitas de forma automatizada (Playwright, janela de 1366×860), para que o "antes" e o "depois" sejam comparáveis. O roteiro está em [`scripts/capturar-evidencias.mjs`](../../scripts/capturar-evidencias.mjs). Todas as capturas do estado avaliado, com a descrição de cada uma, estão na galeria [`screenshots/antes/`](./screenshots/antes/).
 - **Severidade** (escala de Nielsen): 0 = não é problema · 1 = cosmético · 2 = pequeno · 3 = grande · 4 = catastrófico (impede a tarefa ou leva a decisão errada).
 - **Prioridade de correção:** **Alta** para severidade 3–4 ou problema presente em todas as telas; **Média** para severidade 2; **Baixa** para severidade 1.
 - **Lente de acessibilidade:** o objetivo do TP4 é que o sistema possa ser operado por qualquer profissional do hemocentro, inclusive quem tem baixa visão, usa só o teclado ou usa leitor de tela. Por isso cada problema traz também o seu **impacto na acessibilidade**. Os problemas exclusivamente de acessibilidade estão na seção 4 e são tratados na Etapa 2.

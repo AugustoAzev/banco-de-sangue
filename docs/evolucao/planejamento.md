@@ -1,6 +1,6 @@
 # Planejamento da Evolução — TP4, Etapa 2 (Manutenção Evolutiva)
 
-> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · **Planejamento da evolução** · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+> **TP4:** [README](../../README.md) · [Relatório do TP4](../../RELATORIO-TP4.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · **Planejamento da evolução** · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
 **Disciplina:** Manutenção e Integração de Software — TP4
 **Data:** 04/10/2026

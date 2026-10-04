@@ -1,8 +1,8 @@
 # Melhorias Implementadas — Redesign (TP4, Etapa 1)
 
-> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · **Melhorias do redesign** · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+> **TP4:** [README](../../README.md) · [Relatório do TP4](../../RELATORIO-TP4.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · **Melhorias do redesign** · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
-Cada mudança abaixo corrige um ou mais problemas da [avaliação heurística](./avaliacao-heuristica.md) (IDs `P01`…`P17`) e indica a heurística de Nielsen que ela aplica. Todas as capturas "antes" e "depois" foram feitas com o mesmo roteiro automatizado, sobre o mesmo banco de dados, para serem comparáveis.
+Cada mudança abaixo corrige um ou mais problemas da [avaliação heurística](./avaliacao-heuristica.md) (IDs `P01`…`P17`) e indica a heurística de Nielsen que ela aplica. Todas as capturas "antes" e "depois" foram feitas com o mesmo roteiro automatizado, sobre o mesmo banco de dados, para serem comparáveis. As galerias, com a descrição de cada imagem, estão em [antes](./screenshots/antes/) e [depois do redesign](./screenshots/depois-do-redesign/). Para ver como o sistema ficou no fim do TP4, com a Etapa 2, veja o [estado final](../evolucao/screenshots/estado-final/).
 
 **Pull Request:** [#78](https://github.com/AugustoAzev/banco-de-sangue/pull/78) · **Commit:** [`feat(redesign): aplicar heuristicas de Nielsen nas telas existentes (TP4 etapa 1)`](https://github.com/AugustoAzev/banco-de-sangue/commit/40ab87d4cdf9233c702df28bbbfff06d7dc1eadd)
 **Escopo:** manutenção das telas existentes. Nenhuma tela nova e nenhuma mudança no modelo de dados.
@@ -42,7 +42,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 | Antes | Depois |
 |---|---|
-| ![Painel antes](screenshots/antes/02-dashboard.png) | ![Painel depois](screenshots/depois/02-dashboard.png) |
+| ![Painel antes](screenshots/antes/02-dashboard.png) | ![Painel depois](screenshots/depois-do-redesign/02-dashboard.png) |
 
 **Arquivos:** [`app/(protected)/dashboard/page.tsx`](../../app/(protected)/dashboard/page.tsx), [`src/lib/inventory-policy.ts`](../../src/lib/inventory-policy.ts).
 **Teste:** [`tests/redesign-painel-estoque.test.ts`](../../tests/redesign-painel-estoque.test.ts) reproduz o estoque real da captura (9 bolsas em 6 tipos) e garante que o total é 9.
@@ -59,7 +59,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 | Antes | Depois |
 |---|---|
-| ![Estoque antes](screenshots/antes/04-estoque.png) | ![Estoque depois](screenshots/depois/04-estoque.png) |
+| ![Estoque antes](screenshots/antes/04-estoque.png) | ![Estoque depois](screenshots/depois-do-redesign/04-estoque.png) |
 
 **Arquivos:** [`app/(protected)/estoque/page.tsx`](../../app/(protected)/estoque/page.tsx).
 
@@ -74,7 +74,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 | Antes | Depois |
 |---|---|
-| ![Lista antes](screenshots/antes/03-doadores.png) | ![Lista depois](screenshots/depois/03-doadores.png) |
+| ![Lista antes](screenshots/antes/03-doadores.png) | ![Lista depois](screenshots/depois-do-redesign/03-doadores.png) |
 
 **Arquivos:** [`src/lib/system-records.ts`](../../src/lib/system-records.ts), [`pages/api/donors/[id].ts`](../../pages/api/donors/[id].ts), [`pages/api/donors/[id]/anonymize.ts`](../../pages/api/donors/[id]/anonymize.ts), [`pages/api/inventory/bolsas.ts`](../../pages/api/inventory/bolsas.ts), [`app/(protected)/doadores/page.tsx`](../../app/(protected)/doadores/page.tsx).
 **Teste:** [`tests/redesign-doadores.test.ts`](../../tests/redesign-doadores.test.ts) cobre as três rotas recusando o registro (`409`) sem chegar a gravar no banco.
@@ -92,7 +92,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 | Antes — no envio | Antes — 6 s depois | Depois — 6 s depois |
 |---|---|---|
-| ![Erro antes](screenshots/antes/07-doadores-erro-cpf.png) | ![Erro some](screenshots/antes/08-doadores-erro-apos-6s.png) | ![Erro permanece](screenshots/depois/08-doadores-erro-apos-6s.png) |
+| ![Erro antes](screenshots/antes/07-doadores-erro-cpf.png) | ![Erro some](screenshots/antes/08-doadores-erro-apos-6s.png) | ![Erro permanece](screenshots/depois-do-redesign/08-doadores-erro-apos-6s.png) |
 
 **Arquivos:** [`src/lib/donor-form-validation.ts`](../../src/lib/donor-form-validation.ts), [`app/(protected)/doadores/page.tsx`](../../app/(protected)/doadores/page.tsx).
 **Teste:** [`tests/redesign-doadores.test.ts`](../../tests/redesign-doadores.test.ts) (validação e associação de erros da API ao campo).
@@ -108,7 +108,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 | Antes — doador | Depois — doador |
 |---|---|
-| ![Formulário antes](screenshots/antes/06-doadores-formulario.png) | ![Formulário depois](screenshots/depois/06-doadores-formulario.png) |
+| ![Formulário antes](screenshots/antes/06-doadores-formulario.png) | ![Formulário depois](screenshots/depois-do-redesign/06-doadores-formulario.png) |
 
 **Arquivos:** [`app/globals.css`](../../app/globals.css), [`src/lib/blood-types.ts`](../../src/lib/blood-types.ts) e as três telas ([doadores](../../app/(protected)/doadores/page.tsx), [estoque](../../app/(protected)/estoque/page.tsx), [insumos](../../app/(protected)/insumos/page.tsx)).
 
@@ -134,7 +134,7 @@ Os problemas P03, P15 e P16 dependem de funcionalidades novas e são resolvidos 
 
 | Antes | Depois |
 |---|---|
-| ![Diálogo antes](screenshots/antes/10-dialogo-confirmacao.png) | ![Diálogo depois](screenshots/depois/10-dialogo-confirmacao.png) |
+| ![Diálogo antes](screenshots/antes/10-dialogo-confirmacao.png) | ![Diálogo depois](screenshots/depois-do-redesign/10-dialogo-confirmacao.png) |
 
 ## M09 — Perfil em linguagem comum (H2)
 

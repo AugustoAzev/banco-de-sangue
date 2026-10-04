@@ -1,6 +1,6 @@
 # Melhoria de Acessibilidade — TP4, Etapa 2
 
-> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · [Planejamento da evolução](../evolucao/planejamento.md) · **Acessibilidade** · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+> **TP4:** [README](../../README.md) · [Relatório do TP4](../../RELATORIO-TP4.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · [Planejamento da evolução](../evolucao/planejamento.md) · **Acessibilidade** · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
 **Melhoria:** operação completa do sistema por **teclado** e por **leitor de tela**, com **contraste adequado** para baixa visão.
 **Referência:** WCAG 2.1, nível AA.
@@ -106,17 +106,17 @@ Dados brutos: [`relatorio-antes.json`](./evidencias/relatorio-antes.json), [`rel
 
 | Primeiro Tab — antes | Primeiro Tab — depois |
 |---|---|
-| ![Primeiro Tab antes](../redesign/screenshots/antes/11-primeiro-tab.png) | ![Atalho visível](screenshots/acessibilidade/11-primeiro-tab.png) |
+| ![Primeiro Tab antes](../redesign/screenshots/antes/11-primeiro-tab.png) | ![Atalho visível](screenshots/estado-final/11-primeiro-tab.png) |
 
 | Foco em campo — antes (sombra a 10%) | Foco em campo — depois (contorno de 3 px) |
 |---|---|
-| ![Foco antes](../redesign/screenshots/antes/12-foco-campo.png) | ![Foco depois](screenshots/acessibilidade/12-foco-campo.png) |
+| ![Foco antes](../redesign/screenshots/antes/12-foco-campo.png) | ![Foco depois](screenshots/estado-final/12-foco-campo.png) |
 
 | Diálogo — antes (foco no botão atrás do diálogo) | Diálogo — depois (foco dentro do diálogo) |
 |---|---|
-| ![Diálogo antes](../redesign/screenshots/antes/10-dialogo-confirmacao.png) | ![Diálogo depois](screenshots/acessibilidade/10-dialogo-confirmacao.png) |
+| ![Diálogo antes](../redesign/screenshots/antes/10-dialogo-confirmacao.png) | ![Diálogo depois](screenshots/estado-final/10-dialogo-confirmacao.png) |
 
-As demais telas do estado final estão em [`screenshots/acessibilidade/`](./screenshots/acessibilidade/).
+Todas as telas do estado final, inclusive no celular, com a descrição de cada uma, estão na galeria [`screenshots/estado-final/`](./screenshots/estado-final/). As medições brutas estão em [`evidencias/`](./evidencias/).
 
 ## 5. Como verificar manualmente
 

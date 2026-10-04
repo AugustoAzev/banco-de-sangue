@@ -1,6 +1,6 @@
 # Checklist e Testes de Ponta a Ponta — TP4
 
-> **TP4:** [README](../README.md) · [Avaliação heurística](./redesign/avaliacao-heuristica.md) · [Melhorias do redesign](./redesign/melhorias-implementadas.md) · [Planejamento da evolução](./evolucao/planejamento.md) · [Acessibilidade](./evolucao/acessibilidade.md) · **Checklist e testes** · [CHANGELOG](../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+> **TP4:** [README](../README.md) · [Relatório do TP4](../RELATORIO-TP4.md) · [Avaliação heurística](./redesign/avaliacao-heuristica.md) · [Melhorias do redesign](./redesign/melhorias-implementadas.md) · [Planejamento da evolução](./evolucao/planejamento.md) · [Acessibilidade](./evolucao/acessibilidade.md) · **Checklist e testes** · [CHANGELOG](../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
 **Data da execução:** 04/10/2026
 **Resultado:** **44 de 44 verificações passaram** pela interface, mais **80 testes automatizados** (Jest), `tsc --noEmit` e `next build` sem erros.
@@ -19,11 +19,11 @@
 | Requisito do enunciado | Onde está | Verificado por | Situação |
 |---|---|---|---|
 | **Etapa 1** — Avaliação heurística das 10 heurísticas de Nielsen, com pontos fortes e fracos, capturas e prioridade | [avaliacao-heuristica.md](./redesign/avaliacao-heuristica.md) | revisão do documento (17 problemas, severidade e prioridade) | ✅ |
-| **Etapa 1** — Melhorias de interface implementadas a partir da avaliação | código + [melhorias-implementadas.md](./redesign/melhorias-implementadas.md) | testes C1–C11 | ✅ |
+| **Etapa 1** — Melhorias de interface implementadas a partir da avaliação | código + [melhorias-implementadas.md](./redesign/melhorias-implementadas.md) | testes C1–C7, C10 e C11 (as validações de quantidade e as confirmações com o nome do item também são cobertas em D1, G7, F3 e G5) | ✅ |
 | **Etapa 1** — Antes e depois, com a heurística de cada mudança | [melhorias-implementadas.md](./redesign/melhorias-implementadas.md) (M01–M10 com capturas) | revisão do documento | ✅ |
 | **Etapa 2** — Duas funcionalidades novas, definidas e justificadas num documento de planejamento | [planejamento.md](./evolucao/planejamento.md) | revisão do documento | ✅ |
 | **Etapa 2** — Funcionalidades integradas e funcionando | saída de bolsas e busca de doadores | testes D1–D6 e E1–E4, no banco real | ✅ |
-| **Etapa 2** — Pelo menos uma melhoria de acessibilidade, corrigindo limitação real | [acessibilidade.md](./evolucao/acessibilidade.md) | testes F1–F8 (axe sem violações, teclado, leitor de tela) | ✅ |
+| **Etapa 2** — Pelo menos uma melhoria de acessibilidade, corrigindo limitação real | [acessibilidade.md](./evolucao/acessibilidade.md) | testes F1a–F1d, F2–F6 e F8 (axe sem violações, teclado, leitor de tela), mais B2 e G1 (avisos de erro e de sucesso) | ✅ |
 | **Etapa 2** — Justificativa (problema, impacto para pessoas com deficiência, solução) no mesmo diretório do planejamento | [`docs/evolucao/`](./evolucao/) | revisão do documento | ✅ |
 | **Etapa 2** — Documentado no README e no CHANGELOG | [README](../README.md), [CHANGELOG](../CHANGELOG.md) | links conferidos (nenhum quebrado) | ✅ |
 | Versionamento | versão 1.2.0, commits separados por etapa, [PR #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78) | histórico do Git | ✅ |
