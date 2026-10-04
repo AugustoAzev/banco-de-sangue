@@ -1,6 +1,6 @@
 # Planejamento da Evolução — TP4, Etapa 2 (Manutenção Evolutiva)
 
-> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · **Planejamento da evolução** · [Acessibilidade](../evolucao/acessibilidade.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · **Planejamento da evolução** · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
 **Disciplina:** Manutenção e Integração de Software — TP4
 **Data:** 04/10/2026
@@ -168,6 +168,8 @@ Junto da busca:
 | [`tests/evolucao-busca-doadores.test.ts`](../../tests/evolucao-busca-doadores.test.ts) | Nome sem acento, CPF com e sem máscara, mínimo de 3 dígitos, CPF nulo, filtros por tipo e situação combinados |
 
 Total do projeto: **80 testes** (33 antes do TP4), todos passando. `next build` e `tsc --noEmit` sem erros.
+
+As duas funcionalidades também foram testadas pela interface, no banco real, com o roteiro [`scripts/testar-tp4-e2e.mjs`](../../scripts/testar-tp4-e2e.mjs) (verificações D1–D6 e E1–E4). Resultado em [checklist e testes](../checklist-testes-tp4.md).
 
 ## 5. Limitações conhecidas e próximos passos
 

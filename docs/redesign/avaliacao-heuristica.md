@@ -1,6 +1,6 @@
 # Avaliação Heurística — Banco de Sangue (TP4, Etapa 1)
 
-> **TP4:** [README](../../README.md) · **Avaliação heurística** · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+> **TP4:** [README](../../README.md) · **Avaliação heurística** · [Melhorias do redesign](../redesign/melhorias-implementadas.md) · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
 **Disciplina:** Manutenção e Integração de Software — TP4 (Redesign)
 **Sistema avaliado:** versão do `master` após o TP3 (commit `014e608`)

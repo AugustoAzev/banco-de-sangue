@@ -14,6 +14,7 @@ Documentação: [`docs/redesign/`](./docs/redesign/) (Etapa 1) e [`docs/evolucao
 - **Política de estoque** ([`src/lib/inventory-policy.ts`](./src/lib/inventory-policy.ts)): estoque mínimo de 3 bolsas por tipo e limite de baixo estoque de insumos, definidos num só lugar.
 - **Card "Insumos em Baixo Estoque"** no painel.
 - **Roteiro de evidências** [`scripts/capturar-evidencias.mjs`](./scripts/capturar-evidencias.mjs): capturas de tela, axe-core e Lighthouse.
+- **Testes de ponta a ponta** [`scripts/testar-tp4-e2e.mjs`](./scripts/testar-tp4-e2e.mjs): 44 verificações pela interface, contra o sistema rodando e o banco real ([resultado](./docs/checklist-testes-tp4.md)).
 - **47 testes automatizados novos**: de 33 para 80.
 
 ### Alterado

@@ -1,6 +1,6 @@
 # Melhorias Implementadas — Redesign (TP4, Etapa 1)
 
-> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · **Melhorias do redesign** · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
+> **TP4:** [README](../../README.md) · [Avaliação heurística](../redesign/avaliacao-heuristica.md) · **Melhorias do redesign** · [Planejamento da evolução](../evolucao/planejamento.md) · [Acessibilidade](../evolucao/acessibilidade.md) · [Checklist e testes](../checklist-testes-tp4.md) · [CHANGELOG](../../CHANGELOG.md) · [Pull Request #78](https://github.com/AugustoAzev/banco-de-sangue/pull/78)
 
 Cada mudança abaixo corrige um ou mais problemas da [avaliação heurística](./avaliacao-heuristica.md) (IDs `P01`…`P17`) e indica a heurística de Nielsen que ela aplica. Todas as capturas "antes" e "depois" foram feitas com o mesmo roteiro automatizado, sobre o mesmo banco de dados, para serem comparáveis.
 
