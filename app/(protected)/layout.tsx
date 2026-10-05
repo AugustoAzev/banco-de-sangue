@@ -1,22 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { AuthProvider } from '../../src/contexts/AuthContext';
 import { LayoutDashboard, Users, Droplet, LogOut, Package } from 'lucide-react';
 
+const menuItems = [
+  { path: '/dashboard', label: 'Painel Geral', icon: LayoutDashboard },
+  { path: '/doadores', label: 'Doadores', icon: Users },
+  { path: '/estoque', label: 'Estoque de Sangue', icon: Droplet },
+  { path: '/insumos', label: 'Insumos', icon: Package },
+];
+
+// O token traz o valor do enum do banco; a interface mostra o nome do perfil.
+const ROLE_LABELS: Record<string, string> = {
+  ADMINISTRADOR: 'Administrador',
+  ATENDENTE: 'Atendente',
+};
+
 function Sidebar() {
   const { signOut, user } = useAuth();
   const pathname = usePathname();
-
-  const menuItems = [
-    { path: '/dashboard', label: 'Painel Geral', icon: LayoutDashboard },
-    { path: '/doadores', label: 'Doadores', icon: Users },
-    { path: '/estoque', label: 'Estoque de Sangue', icon: Droplet },
-    { path: '/insumos', label: 'Insumos', icon: Package },
-  ];
 
   return (
     <aside className="app-sidebar">
@@ -29,7 +35,7 @@ function Sidebar() {
         </p>
       </div>
 
-      <nav className="app-nav">
+      <nav className="app-nav" aria-label="Menu principal">
         <ul>
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
@@ -63,7 +69,7 @@ function Sidebar() {
       <div className="app-user">
         <div style={{ marginBottom: '1rem' }}>
           <p style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user?.name || 'Usuário'}</p>
-          <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{user?.role || 'Acesso Restrito'}</p>
+          <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{ROLE_LABELS[user?.role ?? ''] ?? 'Acesso Restrito'}</p>
         </div>
         <button
           onClick={signOut}
@@ -91,6 +97,18 @@ function Sidebar() {
 function ProtectedContent({ children }: { children: React.ReactNode }) {
   const { signed, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const previousPath = useRef<string | null>(null);
+
+  // Ao trocar de tela pelo menu, o foco iria continuar no link clicado e o próximo Tab
+  // andaria pelo resto do menu. Levamos o foco para o conteúdo da nova tela (WCAG 2.4.3).
+  // No primeiro carregamento não mexemos: o primeiro Tab mostra "Pular para o conteúdo".
+  useEffect(() => {
+    if (previousPath.current !== null && previousPath.current !== pathname) {
+      document.getElementById('conteudo')?.focus({ preventScroll: true });
+    }
+    previousPath.current = pathname;
+  }, [pathname]);
 
   useEffect(() => {
     if (!loading && !signed) {
@@ -100,7 +118,7 @@ function ProtectedContent({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--color-text-muted)' }}>
+      <div role="status" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--color-text-muted)' }}>
         Carregando sistema...
       </div>
     );
@@ -110,8 +128,9 @@ function ProtectedContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="layout-container">
+      <a href="#conteudo" className="skip-link">Pular para o conteúdo principal</a>
       <Sidebar />
-      <main className="main-content">{children}</main>
+      <main id="conteudo" className="main-content" tabIndex={-1}>{children}</main>
     </div>
   );
 }

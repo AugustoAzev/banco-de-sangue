@@ -1,0 +1,380 @@
+{
+  "data": "2026-10-04T23:44:10.341Z",
+  "tipoTeste": "AB-",
+  "limpeza": [
+    "2 bolsas de teste",
+    "0 doadores restantes",
+    "0 insumos restantes"
+  ],
+  "consoleErrors": [],
+  "results": [
+    {
+      "id": "B1",
+      "area": "Regressão — login",
+      "desc": "Rota protegida sem sessão redireciona para o login",
+      "ok": true,
+      "detail": "",
+      "segundos": 0.1
+    },
+    {
+      "id": "B2",
+      "area": "Regressão — login",
+      "desc": "Senha errada mostra erro e o aviso de erro não some sozinho (9 s)",
+      "ok": true,
+      "detail": "mensagem continua visível após 9 s",
+      "segundos": 16.4
+    },
+    {
+      "id": "B3",
+      "area": "Regressão — API",
+      "desc": "API recusa acesso sem token (401)",
+      "ok": true,
+      "detail": "401, 401, 401, 401",
+      "segundos": 0
+    },
+    {
+      "id": "F1a",
+      "area": "Acessibilidade",
+      "desc": "Login sem violações WCAG A/AA (axe)",
+      "ok": true,
+      "detail": "",
+      "segundos": 0.7
+    },
+    {
+      "id": "B4",
+      "area": "Regressão — login",
+      "desc": "Login válido leva ao painel",
+      "ok": true,
+      "detail": "",
+      "segundos": 18.6
+    },
+    {
+      "id": "C10",
+      "area": "Redesign (M09 · H2)",
+      "desc": "Perfil exibido como \"Administrador\" (não o enum)",
+      "ok": true,
+      "detail": "",
+      "segundos": 0
+    },
+    {
+      "id": "F6",
+      "area": "Acessibilidade (2.4.2)",
+      "desc": "Cada tela tem título próprio na aba",
+      "ok": true,
+      "detail": "Painel Geral — Banco de Sangue | Doadores — Banco de Sangue | Estoque de Sangue — Banco de Sangue | Insumos — Banco de Sangue",
+      "segundos": 25.3
+    },
+    {
+      "id": "C2",
+      "area": "Redesign (M01 · H4)",
+      "desc": "Os 4 cards do painel são links que levam à tela certa",
+      "ok": true,
+      "detail": "todos navegam",
+      "segundos": 72.1
+    },
+    {
+      "id": "C1",
+      "area": "Redesign (M01 · H1)",
+      "desc": "Números do painel batem com as telas de estoque, doadores e insumos",
+      "ok": true,
+      "detail": "bolsas 10, menor AB- (0), 7 tipos abaixo do mínimo, 13 doadores, 0 insumos baixos",
+      "segundos": 30.8
+    },
+    {
+      "id": "C3",
+      "area": "Redesign (M02 · H1/H2)",
+      "desc": "Estoque lista os 8 tipos, sem \"ID Lote\", com situação coerente",
+      "ok": true,
+      "detail": "Tipo Sanguíneo | Bolsas Disponíveis | Última Entrada | Situação | Ações",
+      "segundos": 6.2
+    },
+    {
+      "id": "C11",
+      "area": "Redesign (M10 · H10)",
+      "desc": "Dicas de preenchimento visíveis (450 mL, mínimo, limite de insumos, CEP)",
+      "ok": true,
+      "detail": "",
+      "segundos": 7.7
+    },
+    {
+      "id": "C7",
+      "area": "Redesign (M06 · H6)",
+      "desc": "Todo botão de ícone tem dica (title)",
+      "ok": true,
+      "detail": "",
+      "segundos": 13.3
+    },
+    {
+      "id": "C4",
+      "area": "Redesign (M03 · H5)",
+      "desc": "Registro do sistema protegido na tela e na API (409)",
+      "ok": true,
+      "detail": "PUT/DELETE/anonymize → 409/409/409",
+      "segundos": 1.8
+    },
+    {
+      "id": "C6",
+      "area": "Redesign (M05 · H4)",
+      "desc": "Formulários padronizados: botão do cabeçalho some, \"Cancelar\" fecha e devolve o foco",
+      "ok": true,
+      "detail": "doadores, estoque e insumos",
+      "segundos": 14.5
+    },
+    {
+      "id": "C5",
+      "area": "Redesign (M04 · H9) + A11y (3.3.1)",
+      "desc": "Erro de CPF aparece junto do campo, recebe o foco e continua após 8 s",
+      "ok": true,
+      "detail": "O CPF deve ter 11 dígitos (foram informados 3).",
+      "segundos": 9.5
+    },
+    {
+      "id": "G1",
+      "area": "Regressão — doadores",
+      "desc": "Cadastro válido aparece na lista com CPF formatado; aviso de sucesso some sozinho",
+      "ok": true,
+      "detail": "",
+      "segundos": 28.2
+    },
+    {
+      "id": "G2",
+      "area": "Regressão — doadores",
+      "desc": "CPF duplicado (mesmo número com máscara) é recusado junto do campo",
+      "ok": true,
+      "detail": "CPF já cadastrado",
+      "segundos": 4.7
+    },
+    {
+      "id": "G4",
+      "area": "Regressão — CEP (TP3)",
+      "desc": "CEP válido preenche o endereço (ViaCEP real); inexistente mostra aviso",
+      "ok": true,
+      "detail": "Avenida Paulista, Bela Vista, São Paulo - SP",
+      "segundos": 1.7
+    },
+    {
+      "id": "G3",
+      "area": "Regressão — doadores",
+      "desc": "Edição salva o nome; a API recusa idade fora da faixa (PUT)",
+      "ok": true,
+      "detail": "PUT idade 70 → 400 (idade deve ser um número inteiro entre 16 e 69 anos)",
+      "segundos": 1.8
+    },
+    {
+      "id": "F2",
+      "area": "Acessibilidade (2.4.1)",
+      "desc": "Primeiro Tab é \"Pular para o conteúdo\"; Enter + Tab chega ao botão principal",
+      "ok": true,
+      "detail": "3 teclas",
+      "segundos": 0.8
+    },
+    {
+      "id": "F9",
+      "area": "Acessibilidade (2.4.3)",
+      "desc": "Ao trocar de tela pelo menu (Enter), o próximo Tab já vai para o conteúdo, não para o resto do menu",
+      "ok": true,
+      "detail": "Tab seguinte: \"Novo Doador\"",
+      "segundos": 12.6
+    },
+    {
+      "id": "F8",
+      "area": "Acessibilidade (2.1.1)",
+      "desc": "Cadastro completo de doador usando só o teclado",
+      "ok": true,
+      "detail": "gravado com sexo, tipo e idade escolhidos pelo teclado",
+      "segundos": 7.6
+    },
+    {
+      "id": "F3",
+      "area": "Acessibilidade (2.4.3 / 2.1.2)",
+      "desc": "Diálogo: foco no \"Cancelar\", Tab preso, Esc fecha e devolve o foco ao botão",
+      "ok": true,
+      "detail": "confirmação cita o nome do doador",
+      "segundos": 1.2
+    },
+    {
+      "id": "F5",
+      "area": "Acessibilidade (4.1.2)",
+      "desc": "Botões de ação anunciam a ação e o nome do item",
+      "ok": true,
+      "detail": "editar, anonimizar e excluir",
+      "segundos": 0.8
+    },
+    {
+      "id": "F4",
+      "area": "Acessibilidade (1.3.1 / 3.3.2)",
+      "desc": "Todos os campos dos formulários e filtros têm rótulo associado",
+      "ok": true,
+      "detail": "doador, busca, estoque (filtro e entrada) e insumo",
+      "segundos": 4.7
+    },
+    {
+      "id": "E1",
+      "area": "Funcionalidade 2 — busca",
+      "desc": "Nome sem diferenciar acento e maiúsculas",
+      "ok": true,
+      "detail": "\"JOÃO\" → Joao Carlos Pereira",
+      "segundos": 1.2
+    },
+    {
+      "id": "E2",
+      "area": "Funcionalidade 2 — busca",
+      "desc": "CPF parcial com e sem máscara encontra o mesmo doador",
+      "ok": true,
+      "detail": "\"986224\" e \"986.224\" → E2E TP4 Teste 862249 Mouse Editado",
+      "segundos": 1.2
+    },
+    {
+      "id": "E3",
+      "area": "Funcionalidade 2 — busca",
+      "desc": "Filtro por tipo sanguíneo e por situação; contagem \"X de Y\"",
+      "ok": true,
+      "detail": "O+: 4 de 15 doadores encontrados; anonimizados: 1",
+      "segundos": 1.2
+    },
+    {
+      "id": "E4",
+      "area": "Funcionalidade 2 — busca",
+      "desc": "Sem resultado: mensagem, \"Limpar busca\" restaura a lista e devolve o foco",
+      "ok": true,
+      "detail": "",
+      "segundos": 1.3
+    },
+    {
+      "id": "F1b",
+      "area": "Acessibilidade",
+      "desc": "Doadores com busca ativa e formulário aberto sem violações (axe)",
+      "ok": true,
+      "detail": "",
+      "segundos": 1.2
+    },
+    {
+      "id": "G5",
+      "area": "Regressão — LGPD (TP3)",
+      "desc": "Anonimizar remove dados pessoais e mantém o registro",
+      "ok": true,
+      "detail": "nome trocado, CPF removido, registro mantido",
+      "segundos": 1.9
+    },
+    {
+      "id": "G6",
+      "area": "Regressão — doadores",
+      "desc": "Excluir doador sem doações (pela tela e pela API)",
+      "ok": true,
+      "detail": "tela: removido; API (anonimizado): 204",
+      "segundos": 18.6
+    },
+    {
+      "id": "G7",
+      "area": "Regressão — insumos",
+      "desc": "Criar, sinalizar baixo estoque no painel, editar, validar negativo e excluir",
+      "ok": true,
+      "detail": "painel 0 → 1; -3 recusado; 50 → Normal; excluído",
+      "segundos": 52.5
+    },
+    {
+      "id": "F1c",
+      "area": "Acessibilidade",
+      "desc": "Insumos com formulário aberto sem violações (axe)",
+      "ok": true,
+      "detail": "",
+      "segundos": 1.1
+    },
+    {
+      "id": "D1",
+      "area": "Funcionalidade 1 — saída",
+      "desc": "Entrada de bolsas em AB- (tipo sem estoque) atualiza tabela e painel",
+      "ok": true,
+      "detail": "AB-: 0 → 3 (Adequado); painel 10 → 13; campos vazios recusados",
+      "segundos": 42
+    },
+    {
+      "id": "D2",
+      "area": "Funcionalidade 1 — saída",
+      "desc": "Saída pela linha da tabela já vem com o tipo e o foco na quantidade",
+      "ok": true,
+      "detail": "axe sem violações no formulário de saída",
+      "segundos": 6.8
+    },
+    {
+      "id": "D3",
+      "area": "Funcionalidade 1 — saída",
+      "desc": "Mais bolsas do que o estoque é bloqueado sem gravar nada",
+      "ok": true,
+      "detail": "Há apenas 3 bolsa(s) de AB- em estoque. · API → 400 (Há apenas 3 bolsa(s) de AB- em estoque)",
+      "segundos": 12.3
+    },
+    {
+      "id": "D4",
+      "area": "Funcionalidade 1 — saída",
+      "desc": "Despacho com destino: confirmação, estoque −1 e a bolsa MAIS ANTIGA sai",
+      "ok": true,
+      "detail": "saiu a bolsa da primeira entrada (FIFO); destino gravado",
+      "segundos": 18.5
+    },
+    {
+      "id": "D5",
+      "area": "Funcionalidade 1 — saída",
+      "desc": "Descarte exige motivo; com motivo, estoque −1",
+      "ok": true,
+      "detail": "API sem motivo → 400 (Informe o motivo do descarte)",
+      "segundos": 8.5
+    },
+    {
+      "id": "D6",
+      "area": "Funcionalidade 1 — saída",
+      "desc": "Histórico mostra entrada, despacho e descarte (estoque e painel), mesmo após recarregar",
+      "ok": true,
+      "detail": "estoque, recarregado e painel; ?limite=2 respeitado",
+      "segundos": 13.5
+    },
+    {
+      "id": "G8",
+      "area": "Regressão — estoque",
+      "desc": "Filtro por tipo e \"Excluir lote\" continuam funcionando",
+      "ok": true,
+      "detail": "AB- voltou a 0 (Sem estoque)",
+      "segundos": 18.5
+    },
+    {
+      "id": "F1d",
+      "area": "Acessibilidade",
+      "desc": "Painel, estoque (com formulário de entrada) e diálogo aberto sem violações (axe)",
+      "ok": true,
+      "detail": "",
+      "segundos": 20.5
+    },
+    {
+      "id": "G10",
+      "area": "Regressão — layout",
+      "desc": "Celular (390 px): sem rolagem horizontal da página em nenhuma tela",
+      "ok": true,
+      "detail": "/dashboard 390px, /doadores 390px, /estoque 390px, /insumos 390px",
+      "segundos": 25.5
+    },
+    {
+      "id": "G12",
+      "area": "Regressão — layout",
+      "desc": "Notebook com zoom (1280 px): cards do painel com a mesma altura, tabelas sem estourar e \"Ações\" alinhado como as demais colunas",
+      "ok": true,
+      "detail": "cards 217px, /doadores 928/928px, /estoque 928/928px, /insumos 928/928px",
+      "segundos": 25
+    },
+    {
+      "id": "B5",
+      "area": "Regressão — login",
+      "desc": "Encerrar sessão volta ao login e bloqueia as telas",
+      "ok": true,
+      "detail": "",
+      "segundos": 18.1
+    },
+    {
+      "id": "G11",
+      "area": "Regressão — estabilidade",
+      "desc": "Nenhum erro de JavaScript no console durante todo o roteiro",
+      "ok": true,
+      "detail": "",
+      "segundos": 0
+    }
+  ]
+}
