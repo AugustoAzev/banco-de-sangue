@@ -23,6 +23,7 @@ jest.mock('../src/lib/auth-helpers', () => ({
 }));
 
 import handler from '../pages/api/inventory/bolsas';
+import { groupBagsByType, INVENTORY_POLICY } from '../src/lib/inventory-policy';
 
 const mockRes = () => {
   const res: any = {};
@@ -115,5 +116,41 @@ describe('GET /api/inventory/bolsas — agrupamento por tipo sanguíneo', () => 
     const result = res.json.mock.calls[0][0];
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('uuid-only');
+  });
+});
+
+describe('groupBagsByType', () => {
+  it('preserva a primeira bolsa do grupo e totaliza a quantidade', () => {
+    expect(groupBagsByType([
+      { id_doacao: 'a-1', tipo_sanguineo_coletado: 'A_POSITIVO', data_doacao: '2024-01-15T10:00:00Z' },
+      { id_doacao: 'a-2', tipo_sanguineo_coletado: 'A_POSITIVO', data_doacao: '2024-01-14T10:00:00Z' },
+      { id_doacao: 'o-1', tipo_sanguineo_coletado: 'O_NEGATIVO', data_doacao: '2024-01-13T10:00:00Z' },
+    ])).toEqual([
+      { id: 'a-1', tipo_sangue: 'A_POSITIVO', quantidade: 2, created_at: '2024-01-15T10:00:00Z' },
+      { id: 'o-1', tipo_sangue: 'O_NEGATIVO', quantidade: 1, created_at: '2024-01-13T10:00:00Z' },
+    ]);
+  });
+});
+
+describe('POST /api/inventory/bolsas', () => {
+  it('uses the configured bag volume when registering donations', async () => {
+    mockSupabaseFetch
+      .mockResolvedValueOnce({ ok: true, json: async () => [{ id_doador: 'donor-1' }] })
+      .mockResolvedValueOnce({ ok: true, json: async () => [{ id_unidade: 'unit-1' }] })
+      .mockResolvedValueOnce({ ok: true, json: async () => [{ id_usuario: 'user-1' }] });
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id_doacao: 'bag-1' }],
+    });
+    const res = mockRes();
+
+    await handler({
+      method: 'POST',
+      body: { tipo_sangue: 'A_POSITIVO', quantidade: 1 },
+    } as any, res);
+
+    const payload = JSON.parse((global.fetch as jest.Mock).mock.calls[0][1].body);
+    expect(payload[0].volume_ml).toBe(INVENTORY_POLICY.bagVolumeMl);
+    expect(res.status).toHaveBeenCalledWith(201);
   });
 });

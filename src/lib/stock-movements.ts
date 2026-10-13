@@ -74,6 +74,28 @@ export interface StockMovement {
   observacoes: string | null;
 }
 
+function addMovement(
+  groups: Map<string, StockMovement>,
+  tipo: MovementKind,
+  row: DonationRow,
+  data: string,
+  observacoes: string | null
+): void {
+  const key = `${tipo}|${row.tipo_sanguineo_coletado}|${data}|${observacoes ?? ''}`;
+  const existing = groups.get(key);
+  if (existing) {
+    existing.quantidade += 1;
+  } else {
+    groups.set(key, {
+      tipo,
+      tipo_sangue: row.tipo_sanguineo_coletado,
+      quantidade: 1,
+      data,
+      observacoes,
+    });
+  }
+}
+
 /**
  * Reconstrói as movimentações a partir das bolsas.
  *
@@ -87,17 +109,10 @@ export interface StockMovement {
 export function buildMovements(rows: DonationRow[], limit = 8): StockMovement[] {
   const groups = new Map<string, StockMovement>();
 
-  const add = (tipo: MovementKind, row: DonationRow, data: string, observacoes: string | null) => {
-    const key = `${tipo}|${row.tipo_sanguineo_coletado}|${data}|${observacoes ?? ''}`;
-    const existing = groups.get(key);
-    if (existing) existing.quantidade += 1;
-    else groups.set(key, { tipo, tipo_sangue: row.tipo_sanguineo_coletado, quantidade: 1, data, observacoes });
-  };
-
   for (const row of rows) {
-    add('ENTRADA', row, row.data_doacao, null);
+    addMovement(groups, 'ENTRADA', row, row.data_doacao, null);
     if ((STOCK_EXIT_STATUSES as readonly string[]).includes(row.status)) {
-      add(row.status as StockExitStatus, row, row.atualizado_em, row.observacoes ?? null);
+      addMovement(groups, row.status as StockExitStatus, row, row.atualizado_em, row.observacoes ?? null);
     }
   }
 
