@@ -74,13 +74,33 @@ export interface StockMovement {
   observacoes: string | null;
 }
 
+interface MovementInput {
+  tipo: MovementKind;
+  row: DonationRow;
+  data: string;
+  observacoes: string | null;
+}
+
+function getMovementInputs(row: DonationRow): MovementInput[] {
+  const inputs: MovementInput[] = [{ tipo: 'ENTRADA', row, data: row.data_doacao, observacoes: null }];
+
+  if ((STOCK_EXIT_STATUSES as readonly string[]).includes(row.status)) {
+    inputs.push({
+      tipo: row.status as StockExitStatus,
+      row,
+      data: row.atualizado_em,
+      observacoes: row.observacoes ?? null,
+    });
+  }
+
+  return inputs;
+}
+
 function addMovement(
   groups: Map<string, StockMovement>,
-  tipo: MovementKind,
-  row: DonationRow,
-  data: string,
-  observacoes: string | null
+  input: MovementInput
 ): void {
+  const { tipo, row, data, observacoes } = input;
   const key = `${tipo}|${row.tipo_sanguineo_coletado}|${data}|${observacoes ?? ''}`;
   const existing = groups.get(key);
   if (existing) {
@@ -107,14 +127,12 @@ function addMovement(
  * recupera cada operação com a sua quantidade.
  */
 export function buildMovements(rows: DonationRow[], limit = 8): StockMovement[] {
-  const groups = new Map<string, StockMovement>();
-
-  for (const row of rows) {
-    addMovement(groups, 'ENTRADA', row, row.data_doacao, null);
-    if ((STOCK_EXIT_STATUSES as readonly string[]).includes(row.status)) {
-      addMovement(groups, row.status as StockExitStatus, row, row.atualizado_em, row.observacoes ?? null);
-    }
-  }
+  const groups = rows
+    .flatMap(getMovementInputs)
+    .reduce((accumulator, input) => {
+      addMovement(accumulator, input);
+      return accumulator;
+    }, new Map<string, StockMovement>());
 
   return [...groups.values()]
     .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())

@@ -7,7 +7,11 @@
 
 ## Objetivo e restrição
 
-O trabalho reorganiza a estrutura interna do estoque sem mudar o comportamento observado. Foram aplicadas duas técnicas do catálogo de Martin Fowler: **Extract Function** e **Replace Magic Number with Symbolic Constant**. A resposta das rotas e as regras de negócio foram mantidas.
+O trabalho reorganiza a estrutura interna do estoque sem mudar o comportamento observado. Foram aplicadas quatro técnicas diferentes do catálogo de Martin Fowler: **Extract Function**, **Replace Magic Number with Symbolic Constant**, **Replace Loop with Pipeline** e **Introduce Parameter Object**. A resposta das rotas e as regras de negócio foram mantidas.
+
+## Critério para escolha
+
+As refatorações foram escolhidas porque atacam problemas concretos encontrados no módulo de estoque e têm baixo risco funcional: extraem regras puras para teste, eliminam uma segunda fonte para o volume padrão e tornam o processamento de movimentações mais declarativo e coeso. Em conjunto, melhoram a legibilidade e reduzem o custo de futuras alterações sem alterar o contrato das rotas.
 
 ## Refatorações realizadas
 
@@ -63,28 +67,55 @@ volume_ml: INVENTORY_POLICY.bagVolumeMl,
 
 **Evidência:** teste da rota de cadastro compara o valor persistido com a constante da política e confirma a resposta `201`.
 
-### 3. Oportunista — extrair a acumulação de uma movimentação
+### 3. Oportunista — substituir o laço por um pipeline
 
-**Problema:** `buildMovements` continha inline a criação da chave de agrupamento, incremento da quantidade e inserção da movimentação, misturando essa regra com a iteração das linhas.
+**Problema:** `buildMovements` percorria as linhas com um laço que misturava a descoberta das entradas e saídas com a acumulação dos grupos. Isso escondia as etapas do processamento e tornava menos evidente que cada bolsa pode gerar uma entrada e, quando aplicável, uma saída.
 
 **Antes** (`src/lib/stock-movements.ts`):
 
 ```ts
-const key = `${tipo}|${row.tipo_sanguineo_coletado}|${data}|${observacoes ?? ''}`;
-const existing = groups.get(key);
-if (existing) existing.quantidade += 1;
-else groups.set(key, /* movimentação inicial */);
+for (const row of rows) {
+  addMovement(groups, 'ENTRADA', row, row.data_doacao, null);
+  if ((STOCK_EXIT_STATUSES as readonly string[]).includes(row.status)) {
+    addMovement(groups, row.status, row, row.atualizado_em, row.observacoes ?? null);
+  }
+}
 ```
 
-**Depois:** a inclusão está isolada em `addMovement`, e `buildMovements` expressa somente quais entradas e saídas devem ser consideradas:
+**Depois:** `buildMovements` transforma cada linha em entradas de movimentação com `flatMap` e as acumula com `reduce`, deixando explícitas as etapas do pipeline:
 
 ```ts
-addMovement(groups, 'ENTRADA', row, row.data_doacao, null);
+const groups = rows
+  .flatMap(getMovementInputs)
+  .reduce((accumulator, input) => {
+    addMovement(accumulator, input);
+    return accumulator;
+  }, new Map<string, StockMovement>());
 ```
 
-Chaves, agrupamento, ordenação e limite permanecem iguais.
+Chaves, agrupamento, ordenação e limite permanecem iguais. A escolha é adequada porque a regra é naturalmente uma sequência de transformação e acumulação, e a forma declarativa facilita localizar cada etapa.
 
 **Evidência:** os testes existentes de entradas, saídas, separação por tipo, ordenação e limite exercitam a função pública `buildMovements`.
+
+### 4. Oportunista — introduzir objeto-parâmetro para uma movimentação
+
+**Problema:** `addMovement` recebia quatro argumentos relacionados à mesma movimentação (`tipo`, `row`, `data` e `observacoes`). A ordem desses argumentos podia ser confundida e qualquer novo dado exigiria ampliar a assinatura.
+
+**Antes** (`src/lib/stock-movements.ts`):
+
+```ts
+addMovement(groups, tipo, row, data, observacoes);
+```
+
+**Depois:** os dados foram reunidos em `MovementInput`, e a função recebe um único objeto:
+
+```ts
+addMovement(groups, input);
+```
+
+A escolha é adequada porque os quatro valores formam uma unidade conceitual e são usados juntos na chave e no registro final. O objeto torna a chamada autoexplicativa e cria um ponto estável para futuras informações, sem mudar o resultado produzido por `buildMovements`.
+
+**Evidência:** a mesma suíte de movimentações confirma entradas, saídas, separação por tipo, ordenação e limite após a alteração da assinatura interna.
 
 ## Organização e validação
 
