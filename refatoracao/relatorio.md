@@ -7,7 +7,7 @@
 
 ## Objetivo e restrição
 
-O trabalho reorganiza a estrutura interna do estoque sem mudar o comportamento observado. Foram aplicadas quatro técnicas diferentes do catálogo de Martin Fowler: **Extract Function**, **Replace Magic Number with Symbolic Constant**, **Replace Loop with Pipeline** e **Introduce Parameter Object**. Além das técnicas, as mudanças foram classificadas conforme a intenção da refatoração: **Planejada**, **Preparatória**, **de Compreensão** e **de Longo Prazo**. A resposta das rotas e as regras de negócio foram mantidas.
+O trabalho reorganiza a estrutura interna do estoque sem mudar o comportamento observado. Foram aplicadas quatro técnicas diferentes do catálogo de Martin Fowler: **Extract Function**, **Replace Magic Number with Symbolic Constant**, **Replace Loop with Pipeline** e **Introduce Parameter Object**. Além das técnicas, as mudanças foram classificadas conforme a intenção da refatoração: **de Compreensão**, **Preparatória**, **Planejada** e **de Longo Prazo**. A resposta das rotas e as regras de negócio foram mantidas.
 
 ## Critério para escolha
 
@@ -15,9 +15,11 @@ As refatorações foram escolhidas porque atacam problemas concretos encontrados
 
 ## Refatorações realizadas
 
-### 1. Planejada — extrair o agrupamento de bolsas da rota
+### 1. De compreensão — extrair o agrupamento de bolsas da rota
 
 **Problema:** a rota `GET /api/inventory/bolsas` misturava acesso ao banco e transformação dos registros em grupos. A regra era difícil de testar sem executar a rota.
+
+**Classificação:** a mudança torna a regra de agrupamento mais fácil de entender ao separar a transformação pura da integração com banco e da camada HTTP. A redução da complexidade da rota também facilita a leitura e os testes.
 
 **Antes** (`pages/api/inventory/bolsas.ts`):
 
@@ -69,11 +71,11 @@ volume_ml: INVENTORY_POLICY.bagVolumeMl,
 
 **Evidência:** teste da rota de cadastro compara o valor persistido com a constante da política e confirma a resposta `201`.
 
-### 3. De compreensão — substituir o laço por um pipeline
+### 3. Planejada — substituir o laço por um pipeline
 
 **Problema:** `buildMovements` percorria as linhas com um laço que misturava a descoberta das entradas e saídas com a acumulação dos grupos. Isso escondia as etapas do processamento e tornava menos evidente que cada bolsa pode gerar uma entrada e, quando aplicável, uma saída.
 
-**Classificação:** a prioridade dessa mudança é tornar o código mais fácil de entender. As etapas de transformação e acumulação passam a aparecer explicitamente, permitindo que a intenção do processamento seja identificada sem acompanhar todos os detalhes do laço.
+**Classificação:** a mudança foi planejada para reorganizar o processamento de movimentações em etapas explícitas de transformação e acumulação. O pipeline implementa essa decisão estrutural sem alterar as regras de negócio ou o resultado produzido.
 
 **Antes** (`src/lib/stock-movements.ts`):
 
