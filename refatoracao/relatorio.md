@@ -3,11 +3,11 @@
 **Disciplina:** Manutenção e Integração de Software
 
 **Sistema:** Banco de Sangue
-**Branch:** `tp5-refatoracao`
+**Branch:** `tp5-reclassificacao-fowler`
 
 ## Objetivo e restrição
 
-O trabalho reorganiza a estrutura interna do estoque sem mudar o comportamento observado. Foram aplicadas quatro técnicas diferentes do catálogo de Martin Fowler: **Extract Function**, **Replace Magic Number with Symbolic Constant**, **Replace Loop with Pipeline** e **Introduce Parameter Object**. A resposta das rotas e as regras de negócio foram mantidas.
+O trabalho reorganiza a estrutura interna do estoque sem mudar o comportamento observado. Foram aplicadas quatro técnicas diferentes do catálogo de Martin Fowler: **Extract Function**, **Replace Magic Number with Symbolic Constant**, **Replace Loop with Pipeline** e **Introduce Parameter Object**. Além das técnicas, as mudanças foram classificadas conforme a intenção da refatoração: **Planejada**, **Preparatória**, **de Compreensão** e **de Longo Prazo**. A resposta das rotas e as regras de negócio foram mantidas.
 
 ## Critério para escolha
 
@@ -49,9 +49,11 @@ O primeiro ID e a data do grupo continuam sendo os do primeiro registro recebido
 
 **Evidência:** `tests/api-bolsas.test.ts` verifica diretamente a função e mantém os testes de regressão da resposta da rota.
 
-### 2. Oportunista — substituir o literal do volume pela constante da política
+### 2. Preparatória — substituir o literal do volume pela constante da política
 
 **Problema:** o cadastro de bolsas repetia `450`, embora o volume padrão já estivesse declarado em `INVENTORY_POLICY`. Alterações no volume poderiam deixar a regra central e o cadastro divergentes.
+
+**Classificação:** a mudança elimina uma divergência antes que uma alteração futura na política de volume pudesse exigir ajustes em mais de um ponto. Ela prepara o código para essa evolução ao estabelecer uma única fonte de verdade.
 
 **Antes** (`pages/api/inventory/bolsas.ts`):
 
@@ -67,9 +69,11 @@ volume_ml: INVENTORY_POLICY.bagVolumeMl,
 
 **Evidência:** teste da rota de cadastro compara o valor persistido com a constante da política e confirma a resposta `201`.
 
-### 3. Oportunista — substituir o laço por um pipeline
+### 3. De compreensão — substituir o laço por um pipeline
 
 **Problema:** `buildMovements` percorria as linhas com um laço que misturava a descoberta das entradas e saídas com a acumulação dos grupos. Isso escondia as etapas do processamento e tornava menos evidente que cada bolsa pode gerar uma entrada e, quando aplicável, uma saída.
+
+**Classificação:** a prioridade dessa mudança é tornar o código mais fácil de entender. As etapas de transformação e acumulação passam a aparecer explicitamente, permitindo que a intenção do processamento seja identificada sem acompanhar todos os detalhes do laço.
 
 **Antes** (`src/lib/stock-movements.ts`):
 
@@ -97,9 +101,11 @@ Chaves, agrupamento, ordenação e limite permanecem iguais. A escolha é adequa
 
 **Evidência:** os testes existentes de entradas, saídas, separação por tipo, ordenação e limite exercitam a função pública `buildMovements`.
 
-### 4. Oportunista — introduzir objeto-parâmetro para uma movimentação
+### 4. De longo prazo — introduzir objeto-parâmetro para uma movimentação
 
 **Problema:** `addMovement` recebia quatro argumentos relacionados à mesma movimentação (`tipo`, `row`, `data` e `observacoes`). A ordem desses argumentos podia ser confundida e qualquer novo dado exigiria ampliar a assinatura.
+
+**Classificação:** o objeto-parâmetro cria uma estrutura estável para representar uma movimentação. O benefício principal é reduzir o custo de futuras evoluções, pois novos dados relacionados podem ser incorporados ao objeto sem ampliar repetidamente a lista posicional de argumentos.
 
 **Antes** (`src/lib/stock-movements.ts`):
 
