@@ -6,21 +6,21 @@
 
 ## Objetivo
 
-Reorganizar a estrutura interna do módulo de estoque por meio de quatro técnicas do catálogo de refatorações de Martin Fowler, preservando o comportamento das rotas, as regras de negócio e os contratos existentes. As mudanças também foram classificadas pela intenção: Planejada, Preparatória, de Compreensão e de Longo Prazo.
+Reorganizar a estrutura interna do módulo de estoque por meio de quatro técnicas do catálogo de refatorações de Martin Fowler, preservando o comportamento das rotas, as regras de negócio e os contratos existentes. As mudanças também foram classificadas pela intenção: de Compreensão, Preparatória, Planejada e de Longo Prazo.
 
 ## Onde está cada coisa
 
 | Conteúdo | Documento | Implementação | Validação |
 |---|---|---|---|
 | Relatório detalhado das quatro refatorações, problemas, justificativas e evidências | [`refatoracao/relatorio.md`](./refatoracao/relatorio.md) | — | — |
-| Extract Function — agrupamento de bolsas | [`refatoracao/relatorio.md`](./refatoracao/relatorio.md#1-planejada--extrair-o-agrupamento-de-bolsas-da-rota) | [`groupBagsByType`](./src/lib/inventory-policy.ts) | [`api-bolsas.test.ts`](./tests/api-bolsas.test.ts) |
+| De compreensão — Extract Function — agrupamento de bolsas | [`refatoracao/relatorio.md`](./refatoracao/relatorio.md#1-de-compreensão--extrair-o-agrupamento-de-bolsas-da-rota) | [`groupBagsByType`](./src/lib/inventory-policy.ts) | [`api-bolsas.test.ts`](./tests/api-bolsas.test.ts) |
 | Preparatória — Replace Magic Number with Symbolic Constant — volume padrão | [`refatoracao/relatorio.md`](./refatoracao/relatorio.md#2-preparatória--substituir-o-literal-do-volume-pela-constante-da-política) | [`INVENTORY_POLICY`](./src/lib/inventory-policy.ts) | [`api-bolsas.test.ts`](./tests/api-bolsas.test.ts) |
-| De compreensão — Replace Loop with Pipeline — movimentações | [`refatoracao/relatorio.md`](./refatoracao/relatorio.md#3-de-compreensão--substituir-o-laço-por-um-pipeline) | [`buildMovements`](./src/lib/stock-movements.ts) | [`evolucao-saidas-movimentacoes.test.ts`](./tests/evolucao-saidas-movimentacoes.test.ts) |
+| Planejada — Replace Loop with Pipeline — movimentações | [`refatoracao/relatorio.md`](./refatoracao/relatorio.md#3-planejada--substituir-o-laço-por-um-pipeline) | [`buildMovements`](./src/lib/stock-movements.ts) | [`evolucao-saidas-movimentacoes.test.ts`](./tests/evolucao-saidas-movimentacoes.test.ts) |
 | De longo prazo — Introduce Parameter Object — dados de uma movimentação | [`refatoracao/relatorio.md`](./refatoracao/relatorio.md#4-de-longo-prazo--introduzir-objeto-parâmetro-para-uma-movimentação) | [`MovementInput`](./src/lib/stock-movements.ts) | [`evolucao-saidas-movimentacoes.test.ts`](./tests/evolucao-saidas-movimentacoes.test.ts) |
 
 ## Justificativa da escolha
 
-As quatro técnicas foram escolhidas porque tratam problemas concretos do estoque e têm baixo risco funcional. A primeira foi planejada para isolar uma regra pura; a segunda é preparatória, pois elimina uma fonte divergente antes de mudanças futuras; a terceira é de compreensão, pois explicita o fluxo de processamento; e a quarta é de longo prazo, pois estabelece um objeto estável para evoluções. Assim, o código fica mais legível e preparado para mudanças futuras sem alterar o contrato das APIs.
+As quatro técnicas foram escolhidas porque tratam problemas concretos do estoque e têm baixo risco funcional. A primeira é de compreensão, pois separa uma regra pura e reduz a complexidade da rota; a segunda é preparatória, pois elimina uma fonte divergente antes de mudanças futuras; a terceira foi planejada para reorganizar o fluxo de processamento em etapas explícitas; e a quarta é de longo prazo, pois estabelece um objeto estável para evoluções. Assim, o código fica mais legível e preparado para mudanças futuras sem alterar o contrato das APIs.
 
 ## Validação
 
