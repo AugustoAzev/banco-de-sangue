@@ -1,4 +1,5 @@
 import { BLOOD_TYPES, type BloodType } from './blood-types';
+import type { Bolsa } from './types';
 
 /**
  * Política de estoque — ponto único para os limites usados pelo painel e
@@ -21,11 +22,37 @@ export interface StockGroup {
   quantidade: number;
 }
 
+export interface StockBagRow {
+  id_doacao: string;
+  tipo_sanguineo_coletado: string;
+  data_doacao: string;
+}
+
 export interface StockSummary {
   totalBags: number;
   byType: Record<BloodType, number>;
   lowest: { tipo: BloodType; quantidade: number };
   belowMinimum: { tipo: BloodType; quantidade: number }[];
+}
+
+export function groupBagsByType(rows: StockBagRow[]): Bolsa[] {
+  const groups = new Map<string, Bolsa>();
+
+  for (const row of rows) {
+    const existing = groups.get(row.tipo_sanguineo_coletado);
+    if (existing) {
+      existing.quantidade += 1;
+    } else {
+      groups.set(row.tipo_sanguineo_coletado, {
+        id: row.id_doacao,
+        tipo_sangue: row.tipo_sanguineo_coletado,
+        quantidade: 1,
+        created_at: row.data_doacao,
+      });
+    }
+  }
+
+  return [...groups.values()];
 }
 
 /**

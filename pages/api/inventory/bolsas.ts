@@ -2,8 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseFetch, getServiceHeaders } from '../../../src/lib/supabase';
 import { requireAuth } from '../../../src/lib/auth-helpers';
 import { randomUUID } from 'crypto';
-import type { Bolsa, BolsaCreate } from '../../../src/lib/types';
+import type { BolsaCreate } from '../../../src/lib/types';
 import { GENERIC_DONOR_CPF } from '../../../src/lib/system-records';
+import { groupBagsByType, INVENTORY_POLICY } from '../../../src/lib/inventory-policy';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = await requireAuth(req);
@@ -24,25 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const rows: { id_doacao: string; tipo_sanguineo_coletado: string; data_doacao: string }[] = await response.json();
-
-    const grouped: Record<string, { id: string; tipo_sangue: string; created_at: string }[]> = {};
-    for (const row of rows) {
-      if (!grouped[row.tipo_sanguineo_coletado]) {
-        grouped[row.tipo_sanguineo_coletado] = [];
-      }
-      grouped[row.tipo_sanguineo_coletado].push({
-        id: row.id_doacao,
-        tipo_sangue: row.tipo_sanguineo_coletado,
-        created_at: row.data_doacao,
-      });
-    }
-
-    const result: Bolsa[] = Object.entries(grouped).map(([tipo_sangue, bolsas]) => ({
-      id: bolsas[0]?.id ?? '',
-      tipo_sangue,
-      quantidade: bolsas.length,
-      created_at: bolsas[0]?.created_at,
-    }));
+    const result = groupBagsByType(rows);
 
     return res.status(200).json(result);
   }
@@ -103,7 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       id_doador,
       id_unidade,
       tipo_sanguineo_coletado: tipo_sangue,
-      volume_ml: 450,
+      volume_ml: INVENTORY_POLICY.bagVolumeMl,
       status: 'EM_ESTOQUE',
       id_registrador,
       criado_em: now,
