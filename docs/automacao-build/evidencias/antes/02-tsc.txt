@@ -1,0 +1,10 @@
+$ npx tsc --noEmit
+exit=0
+
+# arquivos de pages/ que o tsc verificou:
+22
+
+# Mesmo comando num clone limpo (sem a pasta .next gerada pelo build):
+# arquivos de pages/api que o tsc verificou: 0 de 14
+# Motivo: o tsconfig.json inclui "api", "src", "app", "lib" e ".next/types",
+# mas não inclui "pages". As rotas da API só entram por tabela, quando existe um .next antigo.

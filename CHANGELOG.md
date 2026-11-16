@@ -2,6 +2,45 @@
 
 Mudanças relevantes do sistema Banco de Sangue. O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o versionamento segue o [SemVer](https://semver.org/lang/pt-BR/).
 
+## [1.3.0] — 2026-11-15 — Build e automação
+
+Documentação: [`RELATORIO-BUILD.md`](./RELATORIO-BUILD.md) e [`docs/automacao-build/`](./docs/automacao-build/).
+
+### Adicionado
+
+- **Ciclo de vida do build em scripts npm:** `lint`, `typecheck`, `test:unit`, `test:e2e`, `build` (com o gancho `postbuild`), `verify` e `package`. `npm run verify` valida tudo com um comando.
+- **Pacote instalável:** `npm run package` gera `dist/banco-de-sangue-<versão>.tar.gz` com o servidor standalone do Next.js e um `BUILD-INFO.json`. O `.env` nunca entra no pacote.
+- **Release automatizada** ([`release.yaml`](./.github/workflows/release.yaml)): uma tag `v*.*.*` valida, empacota e publica a Release no GitHub com as notas deste arquivo.
+- **Busca de segredos (gitleaks)** em todo pull request.
+- **Configuração do Playwright** ([`playwright.config.ts`](./playwright.config.ts)), que sobe o servidor de produção sozinho.
+- **Versão do Node fixada:** `engines` no `package.json` e [`.nvmrc`](./.nvmrc) (Node 22).
+
+### Alterado
+
+- **CI reescrito** ([`homologacao.yaml`](./.github/workflows/homologacao.yaml)):
+  - jobs `verify` (lint, tipos, 82 testes, build e pacote) e `e2e`;
+  - sistema fixado em `ubuntu-24.04` e Node lido do `.nvmrc`;
+  - ações atualizadas, cache do npm e do Next.js;
+  - o pacote fica disponível como artifact.
+- **`npm test` roda o Jest**; os testes E2E passaram para `npm run test:e2e`.
+- **Lint pelo ESLint 9** ([`eslint.config.mjs`](./eslint.config.mjs)) no lugar do `next lint`, que foi descontinuado.
+- **`npm start` roda o servidor standalone** (`node .next/standalone/server.js`).
+- **Testes E2E de login e painel** reescritos para a interface atual.
+- **Next.js 15.5.19 → 15.5.29** e dependências indiretas atualizadas: as falhas de segurança nas dependências de produção caíram de 10 (1 crítica) para 2.
+- **Refatoração estrutural do estoque** (TP5, [PR #81](https://github.com/AugustoAzev/banco-de-sangue/pull/81)), sem mudança de comportamento.
+
+### Removido
+
+- **`react-router-dom`**, dependência sem uso.
+- **Segredos do `vercel.json`** (`JWT_SECRET` e chaves do Supabase). As chaves continuam no histórico do git e precisam ser trocadas.
+
+### Corrigido
+
+- **CI vermelho desde 03/11/2026:** o `ubuntu-latest` passou a ser 26.04, onde o Playwright não instala.
+- **CI que aprovava com teste falhando:** o `|| echo` foi removido.
+- **Checagem de tipos sem as rotas da API:** o `tsconfig.json` não incluía `pages/`.
+- **Erros de API nas telas** tratados com o auxiliar tipado `apiErrorDetail` em vez de `any`.
+
 ## [1.2.0] — 2026-10-04 — TP4: Redesign e Manutenção Evolutiva
 
 Documentação: [`docs/redesign/`](./docs/redesign/) (Etapa 1) e [`docs/evolucao/`](./docs/evolucao/) (Etapa 2).
@@ -86,6 +125,7 @@ Documentação: [`manutencao-adaptativa/`](./manutencao-adaptativa/) e [`RELATOR
 
 - **Primeira versão:** login com JWT, cadastro de doadores, estoque de bolsas por tipo sanguíneo, insumos e painel.
 
+[1.3.0]: https://github.com/AugustoAzev/banco-de-sangue/compare/234840a...v1.3.0
 [1.2.0]: https://github.com/AugustoAzev/banco-de-sangue/pull/78
 [1.1.0]: https://github.com/AugustoAzev/banco-de-sangue/compare/release/1.0.0...014e608
 [1.0.0]: https://github.com/AugustoAzev/banco-de-sangue/tree/release/1.0.0
