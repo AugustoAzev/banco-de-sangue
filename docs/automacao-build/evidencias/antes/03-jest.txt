@@ -1,0 +1,8 @@
+$ npx jest --runInBand
+
+Test Suites: 9 passed, 9 total
+Tests:       82 passed, 82 total
+Snapshots:   0 total
+Time:        3.775 s
+Ran all test suites.
+exit=0

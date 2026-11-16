@@ -1,0 +1,47 @@
+$ npm run build
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/8) ...
+   Generating static pages (2/8) 
+   Generating static pages (4/8) 
+   Generating static pages (6/8) 
+ ✓ Generating static pages (8/8)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                  Size  First Load JS
+┌ ○ /                                     3.11 kB         127 kB
+├ ○ /_not-found                             993 B         103 kB
+├ ○ /dashboard                            1.93 kB         133 kB
+├ ○ /doadores                             7.72 kB         132 kB
+├ ○ /estoque                              4.83 kB         132 kB
+└ ○ /insumos                              4.16 kB         128 kB
++ First Load JS shared by all              102 kB
+  ├ chunks/255-98a0bdaa30757bda.js        46.2 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js   54.2 kB
+  └ other shared chunks (total)           1.99 kB
+
+Route (pages)                                Size  First Load JS
+┌ ƒ /api/auth/login                           0 B        97.1 kB
+├ ƒ /api/auth/me                              0 B        97.1 kB
+├ ƒ /api/cep/[cep]                            0 B        97.1 kB
+├ ƒ /api/donors                               0 B        97.1 kB
+├ ƒ /api/donors/[id]                          0 B        97.1 kB
+├ ƒ /api/donors/[id]/anonymize                0 B        97.1 kB
+├ ƒ /api/employees                            0 B        97.1 kB
+├ ƒ /api/health                               0 B        97.1 kB
+├ ƒ /api/inventory/bolsas                     0 B        97.1 kB
+├ ƒ /api/inventory/bolsas/[id]                0 B        97.1 kB
+├ ƒ /api/inventory/insumos                    0 B        97.1 kB
+├ ƒ /api/inventory/insumos/[id]               0 B        97.1 kB
+├ ƒ /api/inventory/movimentacoes              0 B        97.1 kB
+└ ƒ /api/inventory/saidas                     0 B        97.1 kB
++ First Load JS shared by all             97.1 kB
+  ├ chunks/framework-4e51298db41fcfd4.js  59.7 kB
+  ├ chunks/main-aa047f80c1da3ee4.js       35.2 kB
+  └ other shared chunks (total)           2.28 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+exit=0 tempo=47s

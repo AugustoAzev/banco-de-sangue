@@ -1,0 +1,62 @@
+# Release automatizada: ao enviar uma tag de versão (ex.: v1.3.0), o pipeline
+# valida o código, gera o pacote e publica uma Release no GitHub com ele anexado.
+#
+#   git tag v1.3.0 && git push origin v1.3.0
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Validar, empacotar e publicar
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Conferir se a tag bate com a versão do package.json
+        run: |
+          VERSAO=$(node -p "require('./package.json').version")
+          if [ "v$VERSAO" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::A tag $GITHUB_REF_NAME não corresponde à versão $VERSAO do package.json."
+            exit 1
+          fi
+          echo "VERSAO=$VERSAO" >> "$GITHUB_ENV"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Lint, tipos, testes e build
+        run: npm run verify
+
+      - name: Empacotar
+        run: npm run package
+
+      - name: Extrair as notas da versão do CHANGELOG
+        run: |
+          awk -v v="[$VERSAO]" '
+            /^## \[/ { dentro = (index($0, v) > 0); if (!dentro && achou) exit; if (dentro) { achou = 1; next } }
+            dentro { print }
+          ' CHANGELOG.md > notas.md
+          if [ ! -s notas.md ]; then
+            echo "::error::Seção [$VERSAO] não encontrada no CHANGELOG.md."
+            exit 1
+          fi
+
+      - name: Publicar a Release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: Banco de Sangue ${{ github.ref_name }}
+          body_path: notas.md
+          files: dist/*.tar.gz

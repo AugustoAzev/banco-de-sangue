@@ -43,7 +43,6 @@ page.setDefaultTimeout(60000);
 async function runAxe() {
   await page.addScriptTag({ content: AXE_SRC });
   return page.evaluate(async () => {
-    // eslint-disable-next-line no-undef
     const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } });
     return r.violations.map(v => ({
       id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.length,
