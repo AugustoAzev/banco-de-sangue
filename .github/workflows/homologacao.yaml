@@ -68,8 +68,12 @@ jobs:
           if-no-files-found: error
 
   e2e:
-    name: Testes de ponta a ponta (Playwright)
+    # Este nome é o check exigido pela regra de proteção do master ("Master Protect").
+    # Por isso o job roda mesmo quando o verify falha, e falha junto: um job pulado
+    # contaria como aprovado e deixaria passar um PR com teste quebrado.
+    name: Frontend Tests (Playwright)
     needs: verify
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -79,6 +83,12 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
+      - name: Exigir que lint, tipos, testes de unidade e build tenham passado
+        if: needs.verify.result != 'success'
+        run: |
+          echo "::error::O job verify terminou como '${{ needs.verify.result }}'. Corrija-o antes dos testes E2E."
+          exit 1
+
       # Os testes E2E usam o banco real. Sem os segredos cadastrados no repositório
       # (e em PRs vindos de forks, que não recebem segredos), o job é pulado com aviso.
       - name: Verificar segredos do banco

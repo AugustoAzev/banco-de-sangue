@@ -122,7 +122,8 @@ flowchart LR
 - Ações atualizadas (checkout, setup-node e upload-artifact v7, cache v6), todas em Node 24.
 - Cache do npm e do `.next/cache` entre execuções.
 - O pacote fica disponível como *artifact* por 14 dias.
-- Testes E2E sem `|| echo`: se falharem, o pipeline fica vermelho e o relatório do Playwright é publicado. O job só roda quando os segredos do banco estão cadastrados no repositório; sem eles, é pulado com aviso.
+- Testes E2E sem `|| echo`: se falharem, o pipeline fica vermelho e o relatório do Playwright é publicado. Os testes só rodam quando os segredos do banco estão cadastrados no repositório; sem eles, são pulados com aviso.
+- O job E2E se chama **`Frontend Tests (Playwright)`**, o check que a regra de proteção do `master` ("Master Protect") exige. Por isso ele roda mesmo quando o `verify` falha, e falha junto: um job pulado contaria como aprovado no GitHub. Assim o merge só libera com lint, tipos, testes de unidade e build aprovados.
 - **gitleaks** procura segredos em todo PR.
 - `concurrency` cancela execuções velhas da mesma branch.
 
