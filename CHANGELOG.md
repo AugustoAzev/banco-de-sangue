@@ -125,7 +125,7 @@ Documentação: [`manutencao-adaptativa/`](./manutencao-adaptativa/) e [`RELATOR
 
 - **Primeira versão:** login com JWT, cadastro de doadores, estoque de bolsas por tipo sanguíneo, insumos e painel.
 
-[1.3.0]: https://github.com/AugustoAzev/banco-de-sangue/compare/234840a...v1.3.0
+[1.3.0]: https://github.com/AugustoAzev/banco-de-sangue/pull/87
 [1.2.0]: https://github.com/AugustoAzev/banco-de-sangue/pull/78
 [1.1.0]: https://github.com/AugustoAzev/banco-de-sangue/compare/release/1.0.0...014e608
 [1.0.0]: https://github.com/AugustoAzev/banco-de-sangue/tree/release/1.0.0

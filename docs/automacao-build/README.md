@@ -59,7 +59,7 @@ Saídas completas em [`evidencias/antes/`](./evidencias/antes/).
 | # | Problema | Evidência | Consequência |
 |---|---|---|---|
 | 1 | **CI quebrado:** `ubuntu-latest` passou a ser Ubuntu 26.04 e o Playwright 1.57 não instala nele | [run 41578095839](https://github.com/AugustoAzev/banco-de-sangue/actions/runs/41578095839), 03/11/2026 | todo PR desde então fica vermelho, inclusive as atualizações do Dependabot |
-| 2 | **CI que não testava nada:** `npx playwright test \|\| echo` passava mesmo com falha; os testes Jest não estavam no CI | [`homologacao.yaml` antigo](https://github.com/AugustoAzev/banco-de-sangue/blob/234840a/.github/workflows/homologacao.yaml) | "verde" no CI não queria dizer nada |
+| 2 | **CI que não testava nada:** `npx playwright test \|\| echo` passava mesmo com falha; os testes Jest não estavam no CI | [`homologacao.yaml` antigo](https://github.com/AugustoAzev/banco-de-sangue/blob/234840addd8e42827863c710ebc9674a4a5be70c/.github/workflows/homologacao.yaml) | "verde" no CI não queria dizer nada |
 | 3 | **`npm test` quebrado:** rodava o Playwright, que pegava os arquivos do Jest e encontrava 0 testes | [`07-npm-test.txt`](./evidencias/antes/07-npm-test.txt) | o comando padrão de teste falhava |
 | 4 | **Testes E2E abandonados:** apontavam para `localhost:5173`, endereço da época do Vite | specs antigos | nunca rodaram contra o sistema atual |
 | 5 | **`npm run lint` travado:** `next lint` (descontinuado) sem ESLint instalado abre uma pergunta interativa | [`01-npm-run-lint.txt`](./evidencias/antes/01-npm-run-lint.txt) | impossível usar em automação |
@@ -67,7 +67,7 @@ Saídas completas em [`evidencias/antes/`](./evidencias/antes/).
 | 7 | **Ambiente solto:** sem `engines` nem `.nvmrc`; Node 22 local, 20 no CI, "18+" no README | `package.json` antigo | "na minha máquina funciona" |
 | 8 | **Dependências vulneráveis:** 10 falhas nas dependências de produção (1 crítica no Next, 8 altas) | [`06-npm-audit.txt`](./evidencias/antes/06-npm-audit.txt) | risco real em produção |
 | 9 | **Dependência sem uso:** `react-router-dom` (o Next tem roteamento próprio), com 2 das falhas acima | `grep` sem resultados | peso e risco sem benefício |
-| 10 | **Segredos no repositório público:** `vercel.json` com `JWT_SECRET` e `SUPABASE_SERVICE_ROLE_KEY` desde 27/06/2026 | commits `0778a21`, `eceacd1`, `f683edb` | qualquer pessoa podia assinar tokens e acessar o banco sem restrição |
+| 10 | **Segredos no repositório público:** `vercel.json` com `JWT_SECRET` e `SUPABASE_SERVICE_ROLE_KEY` desde 27/06/2026 | commits [`0778a21`](https://github.com/AugustoAzev/banco-de-sangue/commit/0778a213a852a02f95760696390e2cc7583599aa), [`eceacd1`](https://github.com/AugustoAzev/banco-de-sangue/commit/eceacd1438067909f49e8eae68f8ddfed487b68a), [`f683edb`](https://github.com/AugustoAzev/banco-de-sangue/commit/f683edb3d6514f71e7c776c81cbd210366153150) | qualquer pessoa podia assinar tokens e acessar o banco sem restrição |
 | 11 | **Sem artefato:** o build só existia dentro da pasta `.next` de quem rodou | — | nada versionado para entregar ou instalar |
 
 ## 4. O que foi feito
