@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import api from '../../../src/services/api';
+import api, { apiErrorDetail } from '../../../src/services/api';
 import { Droplet, Plus, Filter, Calendar, Trash2, X, PackageMinus } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
 import { BLOOD_TYPES, formatBloodType, speakBloodType } from '../../../src/lib/blood-types';
@@ -125,8 +125,8 @@ export default function Estoque() {
       closeForm();
       loadBolsas();
       setMovementsKey(k => k + 1);
-    } catch (err: any) {
-      const detail = err.response?.data?.detail;
+    } catch (err) {
+      const detail = apiErrorDetail(err);
       error(typeof detail === 'string' ? detail : 'Erro ao registrar a saída.');
     }
   };
@@ -154,8 +154,8 @@ export default function Estoque() {
       closeForm();
       loadBolsas();
       setMovementsKey(k => k + 1);
-    } catch (err: any) {
-      const detail = err.response?.data?.detail;
+    } catch (err) {
+      const detail = apiErrorDetail(err);
       error(typeof detail === 'string' ? detail : 'Erro ao registrar bolsa. Verifique os dados.');
     }
   };
