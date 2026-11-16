@@ -1,27 +1,21 @@
 import { test, expect } from '@playwright/test';
+import { entrar } from './e2e-helpers.js';
 
-test.describe('Dashboard', () => {
+test.describe('Painel', () => {
   test.beforeEach(async ({ page }) => {
-    // Login first
-    await page.goto('http://localhost:5173/');
-    await page.getByLabel('E-mail profissional').fill('admin@pulse.com');
-    await page.getByLabel('Senha').fill('12345678');
-    await page.getByRole('button', { name: /acessar sistema/i }).click();
-    await page.waitForURL(/dashboard/, { timeout: 10000 });
+    await entrar(page);
+    await page.waitForURL(/dashboard/, { timeout: 10_000 });
   });
 
-  test('dashboard loads with stats cards', async ({ page }) => {
-    // Should show the 4 stat cards
-    await expect(page.getByText('Total de Doadores')).toBeVisible();
-    await expect(page.getByText('Bolsas em Estoque')).toBeVisible();
-    await expect(page.getByText('Menor Estoque')).toBeVisible();
-    await expect(page.getByText('Insumos em Baixo Estoque')).toBeVisible();
+  test('mostra os quatro cards de resumo', async ({ page }) => {
+    for (const titulo of ['Total de Doadores', 'Bolsas em Estoque', 'Menor Estoque', 'Insumos em Baixo Estoque']) {
+      await expect(page.getByText(titulo, { exact: true })).toBeVisible();
+    }
   });
 
-  test('sidebar navigation works', async ({ page }) => {
-    // Navigate to Doadores
-    await page.getByRole('link', { name: /doadores/i }).click();
+  test('menu lateral navega para Doadores', async ({ page }) => {
+    await page.getByRole('navigation').getByRole('link', { name: 'Doadores' }).click();
     await expect(page).toHaveURL(/doadores/);
-    await expect(page.getByText('Gestão de Doadores')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Gestão de Doadores' })).toBeVisible();
   });
 });
