@@ -1,0 +1,1 @@
+rootProject.name = "elegibilidade-doador"

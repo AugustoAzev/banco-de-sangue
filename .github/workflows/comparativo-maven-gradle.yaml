@@ -1,0 +1,113 @@
+# Comparativo didático: a mesma regra de negócio (idade do doador, 16 a 69 anos) com os
+# mesmos casos de teste, construída por três ferramentas de build. O pipeline do sistema
+# continua sendo o homologacao.yaml; este só roda quando a pasta do comparativo muda,
+# ou manualmente em Actions → "Comparativo npm, Maven e Gradle" → Run workflow.
+name: Comparativo npm, Maven e Gradle
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'comparativo-maven-gradle/**'
+      - 'src/lib/donor-eligibility.ts'
+      - 'tests/donor-eligibility.test.ts'
+      - '.github/workflows/comparativo-maven-gradle.yaml'
+  push:
+    branches: [master]
+    paths:
+      - 'comparativo-maven-gradle/**'
+      - 'src/lib/donor-eligibility.ts'
+      - 'tests/donor-eligibility.test.ts'
+      - '.github/workflows/comparativo-maven-gradle.yaml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  npm:
+    name: npm (npm test)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependências (package-lock.json)
+        run: npm ci
+
+      - name: Testes da regra em TypeScript (Jest)
+        run: npx jest --runInBand --verbose tests/donor-eligibility.test.ts
+
+  maven:
+    name: Maven (mvn verify)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: comparativo-maven-gradle
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Preparar Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: comparativo-maven-gradle/pom.xml
+
+      - name: Versão do Maven
+        run: mvn --version
+
+      - name: mvn verify (validate, compile, test, package, verify)
+        run: mvn --batch-mode --no-transfer-progress verify
+
+      - name: Publicar o .jar
+        uses: actions/upload-artifact@v7
+        with:
+          name: maven-jar-${{ github.sha }}
+          path: comparativo-maven-gradle/target/*.jar
+          retention-days: 14
+          if-no-files-found: error
+
+  gradle:
+    name: Gradle (gradle build)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: comparativo-maven-gradle
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Preparar Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # Sem o wrapper (gradlew) no repositório, a versão do Gradle fica fixada aqui.
+      - name: Preparar Gradle 9.9.2
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '9.9.2'
+
+      - name: gradle build (compileJava, test, jar, check, build)
+        run: gradle build --console=plain
+
+      - name: Publicar o .jar
+        uses: actions/upload-artifact@v7
+        with:
+          name: gradle-jar-${{ github.sha }}
+          path: comparativo-maven-gradle/build/libs/*.jar
+          retention-days: 14
+          if-no-files-found: error

@@ -1,0 +1,4 @@
+# Saídas do Maven e do Gradle
+target/
+build/
+.gradle/
