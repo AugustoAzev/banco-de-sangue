@@ -23,6 +23,7 @@ Deixar o build do sistema **reproduzível e automatizado**: um comando valida tu
 | Pipeline de CI | [`.github/workflows/homologacao.yaml`](./.github/workflows/homologacao.yaml) | [execuções do PR #87](https://github.com/AugustoAzev/banco-de-sangue/pull/87/checks) |
 | Release automatizada | [`.github/workflows/release.yaml`](./.github/workflows/release.yaml) | publicada ao criar a tag `v1.3.0` |
 | Dependências | [`package-lock.json`](./package-lock.json), [`.github/dependabot.yml`](./.github/dependabot.yml) | [`06-npm-audit.txt`](./docs/automacao-build/evidencias/antes/06-npm-audit.txt) |
+| Comparativo executável: a mesma regra em npm, Maven e Gradle | [`comparativo-maven-gradle/`](./comparativo-maven-gradle/README.md), [`pom.xml`](./comparativo-maven-gradle/pom.xml), [`build.gradle.kts`](./comparativo-maven-gradle/build.gradle.kts) | [workflow do comparativo](./.github/workflows/comparativo-maven-gradle.yaml) |
 | Histórico de versões | [`CHANGELOG.md`](./CHANGELOG.md) | — |
 
 ## Maven, Gradle e npm, lado a lado
@@ -38,6 +39,8 @@ Deixar o build do sistema **reproduzível e automatizado**: um comando valida tu
 | deploy | publish | tag `v*.*.*` → workflow de release |
 
 O `pom.xml` e o `build.gradle` correspondem ao `package.json`; a trava de versões (`gradle.lockfile`) corresponde ao `package-lock.json` com `npm ci`; o `.jar` corresponde ao pacote `.tar.gz` com o servidor standalone do Next. A diferença que mais pesou: o Maven impõe o ciclo de vida, e o npm não impõe nenhum. Faltava justamente o ciclo.
+
+Para não ficar só na tabela, o [comparativo executável](./comparativo-maven-gradle/README.md) constrói a regra de idade do doador com as três ferramentas e os mesmos casos de teste: `npm test`, `mvn verify` e `gradle build` rodam lado a lado num workflow próprio, e o Maven e o Gradle geram cada um o seu `.jar`.
 
 ## O que foi encontrado e o que mudou
 
