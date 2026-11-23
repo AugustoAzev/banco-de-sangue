@@ -1,6 +1,7 @@
 // Build Gradle da regra de elegibilidade do doador, para comparar com o npm e o Maven.
-// O Gradle monta um grafo de tarefas: `gradle build` roda compileJava, test, jar e check,
-// e pula as que já estão em dia (build incremental).
+// O Gradle monta um grafo de tarefas, não uma fila: `gradle build` depende de `assemble` (jar)
+// e de `check` (test), e pula as tarefas que já estão em dia (build incremental).
+// Como o jar não depende dos testes, ele costuma sair antes deles.
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
@@ -33,7 +34,8 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
 }
 
-// Se um teste falha, a tarefa test falha e o jar não é gerado.
+// Se um teste falha, a tarefa test falha e o build inteiro falha. Diferente do Maven, o jar
+// pode já ter sido gerado antes, porque ele não depende dos testes; no CI, ele nem é publicado.
 tasks.test {
     useJUnitPlatform()
     testLogging {
