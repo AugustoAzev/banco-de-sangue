@@ -2,6 +2,17 @@
 
 Mudanças relevantes do sistema Banco de Sangue. O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o versionamento segue o [SemVer](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+
+- **Comparativo de build** ([`comparativo-maven-gradle/`](./comparativo-maven-gradle/README.md)): a regra de idade do doador construída com Maven (`pom.xml`) e Gradle (`build.gradle.kts`), com os mesmos casos de teste em JUnit. O workflow [`comparativo-maven-gradle.yaml`](./.github/workflows/comparativo-maven-gradle.yaml) roda `npm test`, `mvn verify` e `gradle build` lado a lado ([PR #91](https://github.com/AugustoAzev/banco-de-sangue/pull/91)).
+
+### Corrigido
+
+- **Jest varrendo as saídas do build:** depois de um build, `.next/standalone` e `dist/` traziam outro `package.json` e um `node_modules` inteiro, e o Jest acusava colisão de nomes ([PR #90](https://github.com/AugustoAzev/banco-de-sangue/pull/90)).
+- **Links das notas da Release:** os links relativos do CHANGELOG passam a sair absolutos na página da Release ([PR #89](https://github.com/AugustoAzev/banco-de-sangue/pull/89)).
+
 ## [1.3.0] — 2026-11-15 — Build e automação
 
 Documentação: [`RELATORIO-BUILD.md`](./RELATORIO-BUILD.md) e [`docs/automacao-build/`](./docs/automacao-build/).
@@ -125,6 +136,7 @@ Documentação: [`manutencao-adaptativa/`](./manutencao-adaptativa/) e [`RELATOR
 
 - **Primeira versão:** login com JWT, cadastro de doadores, estoque de bolsas por tipo sanguíneo, insumos e painel.
 
+[Não lançado]: https://github.com/AugustoAzev/banco-de-sangue/compare/v1.3.0...master
 [1.3.0]: https://github.com/AugustoAzev/banco-de-sangue/pull/87
 [1.2.0]: https://github.com/AugustoAzev/banco-de-sangue/pull/78
 [1.1.0]: https://github.com/AugustoAzev/banco-de-sangue/compare/release/1.0.0...014e608

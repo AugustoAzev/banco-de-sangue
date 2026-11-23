@@ -52,6 +52,10 @@ As três ferramentas cumprem o mesmo papel em ecossistemas diferentes. Maven e G
 
 O gancho `postbuild` faz o papel de um plugin ligado a uma fase no Maven: o npm o executa sozinho depois de `build`, sem ninguém precisar lembrar.
 
+### O comparativo rodando
+
+A tabela acima também existe como código: [`comparativo-maven-gradle/`](../../comparativo-maven-gradle/README.md) traz a regra de idade do doador ([`src/lib/donor-eligibility.ts`](../../src/lib/donor-eligibility.ts)) portada para Java, com os mesmos casos de teste em JUnit, um [`pom.xml`](../../comparativo-maven-gradle/pom.xml) e um [`build.gradle.kts`](../../comparativo-maven-gradle/build.gradle.kts). O workflow [`comparativo-maven-gradle.yaml`](../../.github/workflows/comparativo-maven-gradle.yaml) roda `npm test`, `mvn verify` e `gradle build` lado a lado. No Maven e no Gradle não foi preciso escrever o ciclo, só declarar o projeto; no npm, cada etapa e a ordem entre elas estão escritas à mão no `package.json`.
+
 ## 3. Como o build estava (diagnóstico)
 
 Saídas completas em [`evidencias/antes/`](./evidencias/antes/).
