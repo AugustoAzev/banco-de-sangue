@@ -1,0 +1,10 @@
+# E2E contra o pacote extraído (node server.js), servidor recém-iniciado
+Running 5 tests using 2 workers
+
+  ok 1 [chromium] › tests\dashboard.spec.js:10:3 › Painel › mostra os quatro cards de resumo (3.1s)
+  ok 2 [chromium] › tests\login.spec.js:5:3 › Login › credenciais válidas levam ao painel (3.2s)
+  ok 3 [chromium] › tests\dashboard.spec.js:16:3 › Painel › menu lateral navega para Doadores (2.4s)
+  ok 4 [chromium] › tests\login.spec.js:12:3 › Login › senha errada mostra erro (2.5s)
+  ok 5 [chromium] › tests\login.spec.js:18:3 › Login › usuário inexistente mostra erro (1.8s)
+
+  5 passed (8.8s)

@@ -1,33 +1,152 @@
-name: Tests
+# Pipeline de build e testes.
+# Cada etapa chama um script do package.json, assim o que roda aqui é exatamente
+# o que qualquer pessoa roda na própria máquina (npm run verify).
+name: Build e Testes
 
 on:
   push:
     branches: [master, develop, 'feature/**']
   pull_request:
     branches: [master, develop]
+  workflow_dispatch:
+
+# Um push novo na mesma branch cancela a execução anterior, que já ficou velha.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  test:
-    name: Frontend Tests (Playwright)
-    runs-on: ubuntu-latest
+  verify:
+    name: Lint, tipos, testes de unidade e build
+    # Versão do sistema fixada: o "ubuntu-latest" mudou para 26.04 sem aviso e quebrou o pipeline.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Preparar Node.js (versão do .nvmrc)
+        uses: actions/setup-node@v7
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version-file: .nvmrc
+          cache: npm
 
-      - name: Install dependencies
+      - name: Instalar dependências exatamente como no package-lock.json
         run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+      - name: Lint
+        run: npm run lint
 
-      - name: Build Next.js
+      - name: Checagem de tipos
+        run: npm run typecheck
+
+      - name: Testes de unidade e de API (Jest)
+        run: npm run test:unit
+
+      - name: Reaproveitar o cache do Next.js
+        uses: actions/cache@v6
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('app/**', 'pages/**', 'src/**') }}
+          restore-keys: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+
+      - name: Build de produção
         run: npm run build
 
-      - name: Run Playwright tests
-        run: npx playwright test || echo "Playwright tests completed"
+      - name: Empacotar o artefato
+        run: npm run package
+
+      - name: Publicar o pacote
+        uses: actions/upload-artifact@v7
+        with:
+          name: banco-de-sangue-${{ github.sha }}
+          path: dist/*.tar.gz
+          retention-days: 14
+          if-no-files-found: error
+
+  e2e:
+    # Este nome é o check exigido pela regra de proteção do master ("Master Protect").
+    # Por isso o job roda mesmo quando o verify falha, e falha junto: um job pulado
+    # contaria como aprovado e deixaria passar um PR com teste quebrado.
+    name: Frontend Tests (Playwright)
+    needs: verify
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+    steps:
+      - name: Exigir que lint, tipos, testes de unidade e build tenham passado
+        if: needs.verify.result != 'success'
+        run: |
+          echo "::error::O job verify terminou como '${{ needs.verify.result }}'. Corrija-o antes dos testes E2E."
+          exit 1
+
+      # Os testes E2E usam o banco real. Sem os segredos cadastrados no repositório
+      # (e em PRs vindos de forks, que não recebem segredos), o job é pulado com aviso.
+      - name: Verificar segredos do banco
+        id: segredos
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ] && [ -n "$JWT_SECRET" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::E2E pulado: cadastre SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY e JWT_SECRET nos segredos do repositório."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.segredos.outputs.ok == 'true'
+
+      - uses: actions/setup-node@v7
+        if: steps.segredos.outputs.ok == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependências e o navegador
+        if: steps.segredos.outputs.ok == 'true'
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Build de produção
+        if: steps.segredos.outputs.ok == 'true'
+        run: npm run build
+
+      - name: Rodar os testes E2E
+        if: steps.segredos.outputs.ok == 'true'
+        run: npm run test:e2e
+
+      - name: Publicar o relatório do Playwright
+        if: failure() && steps.segredos.outputs.ok == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-${{ github.sha }}
+          path: playwright-report/
+          retention-days: 7
+
+  segredos:
+    name: Busca de segredos no código (gitleaks)
+    # Só em PRs: num push de branch nova o gitleaks varreria o histórico inteiro, onde as
+    # chaves antigas do vercel.json continuam registradas (ver RELATORIO-BUILD.md).
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      # Em PRs, analisa só os commits do PR; em push, os commits enviados.
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

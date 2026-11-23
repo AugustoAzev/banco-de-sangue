@@ -1,0 +1,31 @@
+$ npm test   (script "test": "playwright test")
+  7 |   supabaseFetch: (...args) => mockSupabaseFetch(...args),
+    at Object.<anonymous> (<projeto>\tests\evolucao-saidas-movimentacoes.test.ts:4:27)
+
+ReferenceError: jest is not defined
+
+   at tests\redesign-doadores.test.ts:6
+
+  4 |  * - H5: o doador genérico das entradas de estoque não pode ser alterado.
+  5 |  */
+> 6 | const mockSupabaseFetch = jest.fn();
+    |                           ^
+  7 |
+  8 | jest.mock('../src/lib/supabase', () => ({
+  9 |   supabaseFetch: (...args) => mockSupabaseFetch(...args),
+    at Object.<anonymous> (<projeto>\tests\redesign-doadores.test.ts:6:27)
+
+ReferenceError: describe is not defined
+
+   at tests\redesign-painel-estoque.test.ts:21
+
+  19 | ];
+  20 |
+> 21 | describe('summarizeStock', () => {
+     | ^
+  22 |   it('soma as quantidades em vez de contar os grupos', () => {
+  23 |     const resumo = summarizeStock(estoqueAntes);
+  24 |     expect(resumo.totalBags).toBe(9);
+    at Object.<anonymous> (<projeto>\tests\redesign-painel-estoque.test.ts:21:1)
+
+exit=1

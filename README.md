@@ -2,6 +2,10 @@
 
 Sistema de gestão de hemocentros para cadastro de doadores, controle de estoque de sangue e administração de insumos.
 
+> **Build e automação (versão 1.3.0):** ciclo de vida do build em scripts npm (equivalente às fases do Maven e às tarefas do Gradle), CI que testa de verdade, pacote instalável e release automatizada. Síntese em [`RELATORIO-BUILD.md`](./RELATORIO-BUILD.md), detalhes e evidências em [`docs/automacao-build/`](./docs/automacao-build/).
+>
+> **TP5 — Refatoração:** quatro refatorações do catálogo de Fowler no módulo de estoque. Síntese em [`RELATORIO-TP5.md`](./RELATORIO-TP5.md).
+>
 > **TP4 — Redesign e Manutenção Evolutiva (versão 1.2.0):** o objetivo que atravessa o trabalho é que **qualquer profissional do hemocentro consiga operar o sistema**, inclusive quem tem baixa visão, usa só o teclado ou usa leitor de tela.
 > - **Comece por aqui:** [`RELATORIO-TP4.md`](./RELATORIO-TP4.md), com a síntese das duas etapas, o mapa de onde está cada documento e cada evidência, os números e a reflexão crítica.
 > - **Etapa 1 — Redesign:** [avaliação heurística (Nielsen)](./docs/redesign/avaliacao-heuristica.md) e [melhorias com antes/depois](./docs/redesign/melhorias-implementadas.md).
@@ -30,8 +34,8 @@ Sistema de gestão de hemocentros para cadastro de doadores, controle de estoque
 
 ## Pré-requisitos
 
-- Node.js 18+
-- npm ou yarn
+- Node.js 20.9 ou mais novo (a equipe usa o 22, definido no [`.nvmrc`](./.nvmrc): `nvm use`)
+- npm
 - Conta no Supabase (projeto criado)
 
 ---
@@ -39,10 +43,12 @@ Sistema de gestão de hemocentros para cadastro de doadores, controle de estoque
 ## Instalação
 
 ```bash
-git clone https://github.com/seu-usuario/banco-de-sangue.git
+git clone https://github.com/AugustoAzev/banco-de-sangue.git
 cd banco-de-sangue
-npm install
+npm ci
 ```
+
+`npm ci` instala exatamente as versões do `package-lock.json`. Use `npm install <pacote>` só para adicionar ou atualizar uma dependência.
 
 ## Variáveis de Ambiente
 
@@ -119,9 +125,8 @@ Detalhes e roteiro de verificação manual: [`docs/evolucao/acessibilidade.md`](
 ## Testes
 
 ```bash
-npx jest                 # testes de unidade e de API (80 testes)
-npx playwright test      # E2E (requer o sistema rodando)
-npx playwright show-report
+npm test                 # testes de unidade e de API (Jest, 82 testes)
+npm run test:e2e         # E2E com Playwright; precisa de `npm run build` e do .env (sobe o servidor sozinho)
 
 # TP4: 46 verificações pela interface contra o sistema rodando (cria e apaga os próprios dados)
 npm install --no-save axe-core@4
@@ -129,6 +134,32 @@ node scripts/testar-tp4-e2e.mjs e2e-saida
 ```
 
 Resultado e checklist do TP4: [`docs/checklist-testes-tp4.md`](./docs/checklist-testes-tp4.md).
+
+---
+
+## Build e automação
+
+| Comando | O que faz | Equivalente no Maven |
+|---|---|---|
+| `npm run lint` | ESLint | `validate` |
+| `npm run typecheck` | checagem de tipos do TypeScript | `compile` |
+| `npm test` | testes de unidade e de API (Jest) | `test` |
+| `npm run build` | build de produção + servidor standalone (gancho `postbuild`) | `package` |
+| `npm run verify` | lint, tipos, testes e build, parando na primeira falha | `verify` |
+| `npm run package` | gera `dist/banco-de-sangue-<versão>.tar.gz` | `package` (o `.jar`) |
+| `npm start` | sobe o servidor de produção já construído | — |
+
+**CI** ([`homologacao.yaml`](./.github/workflows/homologacao.yaml)): todo push e PR roda `verify`, gera o pacote como artifact, roda os testes E2E e, nos PRs, procura segredos com o gitleaks.
+
+**Release** ([`release.yaml`](./.github/workflows/release.yaml)): com a versão já atualizada no `package.json` e no `CHANGELOG.md`, enviar a tag publica a Release com o pacote anexado:
+
+```bash
+git tag v1.3.0 && git push origin v1.3.0
+```
+
+Para rodar o pacote em outra máquina: extrair, criar o `.env` a partir do `.env.example` e executar `node server.js`.
+
+Detalhes: [`docs/automacao-build/`](./docs/automacao-build/).
 
 ---
 

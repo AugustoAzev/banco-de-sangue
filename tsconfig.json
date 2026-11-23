@@ -32,10 +32,10 @@
     ]
   },
   "include": [
-    "api",
+    "next-env.d.ts",
     "app",
+    "pages",
     "src",
-    "lib",
     ".next/types/**/*.ts"
   ],
   "references": [

@@ -7,3 +7,10 @@ const api = axios.create({
 });
 
 export default api;
+/**
+ * Lê o campo `detail` que as rotas da API devolvem nos erros.
+ * Retorna `undefined` quando o erro não veio de uma resposta HTTP (ex.: falha de rede).
+ */
+export function apiErrorDetail(err: unknown): unknown {
+  return axios.isAxiosError(err) ? err.response?.data?.detail : undefined;
+}

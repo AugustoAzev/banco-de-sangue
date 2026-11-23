@@ -1,45 +1,22 @@
 import { test, expect } from '@playwright/test';
+import { entrar, EMAIL } from './e2e-helpers.js';
 
-// Test assumes backend is running at http://127.0.0.1:8000
-// and frontend at http://localhost:5173 (or http://127.0.0.1:5173)
-
-test.describe('Login Flow', () => {
-  test('login with valid credentials redirects to dashboard', async ({ page }) => {
-    await page.goto('http://localhost:5173/');
-
-    // Fill credentials (admin created by seed_data.py)
-    await page.getByLabel('E-mail profissional').fill('admin@pulse.com');
-    await page.getByLabel('Senha').fill('12345678');
-
-    await page.getByRole('button', { name: /acessar sistema/i }).click();
-
-    // Should redirect to dashboard
-    await expect(page).toHaveURL(/dashboard/);
-
-    // Dashboard should show some content
-    await expect(page.getByText('Painel de Controle')).toBeVisible({ timeout: 10000 });
+test.describe('Login', () => {
+  test('credenciais válidas levam ao painel', async ({ page }) => {
+    await entrar(page);
+    // O primeiro login depois que o servidor sobe consulta o Supabase remoto e pode passar de 5 s.
+    await expect(page).toHaveURL(/dashboard/, { timeout: 10_000 });
+    await expect(page.getByRole('heading', { name: 'Painel de Controle' })).toBeVisible({ timeout: 10_000 });
   });
 
-  test('login with wrong password shows error', async ({ page }) => {
-    await page.goto('http://localhost:5173/');
-
-    await page.getByLabel('E-mail profissional').fill('admin@pulse.com');
-    await page.getByLabel('Senha').fill('wrongpassword');
-
-    await page.getByRole('button', { name: /acessar sistema/i }).click();
-
-    // Should show error message
-    await expect(page.getByText(/credenciais inválidas/i)).toBeVisible({ timeout: 5000 });
+  test('senha errada mostra erro', async ({ page }) => {
+    await entrar(page, EMAIL, 'senha-errada');
+    await expect(page.getByText(/credenciais inválidas/i)).toBeVisible({ timeout: 10_000 });
+    await expect(page).not.toHaveURL(/dashboard/);
   });
 
-  test('login with non-existent user shows error', async ({ page }) => {
-    await page.goto('http://localhost:5173/');
-
-    await page.getByLabel('E-mail').fill('nobody@fake.com');
-    await page.getByLabel('Senha').fill('12345678');
-
-    await page.getByRole('button', { name: /acessar sistema/i }).click();
-
-    await expect(page.getByText(/credenciais inválidas/i)).toBeVisible({ timeout: 5000 });
+  test('usuário inexistente mostra erro', async ({ page }) => {
+    await entrar(page, 'ninguem@exemplo.com');
+    await expect(page.getByText(/credenciais inválidas/i)).toBeVisible({ timeout: 10_000 });
   });
 });

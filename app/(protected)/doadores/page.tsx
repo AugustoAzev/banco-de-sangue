@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import api from '../../../src/services/api';
+import api, { apiErrorDetail } from '../../../src/services/api';
 import { Plus, Pencil, Trash2, X, ShieldOff, UserPlus, UserCog, Search } from 'lucide-react';
 import { useToast } from '../../../src/contexts/ToastContext';
 import { DONOR_SCREENING_CRITERIA } from '../../../src/lib/donor-eligibility';
@@ -117,8 +117,8 @@ export default function Doadores() {
       await api.delete(`/donors/${doador.id_doador}`);
       success(`Doador "${doador.nome_completo}" excluído.`);
       loadDoadores();
-    } catch (err: any) {
-      const msg = err.response?.data?.detail || 'Erro ao excluir.';
+    } catch (err) {
+      const msg = apiErrorDetail(err) || 'Erro ao excluir.';
       error(typeof msg === 'string' ? msg : JSON.stringify(msg));
     }
   };
@@ -129,8 +129,8 @@ export default function Doadores() {
       await api.patch(`/donors/${doador.id_doador}/anonymize`);
       success('Doador anonimizado com sucesso.');
       loadDoadores();
-    } catch (err: any) {
-      const msg = err.response?.data?.detail;
+    } catch (err) {
+      const msg = apiErrorDetail(err);
       error(typeof msg === 'string' ? msg : 'Erro ao anonimizar doador.');
     }
   };
@@ -173,8 +173,8 @@ export default function Doadores() {
 
       handleCancel();
       loadDoadores();
-    } catch (err: any) {
-      const detail = err.response?.data?.detail;
+    } catch (err) {
+      const detail = apiErrorDetail(err);
       const message = typeof detail === 'string' ? detail : 'Erro ao salvar dados.';
       // Erro do servidor que pertence a um campo aparece junto dele (ex.: "CPF já cadastrado").
       const field = fieldForApiError(message);
