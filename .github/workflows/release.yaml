@@ -53,6 +53,14 @@ jobs:
             echo "::error::Seção [$VERSAO] não encontrada no CHANGELOG.md."
             exit 1
           fi
+          # Os links do CHANGELOG são relativos (./arquivo), o que funciona dentro do repositório
+          # mas quebra na página da Release. Aqui viram links absolutos fixados na tag:
+          # pastas (terminadas em /) vão para /tree/, arquivos para /blob/.
+          BASE="https://github.com/$GITHUB_REPOSITORY"
+          sed -E -i \
+            -e "s#\]\(\./([^)]*/)\)#]($BASE/tree/$GITHUB_REF_NAME/\1)#g" \
+            -e "s#\]\(\./([^)]+)\)#]($BASE/blob/$GITHUB_REF_NAME/\1)#g" \
+            notas.md
 
       - name: Publicar a Release
         uses: softprops/action-gh-release@v3
