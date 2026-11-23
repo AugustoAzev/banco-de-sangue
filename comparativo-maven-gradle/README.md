@@ -24,6 +24,8 @@ O sistema continua usando só a versão em TypeScript. Este módulo existe para 
 
 **A diferença que aparece rodando:** no Maven e no Gradle não foi preciso escrever o ciclo, só declarar o projeto. No npm, cada etapa e a ordem entre elas estão escritas à mão no `package.json`.
 
+**Fila contra grafo:** o log mostra a diferença de fundo entre os dois. O Maven segue uma fila de fases, e o `.jar` (fase `package`) só sai depois dos testes (fase `test`). O Gradle monta um grafo de tarefas: `build` depende de `assemble` (o `jar`) e de `check` (o `test`), mas o `jar` não depende dos testes, por isso sai antes deles (`compileJava`, `jar`, `test`, `check`, `build`). Se um teste falha, o `build` falha nos dois casos, e o workflow não publica nenhum `.jar`.
+
 ## Como rodar
 
 **No GitHub (não precisa instalar nada):** Actions → **Comparativo npm, Maven e Gradle** → **Run workflow**. Os três jobs rodam lado a lado ([`comparativo-maven-gradle.yaml`](../.github/workflows/comparativo-maven-gradle.yaml)), e os dois `.jar` ficam disponíveis como artifacts.

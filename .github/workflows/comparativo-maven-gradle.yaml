@@ -101,7 +101,7 @@ jobs:
         with:
           gradle-version: '9.9.2'
 
-      - name: gradle build (compileJava, test, jar, check, build)
+      - name: gradle build (compileJava, jar, test, check, build)
         run: gradle build --console=plain
 
       - name: Publicar o .jar
